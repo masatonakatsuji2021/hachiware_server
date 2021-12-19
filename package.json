@@ -1,0 +1,24 @@
+{
+  "name": "hachiware_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "hachiware_server": "filtering.js"
+  },
+  "dependencies": {
+    "hachiware_sync": "^1.0.0",
+    "hachiware_tool": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "web",
+    "server",
+    "javascript"
+  ],
+  "author": "Nakatsuji Masato",
+  "license": "MIT"
+}
