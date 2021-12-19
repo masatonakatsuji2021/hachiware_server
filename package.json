@@ -1,7 +1,7 @@
 {
   "name": "hachiware_server",
   "version": "1.0.0",
-  "description": "",
+  "description": "JavaScript Framework \"Hachiware\" Web Server Application.",
   "main": "index.js",
   "bin": {
     "hachiware_server": "filtering.js"
@@ -20,5 +20,13 @@
     "javascript"
   ],
   "author": "Nakatsuji Masato",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/masatonakatsuji2021/hachiware_server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/masatonakatsuji2021/hachiware_server/issues"
+  },
+  "homepage": "https://github.com/masatonakatsuji2021/hachiware_server#readme"
 }
