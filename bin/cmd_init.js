@@ -1,14 +1,30 @@
 const tool = require("hachiware_tool");
+const fs = require("fs");
 
-module.exports = function(exitResolve){
+module.exports = function(rootPath, exitResolve){
 
 	var init = {};
 
 	this.then(function(resolve){
 
-		this.outn("** サーバー初期化設定 **").outn("新規でサーバー設定を作成します。以下の設問にお答えください。").br(2);
+		this.br();
 
-		this.in("  Q. サーバー名称があれば入力してください ()",function(value, retry){
+		this.outn("** Create server settings **")
+			.outn("Create a new server setting. Please answer the following questions.")
+			.br(2)
+		;
+
+		this.in("  Q. Enter the server name. (server_01)",function(value, retry){
+
+			if(!value){
+				value = "server_01";
+			}
+
+			if(fs.existsSync(rootPath + "/" + value)){
+				this.color.red("    [Error]").outn(" \"" + value + "\" cannot be created as it is because the same server name setting already exists. ")
+					.outn("            Delete the target server name or specify a new server name.");
+				return retry();
+			}
 
 			init.server_name = value;
 
@@ -17,7 +33,7 @@ module.exports = function(exitResolve){
 
 	}).then(function(resolve){
 
-		this.in("  Q. SSL接続しますか？[y/n] (n)", function(value, retry){
+		this.in("  Q. SSL connection? [y/n] (n)", function(value){
 
 			if(!value){
 				value = "N";
@@ -41,7 +57,7 @@ module.exports = function(exitResolve){
 			return resolve();
 		}
 
-		this.in("    Q.　サーバー証明書の秘密鍵ファイルのパスを指定 (server.key)",function(value, retry){
+		this.in("    Q. Specify the path of the private key file of the server certificate. (server.key)",function(value, retry){
 
 			if(!value){
 				value = "server.key";
@@ -59,7 +75,7 @@ module.exports = function(exitResolve){
 		if(!init.ssl){
 			return resolve();
 		}
-		this.in("    Q.　サーバー証明書のパスを指定 (server.crt)",function(value, retry){
+		this.in("    Q. Specify the path of the server certificate. (server.crt)",function(value, retry){
 
 			if(!value){
 				value = "server.crt";
@@ -75,7 +91,7 @@ module.exports = function(exitResolve){
 		if(!init.ssl){
 			return resolve();
 		}
-		this.in("    Q.　必要であればサーバー証明書のCA中間証明書パスを指定 ()",function(value, retry){
+		this.in("    Q. Specify the CA intermediate certificate path of the server certificate if required. ()",function(value){
 
 			if(value){
 				init.certificate.ca = value;
@@ -90,7 +106,7 @@ module.exports = function(exitResolve){
 			return resolve();
 		}
 
-		this.in("    Q. http接続を併用しますか？[y/n] (y)",function(value, retry){
+		this.in("    Q. Combined with http connection? [y/n] (y)",function(value){
 
 			if(!value){
 				value = "y";
@@ -110,7 +126,11 @@ module.exports = function(exitResolve){
 
 	}).then(function(resolve){
 
-		this.in("  Q. ホスト名(ドメイン)があれば入力してください。 ()",function(value, retry){
+		this.in("  Q. Enter the host name (domain). (localhost)",function(value, retry){
+
+			if(!value){
+				value = "localhost";
+			}
 
 			init.host = value;
 
@@ -126,7 +146,7 @@ module.exports = function(exitResolve){
 			var port = "80";
 		}
 
-		this.in("  Q. ポート番号の指定があれば入力してください。 (" + port + ")",function(value, retry){
+		this.in("  Q. Enter the port number. (" + port + ")",function(value, retry){
 
 			if(!value){
 				value = port;
@@ -139,7 +159,7 @@ module.exports = function(exitResolve){
 
 	}).then(function(resolve){
 
-		this.in("  Q. ファイル公開が可能なディレクトリ領域を用意しますか？[y/n] (n)",function(value, retry){
+		this.in("  Q. Prepare a directory area where files can be published? [y/n] (n)",function(value, retry){
 
 			if(!value){
 				value = "n";
@@ -160,7 +180,7 @@ module.exports = function(exitResolve){
 			return resolve();
 		}
 
-		this.in("    Q. ファイル航海用のURL(ホスト名以降)を指定してください。 (/assets)",function(value, retry){
+		this.in("    Q. Specify the URL for publishing the file (after the host name). (/assets)",function(value, retry){
 
 			if(!value){
 				value = "/assets";
@@ -177,7 +197,7 @@ module.exports = function(exitResolve){
 			return resolve();
 		}
 
-		this.in("    Q. ファイル航海用のマウント先パスを指定してください。 (/assets)",function(value, retry){
+		this.in("    Q. Specify the mount path for publishing the file. (/assets)",function(value, retry){
 
 			if(!value){
 				value = "/assets";
@@ -190,7 +210,7 @@ module.exports = function(exitResolve){
 
 	}).then(function(resolve){
 
-		this.in("  Q. エラー発生時にサーバーを永続的に起動できるようにしますか？[y/n] (y)",function(value, retry){
+		this.in("  Q. Do you want the server to be able to start permanently in the event of an error? [y/n] (y)",function(value, retry){
 
 			if(!value){
 				value = "y";
@@ -210,7 +230,7 @@ module.exports = function(exitResolve){
 
 	}).then(function(resolve){
 
-		this.in("  Q. コンソール上にログを表示させますか？[y/n] (y)",function(value, retry){
+		this.in("  Q. Display the log on the console? [y/n] (y)",function(value, retry){
 
 			if(!value){
 				value = "y";
@@ -230,7 +250,7 @@ module.exports = function(exitResolve){
 
 	}).then(function(resolve){
 
-		this.in("  Q. サーバー開始/終了ログを出力しますか？[y/n] (y)",function(value, retry){
+		this.in("  Q. Output server start/end log? [y/n] (y)",function(value, retry){
 
 			if(!value){
 				value = "y";
@@ -258,7 +278,7 @@ module.exports = function(exitResolve){
 			return resolve();
 		}
 
-		this.in("    Q. サーバー開始/終了ログの出力先パスを指定 (logs/startup/startup-{YYYY}.log)",function(value, retry){
+		this.in("    Q. Specify the output destination path of the server start/end log (logs/startup/startup-{YYYY}.log)",function(value, retry){
 
 			if(!value){
 				value = "logs/startup/startup-{YYYY}.log";
@@ -275,7 +295,7 @@ module.exports = function(exitResolve){
 			return resolve();
 		}
 
-		this.in("    Q. サーバー開始/終了ログの出力内容フォーマットを指定 ([{DATETIME}] {MODE} {HOST}:{PORT} server_name = {SERVERNAME})",function(value, retry){
+		this.in("    Q. Specify the output content format of the server start/end log ([{DATETIME}] {MODE} {HOST}:{PORT} server_name = {SERVERNAME})",function(value, retry){
 
 			if(!value){
 				value = "[{DATETIME}] {MODE} {HOST}:{PORT} server_name = {SERVERNAME}";
@@ -288,7 +308,7 @@ module.exports = function(exitResolve){
 
 	}).then(function(resolve){
 
-		this.in("  Q. アクセスログを出力しますか？[y/n] (y)",function(value, retry){
+		this.in("  Q. Output access log? [y/n] (y)",function(value, retry){
 
 			if(!value){
 				value = "y";
@@ -316,7 +336,7 @@ module.exports = function(exitResolve){
 			return resolve();
 		}
 
-		this.in("    Q. アクセスログの出力先パスを指定 (logs/access/access-{YYYY}-{MM}.log)",function(value, retry){
+		this.in("    Q. Specify the output destination path of the access log. (logs/access/access-{YYYY}-{MM}.log)",function(value, retry){
 
 			if(!value){
 				value = "logs/access/access-{YYYY}-{MM}.log";
@@ -333,7 +353,7 @@ module.exports = function(exitResolve){
 			return resolve();
 		}
 
-		this.in("    Q. アクセスログの出力内容フォーマットを指定 ([{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE})",function(value, retry){
+		this.in("    Q. Specify the output content format of the access log. ([{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE})",function(value, retry){
 
 			if(!value){
 				value = "[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE}";
@@ -346,7 +366,7 @@ module.exports = function(exitResolve){
 
 	}).then(function(resolve){
 
-		this.in("  Q. エラーログを出力しますか？[y/n] (y)",function(value, retry){
+		this.in("  Q. Output error log? [y/n] (y)",function(value, retry){
 
 			if(!value){
 				value = "y";
@@ -374,7 +394,7 @@ module.exports = function(exitResolve){
 			return resolve();
 		}
 
-		this.in("    Q. エラーログの出力先パスを指定 (logs/error/error-{YYYY}-{MM}.log)",function(value, retry){
+		this.in("    Q. Specify the output destination path of the error log. (logs/error/error-{YYYY}-{MM}.log)",function(value, retry){
 
 			if(!value){
 				value = "logs/error/error-{YYYY}-{MM}.log";
@@ -391,7 +411,7 @@ module.exports = function(exitResolve){
 			return resolve();
 		}
 
-		this.in("    Q. エラーログの出力内容フォーマットを指定 ([{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE} {ERROR_EXCEPTION} {ERROR_STACK})",function(value, retry){
+		this.in("    Q. Specify the output content format of the error log. ([{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE} {ERROR_EXCEPTION} {ERROR_STACK})",function(value, retry){
 
 			if(!value){
 				value = "[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE} {ERROR_EXCEPTION} {ERROR_STACK}";
@@ -404,7 +424,7 @@ module.exports = function(exitResolve){
 
 	}).then(function(resolve){
 
-		this.in("  Q. アクセスハンドリングコールバックを指定しますか？ [y/n] (y)",function(value, retry){
+		this.in("  Q. Specify an access handling callback? [y/n] (y)",function(value, retry){
 
 			if(!value){
 				value = "y";
@@ -430,7 +450,7 @@ module.exports = function(exitResolve){
 			return resolve();
 		}
 
-		this.in("    Q. アクセスハンドリングコールバックを同期対応で指定しますか？ [y/n] (y)",function(value, retry){
+		this.in("    Q. Specify access handling callbacks for synchronization? [y/n] (y)",function(value, retry){
 
 			if(!value){
 				value = "y";
@@ -447,7 +467,7 @@ module.exports = function(exitResolve){
 
 	}).then(function(resolve){
 
-		this.in("  Q. エラーハンドリングコールバックを指定しますか？ [y/n] (y)",function(value, retry){
+		this.in("  Q. Specify an error handling callback? [y/n] (y)",function(value, retry){
 
 			if(!value){
 				value = "y";
@@ -473,7 +493,7 @@ module.exports = function(exitResolve){
 			return resolve();
 		}
 
-		this.in("    Q. エラーハンドリングコールバックを同期対応で指定しますか？ [y/n] (y)",function(value, retry){
+		this.in("    Q. Specify error handling callbacks for synchronization? [y/n] (y)",function(value, retry){
 
 			if(!value){
 				value = "y";
@@ -522,19 +542,53 @@ module.exports = function(exitResolve){
 					outData["Log StartUp Enable"] = false;
 				}
 			}
+
+			if(init.logs.access){
+				if(init.logs.access.enable){
+					outData["Log Access"] = true;
+					outData["  Log Access Path"] = init.logs.access.path;
+					outData["  Log Access contents"] = init.logs.access.contents;
+				}
+				else{
+					outData["Log Access Enable"] = false;
+				}
+			}
+
+			if(init.logs.error){
+				if(init.logs.error.enable){
+					outData["Log Error"] = true;
+					outData["  Log Error Path"] = init.logs.error.path;
+					outData["  Log Error contents"] = init.logs.error.contents;
+				}
+				else{
+					outData["Log Error Enable"] = false;
+				}
+			}
 		}
 
+		if(init.callbacks){
+			if(init.callbacks.access){
+				outData["Callback Access"] = true;
+				if(init.callbacks.syncAccess){
+					outData["Callback Access Sync"] = true;
+				}
+			}
+			if(init.callbacks.error){
+				outData["Callback Error"] = true;
+				if(init.callbacks.syncError){
+					outData["Callback Error Sync"] = true;
+				}
+			}
+		}
 
 		this.outData(outData,{
 			fieldMaxLength:40,
 			valueMaxLength:80,
 		});
 
-		console.log(init);
-
 		this.br();
 
-		this.in("上記の内容でサーバーを作成します。よろしいですか？[y/n] (y)", function(value, retry){
+		this.in(" Create a server with the above contents. Is it OK? [y/n] (y)", function(value, retry){
 
 			if(!value){
 				value = "y";
@@ -542,11 +596,18 @@ module.exports = function(exitResolve){
 
 			if(value == "y"){
 
+				var path = rootPath + "/" + init.server_name;
 
-				this.br(2).outn("サーバー作成を完了しました。");
+				fs.mkdirSync(path);
+
+				var initStr = require("./cmd_init_source.js");
+
+				fs.writeFileSync(path + "/index.js",initStr(init));
+
+				this.br(2).outn("Completed server creation.");
 			}
 			else{
-				this.br(2).outn("サーバー作成を中止しました。");
+				this.br(2).outn("Cancel server creation.");
 
 			}
 

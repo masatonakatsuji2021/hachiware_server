@@ -37,9 +37,9 @@ module.exports = {
 		
 	},
 
-	console: function(){
-		const console = require("./bin/console.js");
-		console();
+	command: function(rootPath){
+		const command = require("./bin/command.js");
+		command(rootPath);
 	},
 
 };
