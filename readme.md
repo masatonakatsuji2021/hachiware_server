@@ -27,9 +27,9 @@ The ``listen.`` method is a method for building a simple server.
 Write the following code in ``index.js``.
 
 ```javascript
-const server = require("hachiware_server");
+const { listen } = require("hachiware_server");
 
-server.listen(__dirname);
+listen(__dirname);
 ```
 
 Specify the current path of ``index.js`` as an argument.
@@ -53,7 +53,6 @@ module.exports = {
 	host: "www.sample1.com",
 
 	port: 80,
-
 
 	callbacks: {
 		access: function(data){
