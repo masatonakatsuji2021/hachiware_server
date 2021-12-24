@@ -1,10 +1,12 @@
-module.exports = function(params, req, res){
+module.exports = function(resolve, params, req, res){
 
 	if(!params.filtering){
-		return;
+		return resolve();
 	}
 
 	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+	var juge = true;
 
 	if(params.filtering.mode == "accpet"){
 		var juge = false;
@@ -46,8 +48,10 @@ module.exports = function(params, req, res){
 	}
 
 	if(!juge){
-		return false;
+		res.statusCode = 404;
+		res.end();
+		return;
 	}
 
-	return true;
+	resolve();
 };

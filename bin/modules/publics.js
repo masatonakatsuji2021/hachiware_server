@@ -1,8 +1,7 @@
 const fs = require("fs");
 const path = require("path");
-const mime = require("./mime.js");
 
-module.exports = {
+module.exports = function(resolve, params, req, res){
 
 	/**
 	 * searchAssets
@@ -10,7 +9,7 @@ module.exports = {
 	 * @param {*} requestUrl 
 	 * @returns 
 	 */
-	searchAssets: function(params, requestUrl){
+	 const searchAssets = function(params, requestUrl){
 
 		if(!params.assets){
 			return null;
@@ -30,7 +29,7 @@ module.exports = {
 		}
 
 		return assets;
-	},
+	};
 
 	/**
 	 * loadFile
@@ -39,7 +38,7 @@ module.exports = {
 	 * @param {*} req 
 	 * @param {*} res 
 	 */
-	loadFile: function(assets, filePath, req, res){
+	 const loadFile = function(assets, filePath, req, res){
 
 		var headers = {};
 		headers["Content-Type"] = mime(assets, path.extname(filePath));
@@ -56,7 +55,7 @@ module.exports = {
 		res.writeHead(200,headers);
 		var file = fs.readFileSync(filePath);
 		res.write(file);
-	},
+	};
 
 	/**
 	 * loadAssets
@@ -64,15 +63,15 @@ module.exports = {
 	 * @param {*} req 
 	 * @param {*} res 
 	 */
-	loadAssets: function(assets, req, res){
-		var filePath = assets.mount + req.url.replace(assets.url,"");
+	const loadAssets = function(assets, req, res){
+		var filePath = params.rootPath + "/" + assets.mount + req.url.replace(assets.url,"");
 
 		res.statusCode = 200;
 
 		if(fs.existsSync(filePath)){
 
 			if(fs.statSync(filePath).isFile()){
-				this.loadFile(assets, filePath, req, res);
+				loadFile(assets, filePath, req, res);
 			}
 			else{
 
@@ -99,7 +98,7 @@ module.exports = {
 					}
 
 					if(juge){
-						this.loadFile(assets, filePath, req, res);
+						loadFile(assets, filePath, req, res);
 					}
 				}
 
@@ -110,6 +109,55 @@ module.exports = {
 			res.statusCode = 404;
 		}
 		res.end();
-	},
+	};
+
+	/**
+	 * mime
+	 * @param {*} assets 
+	 * @param {*} extName 
+	 * @returns 
+	 */
+	const mime = function(assets, extName){
+
+		extName = extName.split(".").join("");
 	
+		var mimeList = {
+				"txt":"text/plain",
+				"jpg":"image/jpeg",
+				"jpeg":"image/jpeg",
+				"png":"image/png",
+				"gif":"image/gif",
+				"svg":"image/svg",
+				"bmp":"image/bmp",
+				"json":"text/json",
+				"js":"text/javascript",
+				"css":"text/css",
+				"html":"text/html",
+				"htm":"text/html",
+		};
+	
+		if(assets.mimes){
+			var colums = Object.keys(assets.mimes);
+			for(var n = 0 ; n < colums.length ; n++){
+				var type = colums[n];
+				var mime = assets.mimes[type];
+				mimeList[type] = mime;
+			}
+		}
+	
+		if(mimeList[extName]){
+			return mimeList[extName];
+		}
+		else{
+			return "text/plain";
+		}
+	};
+
+	var assets = searchAssets(params, req.url);
+
+	if(!assets){
+		return resolve();
+	}
+
+	loadAssets(assets, req, res);
 };

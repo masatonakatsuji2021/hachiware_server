@@ -1,4 +1,4 @@
-module.exports = function(req, callback, catchCallback){
+module.exports = function(resolve, params, req, res){
 
 	var url = req.url;
 	var queryStr = url.split("?")[1];
@@ -16,7 +16,7 @@ module.exports = function(req, callback, catchCallback){
 
 	if(req.method == "GET"){
 		req.body = null;
-		callback(req);
+		resolve();
 	}
 	else{
 	
@@ -32,7 +32,7 @@ module.exports = function(req, callback, catchCallback){
 			var body = null;
 
 			if(contentType == "application/json"){
-					body = JSON.parse(bodyBuff);
+				body = JSON.parse(bodyBuff);
 			}
 			else if(contentType == "application/x-www-form-urlencoded"){
 				body = {};
@@ -48,11 +48,7 @@ module.exports = function(req, callback, catchCallback){
 
 			req.body = body;
 
-			try{
-				callback(req);
-			}catch(error){
-				catchCallback(error);
-			}
+			resolve();
 		});
 
 	}
