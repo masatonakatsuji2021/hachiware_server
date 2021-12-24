@@ -1,10 +1,12 @@
 const sync = require("hachiware_sync");
 const tool = require("hachiware_tool");
+
 const errorHandle = require("./errorHandle.js");
 const log = require("./log.js");
-// var request = require("./request.js");
 
 module.exports = function(params ,req ,res){
+
+	res.setHeader("server","hachiware server");
 
 	sync.then(function(resolve){
 
