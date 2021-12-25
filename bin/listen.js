@@ -7,7 +7,7 @@ const https = require("./https.js");
 
 module.exports = function(rootPath){
 
-	console.log("****************************************");
+	console.log("***********************************");
 	console.log("*** Hachiware Server *****");
 	console.log("");
 	console.log("[" + tool.getDateFormat("{DATETIME}") + "] Listen Start");
@@ -29,6 +29,10 @@ module.exports = function(rootPath){
 
 	var loadConf = [];
 	var loadModules = [];
+
+	console.log("**** Connect URL ******************");
+	console.log("");
+
 	for(var n = 0 ; n < confList.file.length ; n++){
 		var path = confList.file[n];
 
@@ -52,8 +56,24 @@ module.exports = function(rootPath){
 				conf.port = 80;
 			}
 		}
+		
+		var connectStr = " ";
+		if(conf.ssl){
+			connectStr += "https://";
+			connectStr += conf.host;
+			if(conf.port !== 443){
+				connectStr += ":" + conf.port;
+			}
+		}
+		else{
+			connectStr += "http://";
+			connectStr += conf.host;
+			if(conf.port !== 80){
+				connectStr += ":" + conf.port;
+			}
+		}
 
-		console.log(" Connect-URL :" + conf.host + ":" + conf.port);
+		console.log(connectStr);
 
 		conf._host = conf.host;
 		if(conf.ssl){
@@ -69,6 +89,8 @@ module.exports = function(rootPath){
 
 		loadConf.push(conf);
 	}
+
+	console.log("\n--\n");
 
 	for(var n = 0 ; n < loadConf.length ; n++){
 		var conf = loadConf[n];
