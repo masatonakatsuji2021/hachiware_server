@@ -41,8 +41,8 @@ The file and directory structure is as follows.
 
 ```
 index.js
-	L conf
-		L conf.js 	
+    L conf
+        L conf.js 	
 ```
 
 Describe as follows in the configuration file `` conf/conf.js``
@@ -50,17 +50,17 @@ Describe as follows in the configuration file `` conf/conf.js``
 ```javascript
 module.exports = {
 
-	host: "www.sample1.com",
+    host: "www.sample1.com",
 
-	port: 80,
+    port: 80,
 
-	callbacks: {
-		access: function(data){
+    callbacks: {
+        access: function(data){
 		
-			data.res.write("Hallo Web Server!");
-			data.res.end();
-		},
-	},
+            data.res.write("Hallo Web Server!");
+            data.res.end();
+        },
+    },
 
 	modules: [
 		"filtering",
@@ -126,7 +126,7 @@ The details of the values ​​of various setting items will be explained later
 ```javascript
 module.exports = {
 
-	host: "localhost",
+    host: "localhost",
 
 };
 ```
@@ -136,7 +136,7 @@ module.exports = {
 ```javascript
 module.exports = {
 
-	port: 80,
+    port: 80,
 
 };
 ```
