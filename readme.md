@@ -56,18 +56,18 @@ module.exports = {
 
     callbacks: {
         access: function(data){
-		
+
             data.res.write("Hallo Web Server!");
             data.res.end();
         },
     },
 
-	modules: [
-		"filtering",
-		"basicAuth",
-		"publics",
-		"request",
-	],
+    modules: [
+        "filtering",
+        "basicAuth",
+        "publics",
+        "request",
+    ],
 };
 ```
 
@@ -79,9 +79,9 @@ Also, when setting multiple servers, add the configuration file as shown below.
 
 ```
 index.js
-	L conf
-		L conf.js
-		L conf2.js
+    L conf
+        L conf.js
+        L conf2.js
 ```
 
 The configuration file ``conf2.js`` is below.  
@@ -89,24 +89,24 @@ The configuration file ``conf2.js`` is below.
 ```javascript
 module.exports = {
 
-	host: "www.sample2.com",
+    host: "www.sample2.com",
 
-	port: 80,
+    port: 80,
 
-	callbacks: {
-		access: function(data){
+    callbacks: {
+        access: function(data){
 
-			data.res.write("Hello Web Server2!!");
-			data.res.end();
-		},
-	},
+            data.res.write("Hello Web Server2!!");
+            data.res.end();
+        },
+    },
 
-	modules: [
-		"filtering",
-		"basicAuth",
-		"publics",
-		"request",
-	],
+    modules: [
+        "filtering",
+        "basicAuth",
+        "publics",
+        "request",
+    ],
 };
 ```
 
@@ -150,12 +150,12 @@ Multiple areas can be specified.
 ```javascript
 module.exports = {
 
-	assets:[
-		{
-			url:"/ast",
-			mount: "/assets",
-		},
-	],
+    assets:[
+        {
+            url:"/ast",
+            mount: "/assets",
+        },
+    ],
 
 };
 ```
@@ -165,18 +165,18 @@ module.exports = {
 ```javascript
 module.exports = {
 
-	callbacks: {
-		access: function(data){
-		
-			data.res.write("Hello Web Server!");
-			data.res.end();
-		},
-		error: function(error, data){
+    callbacks: {
+        access: function(data){
 
-			data.res.write(error);
-			data.res.end();
-		}
-	},
+            data.res.write("Hello Web Server!");
+            data.res.end();
+        },
+        error: function(error, data){
+
+            data.res.write(error);
+            data.res.end();
+        }
+    },
 };
 ```
 
