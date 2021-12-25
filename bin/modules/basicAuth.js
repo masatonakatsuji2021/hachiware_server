@@ -4,6 +4,7 @@ module.exports = function(resolve, params, req, res){
 
 	const failed = function(basicAuth, res){
 		res.statusCode = 401;
+		res.setHeader("server","hachiware server");
 		basicAuth.onFailed(res);
 	};
 

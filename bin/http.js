@@ -8,18 +8,12 @@ module.exports = function(port, params){
 
 		var decisionParam = null;
 
+		var targetHost = req.headers.host;
+
 		for(var n = 0 ; n < params.length ; n++){
 			var p_ = params[n];
 
-			var host = p_.host;
-
-			if(port != 80){
-				host += ":" + port;
-			}
-
-			if(
-				req.headers.host === host
-			){
+			if(targetHost === p_._host){
 				decisionParam = p_;
 				break;
 			}
@@ -36,8 +30,6 @@ module.exports = function(port, params){
 	
 	h.httpAllowHalfOpen = true;
 	
-	console.log(port);
-
 	h.listen(port);
 
 	// log.writeStartUp(true);
