@@ -1,3 +1,13 @@
+/**
+ * ====================================================================
+ * Hachiware_Server
+ * 
+ * Web server application with Node.js
+ * 
+ * Author : Nakatsuji Masato 
+ * ====================================================================
+ */
+
 module.exports = function(rootPath){
 	
 	var args = process.argv;

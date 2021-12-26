@@ -1,3 +1,13 @@
+/**
+ * ====================================================================
+ * Hachiware_Server
+ * 
+ * Web server application with Node.js
+ * 
+ * Author : Nakatsuji Masato 
+ * ====================================================================
+ */
+
 const tool = require("hachiware_tool");
 
 module.exports = function(resolve, params, req, res){

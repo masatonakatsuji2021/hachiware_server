@@ -1,3 +1,13 @@
+/**
+ * ====================================================================
+ * Hachiware_Server
+ * 
+ * Web server application with Node.js
+ * 
+ * Author : Nakatsuji Masato 
+ * ====================================================================
+ */
+
 const CLI = require("hachiware_cli");
 
 module.exports = function(rootPath){
