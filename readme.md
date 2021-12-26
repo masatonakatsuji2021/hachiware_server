@@ -18,21 +18,27 @@ All you have to do is add the package require code to index.js etc. and you're r
 const server = require("hachiware_server");
 ```
 
+Optionally create a directory, create a ``index.js`` file and write the following code.
+
+```javascript
+const hachiware_server = require("hachiware_server");
+hachiware_server(__dirname);
+```
+
+Depending on the command line argument at startup, the server is started or various scaffolds are executed by the console.
+
 ---
 
 ## # Server construction
 
-The ``listen.`` method is a method for building a simple server.
+To start the server, execute the following command on the directory where ``index.js`` is installed.
 
-Write the following code in ``index.js``.
-
-```javascript
-const { listen } = require("hachiware_server");
-
-listen(__dirname);
+```
+node . listen
 ```
 
-Specify the current path of ``index.js`` as an argument.
+In the initial state, the server cannot be started because the configuration file is not prepared at all.  
+(Only the message "No configuration directory." Is displayed)
 
 Multiple servers can be set for each domain or port.  
 For that setting, you need to specify a configuration file separately in the ``conf`` directory.
@@ -41,8 +47,8 @@ The file and directory structure is as follows.
 
 ```
 index.js
-    L conf
-        L conf.js 	
+conf
+    L conf.js 	
 ```
 
 Describe as follows in the configuration file `` conf/conf.js``
@@ -79,9 +85,9 @@ Also, when setting multiple servers, add the configuration file as shown below.
 
 ```
 index.js
-    L conf
-        L conf.js
-        L conf2.js
+conf
+    L conf.js
+    L conf2.js
 ```
 
 The configuration file ``conf2.js`` is below.  
@@ -265,9 +271,65 @@ The shortcodes of each format and their output results are as follows.
 |{HH}|〇|〇|〇|Log output hour|
 |{mm}|〇|〇|〇|Log output minutes|
 |{ss}|〇|〇|〇|Log output second|
+|{HOST}|〇|〇|〇|Host name|
+|{PORT}|〇|〇|〇|Port Number|
+|{SSL}|〇|〇|〇|SSL enabled/disabled|
+|{LISTEN_URI}|〇|〇|〇|Requestable URL|
+|{CONF_FILE}|〇|〇|〇|Read setting file name|
+|{MODE}|〇|-|-|Server start\end|
+|{METHOD}|-|〇|〇|Request method|
+|{REQUEST_URL}|-|〇|〇|Requested URL|
+|{RESPONSE_CODE}|-|〇|〇|Response code number|
+|{REMOTE_IP}|-|〇|〇|Source IP address information|
+|{REQUEST_QUERY}|-|〇|〇|Query information(GET)|
+|{REQUEST_BODY}|-|〇|〇|Request body|
+|{ERROR_EXCEPTION}|-|-|〇|Error message|
+|{ERROR_STACK}|-|-|〇|Error details|
 
+If you want to include information other than the above shortcode in the error log, you can add the original error information using a callback.
 
+```javascript
+access: {
+    enable: true,
+    path: "logs/access/access-{YYYY}-{MM}.log",
+    contents: "[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE}",
+    callback: function(contents, req ,res){
+        contents += " HEADERS=" + JSON.stringify(req.headers);
+        return contents;
+    },
+},
+```
 
+One thing to keep in mind when implementing a callback is that the arguments are different for startUp, access, and error.
+
+In the case of strtUp, it will be the error content and setting information.
+
+```javascript
+callback: function(contents, params){
+    contents += " SNAME=" + params.servername;
+    return contents;
+},
+```
+
+In the case of access, the order is error content, setting information, request information, and response information.
+
+```javascript
+callback: function(contents, params, req, res){
+    contents += " HEADERS=" + JSON.stringify(req.headers);
+    return contents;
+},
+```
+
+In the case of error, the order is content content, error content, setting information, request information, and response information.
+
+```javascript
+callback: function(contents, exception, params, req, res){
+    contents += "\n\n HEADERS=" + JSON.stringify(req.headers);
+    return contents;
+},
+```
+
+It is also possible to adjust the log output with just a callback.
 
 ### - modules
 
