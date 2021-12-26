@@ -14,19 +14,13 @@ module.exports = function(rootPath, exitResolve){
 			.br(2)
 		;
 
-		this.in("  Q. Enter the server name. (server_01)",function(value, retry){
+		this.in("  Q. Enter the host name (domain). (localhost)",function(value, retry){
 
 			if(!value){
-				value = "server_01";
+				value = "localhost";
 			}
 
-			if(fs.existsSync(rootPath + "/" + value)){
-				this.color.red("    [Error]").outn(" \"" + value + "\" cannot be created as it is because the same server name setting already exists. ")
-					.outn("            Delete the target server name or specify a new server name.");
-				return retry();
-			}
-
-			init.server_name = value;
+			init.host = value;
 
 			resolve();
 		});
@@ -120,19 +114,6 @@ module.exports = function(rootPath, exitResolve){
 			else{
 				init.combine = false;
 			}
-
-			resolve();
-		});
-
-	}).then(function(resolve){
-
-		this.in("  Q. Enter the host name (domain). (localhost)",function(value, retry){
-
-			if(!value){
-				value = "localhost";
-			}
-
-			init.host = value;
 
 			resolve();
 		});

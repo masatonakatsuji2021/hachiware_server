@@ -26,7 +26,7 @@ module.exports = function(params ,req ,res){
 			params.modules, 
 			function(next, module){
 
-				var mPath = "modules/" + module + ".js";
+				var mPath = "modules/" + module + "/index.js";
 
 				var mod = require("./" + mPath);
 

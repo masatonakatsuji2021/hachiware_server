@@ -122,7 +122,7 @@ module.exports = function(rootPath){
 						continue;
 					}
 	
-					var mPath = "modules/" + module + ".js";
+					var mPath = "modules/" + module + "/index.js";
 	
 					if(!fs.existsSync(__dirname + "/" + mPath)){
 						console.log(" [WARM] " + conf.host + ":" + conf.port + " | \"" + module + "\" is not found module.");
