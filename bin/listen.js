@@ -43,6 +43,7 @@ module.exports = function(rootPath){
 		}
 
 		conf.rootPath = rootPath;
+		conf._file = path;
 
 		if(!conf.host){
 			conf.host = "localhost";
@@ -168,7 +169,29 @@ module.exports = function(rootPath){
 
 	process.on("exit",function(){
 		console.log("[" + tool.getDateFormat("{DATETIME}") + "] Server Exit.");
-		// log.writeStartUp(false);
+
+		var colums = Object.keys(confListOnPort);
+		for(var n = 0 ; n < colums.length ; n++){
+			var port = colums[n];
+			var confs = confListOnPort[port];
+
+			for(var n2 = 0 ; n2 < confs.length ; n2++){
+				var c_ = confs[n2];
+				log.writeStartUp(false, c_);
+			}
+		}
+
+		var colums = Object.keys(confListOnPortAndSSL);
+		for(var n = 0 ; n < colums.length ; n++){
+			var port = colums[n];
+			var confs = confListOnPortAndSSL[port];
+
+			for(var n2 = 0 ; n2 < confs.length ; n2++){
+				var c_ = confs[n2];
+				log.writeStartUp(false, c_);
+			}
+		}
+
 	});
 	process.on("SIGINT", function () {
 		process.exit(0);

@@ -32,5 +32,8 @@ module.exports = function(port, params){
 	
 	h.listen(port);
 
-	// log.writeStartUp(true);
+	for(var n = 0 ; n < params.length ; n++){
+		var p_ = params[n];
+		log.writeStartUp(true, p_);
+	}
 };

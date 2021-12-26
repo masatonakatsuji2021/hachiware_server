@@ -1,55 +1,49 @@
 const fs = require("fs");
 const tool = require("hachiware_tool");
+const path0 = require("path");
 
 module.exports = {
 
 	/**
-	 * defaultConvertLogPath
+	 * defaultConvert
 	 * @param {*} logPath 
 	 * @param {*} date 
+	 * @param {*} paarms 
 	 * @returns 
 	 */
-	defaultConvertLogPath: function(logPath, date){
+	defaultConvert: function(strs, date, params){
 
-		logPath = logPath.replace("{YYYY}", tool.getDateFormat("{YYYY}",date));
-		logPath = logPath.replace("{MM}", tool.getDateFormat("{MM}",date));
-		logPath = logPath.replace("{M}", tool.getDateFormat("{M}",date));
-		logPath = logPath.replace("{DD}", tool.getDateFormat("{DD}",date));
-		logPath = logPath.replace("{D}", tool.getDateFormat("{D}",date));
-		logPath = logPath.replace("{HH}", tool.getDateFormat("{HH}",date));
-		logPath = logPath.replace("{H}", tool.getDateFormat("{H}",date));
-		logPath = logPath.replace("{mm}", tool.getDateFormat("{mm}",date));
-		logPath = logPath.replace("{m}", tool.getDateFormat("{m}",date));
-		logPath = logPath.replace("{ss}", tool.getDateFormat("{ss}",date));
-		logPath = logPath.replace("{s}", tool.getDateFormat("{s}",date));
+		strs = strs.replace("{DATETIME}", tool.getDateFormat("{DATETIME}",date));
+		strs = strs.replace("{DATE}", tool.getDateFormat("{DATE}",date));
+		strs = strs.replace("{TIME}", tool.getDateFormat("{TIME}",date));
+		strs = strs.replace("{YYYY}", tool.getDateFormat("{YYYY}",date));
+		strs = strs.replace("{MM}", tool.getDateFormat("{MM}",date));
+		strs = strs.replace("{M}", tool.getDateFormat("{M}",date));
+		strs = strs.replace("{DD}", tool.getDateFormat("{DD}",date));
+		strs = strs.replace("{D}", tool.getDateFormat("{D}",date));
+		strs = strs.replace("{HH}", tool.getDateFormat("{HH}",date));
+		strs = strs.replace("{H}", tool.getDateFormat("{H}",date));
+		strs = strs.replace("{mm}", tool.getDateFormat("{mm}",date));
+		strs = strs.replace("{m}", tool.getDateFormat("{m}",date));
+		strs = strs.replace("{ss}", tool.getDateFormat("{ss}",date));
+		strs = strs.replace("{s}", tool.getDateFormat("{s}",date));
+		strs = strs.replace("{HOST}", params.host);
+		strs = strs.replace("{PORT}", params.port);
 
-		return logPath;
-	},
+		if(params.ssl){
+			var ssl = true;
+			var url = "https://" + params._host;
+		}
+		else{
+			var ssl = false;
+			var url = "http://" + params._host;
+		}
 
-	/**
-	 * defaultConvertContents
-	 * @param {*} contents 
-	 * @param {*} date 
-	 * @returns 
-	 */
-	defaultConvertContents: function(contents, date){
+		strs = strs.replace("{SSL}", ssl);
+		strs = strs.replace("{LISTEN_URI}", url);
+		strs = strs.replace("{CONF_FILE}", path0.basename(params._file));
 
-		contents = contents.replace("{DATETIME}",tool.getDateFormat("{DATETIME}", date));
-		contents = contents.replace("{DATE}",tool.getDateFormat("{DATE}", date));
-		contents = contents.replace("{TIME}",tool.getDateFormat("{TIME}", date));
-		contents = contents.replace("{YYYY}", tool.getDateFormat("{YYYY}",date));
-		contents = contents.replace("{MM}", tool.getDateFormat("{MM}",date));
-		contents = contents.replace("{M}", tool.getDateFormat("{M}",date));
-		contents = contents.replace("{DD}", tool.getDateFormat("{DD}",date));
-		contents = contents.replace("{D}", tool.getDateFormat("{D}",date));
-		contents = contents.replace("{HH}", tool.getDateFormat("{HH}",date));
-		contents = contents.replace("{H}", tool.getDateFormat("{H}",date));
-		contents = contents.replace("{mm}", tool.getDateFormat("{mm}",date));
-		contents = contents.replace("{m}", tool.getDateFormat("{m}",date));
-		contents = contents.replace("{ss}", tool.getDateFormat("{ss}",date));
-		contents = contents.replace("{s}", tool.getDateFormat("{s}",date));
-
-		return contents;
+		return strs;
 	},
 
 	/**
@@ -77,6 +71,7 @@ module.exports = {
 	/**
 	 * writeStartUp
 	 * @param {*} mode 
+	 * @param {*} port 
 	 * @param {*} params 
 	 * @returns 
 	 */
@@ -86,22 +81,26 @@ module.exports = {
 			return;
 		}
 
-		if(!params.logs.startUp.enable){
+		var startUp = params.logs.startUp;
+
+		if(!startUp.enable){
 			return;
 		}
 
 		var logPath = "logs/logs/startup/startup.log";
-		var contents = "[{DATETIME}] MODE={MODE} HOST={HOST} PORT={PORT} SERVER_NAME={SERVERNAME}";
-
-		if(params.logs.startUp.path){
-			logPath = params.logs.startUp.path;
-		}
-		if(params.logs.startUp.contents){
-			contents = params.logs.startUp.contents;
+		if(startUp.path){
+			logPath = startUp.path;
 		}
 
-		logPath = this.defaultConvertLogPath(logPath);
-		contents = this.defaultConvertContents(contents);
+		var contents = "[{DATETIME}] MODE={MODE} HOST={HOST} PORT={PORT} SSL={SSL} CONF={CONF_FILE}";
+		if(startUp.contents){
+			contents = startUp.contents;
+		}
+
+		var d = new Date();
+
+		logPath = this.defaultConvert(logPath, d, params);
+		contents = this.defaultConvert(contents, d, params);
 
 		this.defaultMkDir(logPath);
 
@@ -111,16 +110,22 @@ module.exports = {
 		else{
 			mode = "CLOSE";
 		}
-		var host = params.host;
-		var port = params.port;
-		var serverName = params.server_name;
-		var httpAllowHalfOpen = params.httpAllowHalfOpen;
+		var url = params._host;
 
+		if(params.ssl){
+			url = "https://" + url;
+		}
+		else{
+			url = "http://" + url;
+		}
 		contents = contents.replace("{MODE}", mode);
-		contents = contents.replace("{HOST}", host);
-		contents = contents.replace("{PORT}", port);
-		contents = contents.replace("{SERVERNAME}", serverName);
-		contents = contents.replace("{HTTPALLOWHALFOPEN}", httpAllowHalfOpen.toString());
+
+		if(startUp.callback){
+			var buff = startUp.callback(contents, params);
+			if(buff){
+				contents = buff;
+			}
+		}
 
 		fs.appendFileSync(logPath, contents + "\n");
 	},
@@ -137,22 +142,26 @@ module.exports = {
 			return;
 		}
 
-		if(!params.logs.access.enable){
+		var access = params.logs.access;
+
+		if(!access.enable){
 			return;
 		}
 
 		var logPath = "logs/access/access-{YYYY}-{MM}.log";
+		if(access.path){
+			logPath = access.path;
+		}
+
 		var contents = "[{DATETIME}] METHOD={METHOD} REQUEST_URI={REQUEST_URL} REMOTE_IP={REMOTE_IP} RESPONSE_CODE={RESPONSE_CODE}";
-
-		if(params.logs.access.path){
-			logPath = params.logs.access.path;
-		}
-		if(params.logs.access.contents){
-			contents = params.logs.access.contents;
+		if(access.contents){
+			contents = access.contents;
 		}
 
-		logPath = this.defaultConvertLogPath(logPath);
-		contents = this.defaultConvertContents(contents);
+		var d = new Date();
+
+		logPath = this.defaultConvert(logPath, d, params);
+		contents = this.defaultConvert(contents, d, params);
 
 		this.defaultMkDir(logPath);
 
@@ -160,11 +169,20 @@ module.exports = {
 		var requestUrl = req.url;
 		var responseCode = res.statusCode;
 		var remoteIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+		var query = req.query;
 
 		contents = contents.replace("{METHOD}", method);
 		contents = contents.replace("{REQUEST_URL}", requestUrl);
 		contents = contents.replace("{RESPONSE_CODE}", responseCode);
 		contents = contents.replace("{REMOTE_IP}", remoteIp);
+		contents = contents.replace("{REQUEST_QUERY}", JSON.stringify(query));
+
+		if(access.callback){
+			var buff = access.callback(contents, params, req, res);
+			if(buff){
+				contents = buff;
+			}
+		}
 
 		fs.appendFileSync(logPath, contents + "\n");
 	},
@@ -182,22 +200,26 @@ module.exports = {
 			return;
 		}
 
-		if(!params.logs.error.enable){
+		var errLog = params.logs.error;
+
+		if(!errLog.enable){
 			return;
 		}
 
 		var logPath = "logs/error/error-{YYYY}-{MM}.log";
+		if(errLog.path){
+			logPath = errLog.path;
+		}
+
 		var contents = "[{DATETIME}] METHOD={METHOD} REQUEST_URI={REQUEST_URL} REMOTE_IP={REMOTE_IP} RESPONSE_CODE={RESPONSE_CODE} ERROR_EXP={ERROR_EXCEPTION} ERROR_STACK={ERROR_STACK}";
-
-		if(params.logs.error.path){
-			logPath = params.logs.error.path;
-		}
-		if(params.logs.error.contents){
-			contents = params.logs.error.contents;
+		if(errLog.contents){
+			contents = errLog.contents;
 		}
 
-		logPath = this.defaultConvertLogPath(logPath);
-		contents = this.defaultConvertContents(contents);
+		var d = new Date();
+
+		logPath = this.defaultConvert(logPath, d, params);
+		contents = this.defaultConvert(contents, d, params);
 
 		this.defaultMkDir(logPath);
 
@@ -205,13 +227,25 @@ module.exports = {
 		var requestUrl = req.url;
 		var responseCode = res.statusCode;
 		var remoteIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+		var query = req.query;
+		var body = req.body;
 
 		contents = contents.replace("{METHOD}", method);
 		contents = contents.replace("{REQUEST_URL}", requestUrl);
 		contents = contents.replace("{RESPONSE_CODE}", responseCode);
 		contents = contents.replace("{REMOTE_IP}", remoteIp);
+		contents = contents.replace("{REQUEST_QUERY}", JSON.stringify(query));
+		contents = contents.replace("{REQUEST_BODY}", JSON.stringify(body));
+		
 		contents = contents.replace("{ERROR_EXCEPTION}", errorException);
 		contents = contents.replace("{ERROR_STACK}", errorException.stack);
+
+		if(errLog.callback){
+			var buff = errLog.callback(contents, errorException, params, req, res);
+			if(buff){
+				contents = buff;
+			}
+		}
 
 		fs.appendFileSync(logPath, contents + "\n");
 	},
