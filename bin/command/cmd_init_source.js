@@ -2,259 +2,233 @@ module.exports = function(init){
 
 	var str="";
 
-	str += "const { listen } = require(\"hachiware_server\"); \n\n";
+	str += "// server configure \n";
 
-	str += "listen({ \n\n";
+	str += "module.exports = { \n\n";
 
-	str += "	// server name \n";
+	str += "	host: \"" + init.host + "\", // <= host name \n\n";
 
-	str += "	server_name: \"" + init.server_name + "\", \n\n";
+	str += "	ssl: " + init.ssl.toString() + ", // <= ssl enable (true/false) \n\n";
 
-	str += "	// ssl enable \n";
-
-	str += "	ssl: " + init.ssl.toString() + ", \n\n";
+	if(!init.ssl){
+		str += "	/** \n";
+	}
+	
+	str += "	certificate: {  // <= ssl certificate \n";
 
 	if(init.ssl){
+		str += "		key: \"" + init.certificate.key + "\", // <= certificate key \n";
+	}
+	else{
+		str += "		key: \"key/ssl.key\", // <= certificate key \n";
+	}
 
-		str += "	// ssl certificate \n";
+	if(init.ssl){
+		str += "		cert: \"" + init.certificate.cert + "\",  // <= certificate cert \n";
+	}
+	else{
+		str += "		cert: \"key/ssl.cert\", // <= certificate cert \n";
+	}
 
-		str += "	certificate: {\n";
-
-		str += "		key: \"" + init.certificate.key + "\", \n";
-
-		str += "		cert: \"" + init.certificate.cert + "\", \n";
-
+	if(init.ssl){
 		if(init.certificate.ca){
-			str += "		ca: \"" + init.certificate.ca + "\", \n";
+			str += "		ca: \"" + init.certificate.ca + "\", // <= certificate CA cert \n";
 		}
-
-		str += "	}, \n\n";
-
-		str += "	// http/https combine.\n";
-	
-		str += "	combine: " + init.combine.toString() + ", \n\n";
+		else{
+			str += "		// ca: \"key/ssl.ca\", // <= certificate CA cert \n";
+		}	
+	}
+	else{
+		str += "		// ca: \"key/ssl.ca\", // <= certificate CA cert \n";
 	}
 
-	str += "	// host \n ";
+	str += "	}, \n";
 
-	str += "	host: \"" + init.host + "\", \n\n";
-
-	str += "	// port number \n ";
-
-	str += "	port: " + init.port + ", \n\n";
-
-	str += "	// http Allow Half Open \n";
-
-	str += "	httpAllowHalfOpen: " + init.httpAllowHalfOpen.toString() + ", \n\n";
-
-	str += "	// error Console Output \n";
-
-	str += "	errorConsoleOutput: " + init.errorConsoleOutput.toString() + ", \n\n";
-
-	if(init.logs){
-
-		str += "	// log setting \n";
-
-		str += "	logs: { \n\n";
-
-		if(init.logs.startup.enable){
-
-			str += "		// server Start/End log \n";
-
-			str += "		startup: { \n\n";
-
-			str += "			// server Start/end enable \n";
-
-			str += "			enable: " + init.logs.startup.enable.toString() + ", \n\n";
-
-			str += "			// server Start/end write path \n";
-
-			str += "			path: \"" + init.logs.startup.path + "\", \n\n";
-
-			str += "			// server Start/end write contents format \n";
-
-			str += "			contents: \"" + init.logs.startup.contents + "\", \n";
-
-			str += "		}, \n\n";
-
-		}
-
-		if(init.logs.access.enable){
-		
-			str += "		// server access log \n";
-
-			str += "		access: { \n\n";
-
-			str += "			// server access enable \n";
-
-			str += "			enable: " + init.logs.access.enable.toString() + ", \n\n";
-
-			str += "			// server access write path \n";
-
-			str += "			path: \"" + init.logs.access.path + "\", \n\n";
-
-			str += "			// server access write contents format \n";
-
-			str += "			contents: \"" + init.logs.access.contents + "\", \n";
-
-			str += "		}, \n\n";
-		}
-
-		if(init.logs.error){
-
-			str += "		// server error log \n";
-
-			str += "		error: { \n\n";
-		
-			str += "			// server error enable \n";
-		
-			str += "			enable: " + init.logs.error.enable.toString() + ", \n\n";
-		
-			str += "			// server error write path \n";
-		
-			str += "			path: \"" + init.logs.error.path + "\", \n\n";
-	
-			str += "			// server error write contents format \n";
-
-			str += "			contents: \"" + init.logs.error.contents + "\", \n";
-
-			str += "		}, \n\n";
-		}
-
-		str += "	}, \n\n";
+	if(!init.ssl){
+		str += "	*/ \n";
 	}
 
+	str += "\n";
 
-	if(init.callbacks){
-		str += "	// callbacks \n";
+	str += "	port: " + init.port + ",  // <= port number \n\n";
+
+	str += "	errorConsoleOutput: true, // <= error Console Output \n\n";
+
+	if(!init.logs){
+		str += "	/** \n";
+	}
+
+	str += "	logs: {  // <= log setting \n";
 	
-		str += "	callbacks: { \n\n";
-	
-		if(init.callbacks.access){
+	str += "		startup: { 	// <= server Start/End log \n";
 
-			if(init.callbacks.syncAccess){
+	str += "			enable: true, // <= server Start/end enable \n";
 
-				str += "		// access callback sync \n";
+	str += "			path: \"logs/startup/startup-{YYYY}.log\", // <= server Start/end write path \n";
 
-				str += "		syncAccess: true, \n\n";
+	str += "			contents: \"[{DATETIME}] {MODE} {HOST}:{PORT} URL= {LISTEN_URI} CONF= {CONF_FILE}\", // <= server Start/end write contents format\n";
 
-				str += "		// access callback \n";
+	str += "		}, \n";
 
-				str += "		access: function(resolve, data){ \n";
-	
-				str += "\n";
-					
-				str += "			data.res.write(\"<h1>Welcome Hachiware Server</h1>\"); \n\n";
-					
-				str += "			data.res.write(\"<p>Currently displaying test text.</p>\"); \n\n";
+	str += "		access: {  // <= server access log \n";
 
-				str += "			// Be sure to execute the solution.\n";
+	str += "			enable: true, // <= server access enable \n";
 
-				str += "			resolve(); \n";
+	str += "			path: \"logs/access/access-{YYYY}-{MM}.log\", // <= server access write path \n";
 
-				str += "		}, \n\n";	
-	
-			}
-			else{
+	str += "			contents: \"[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE}\", // <= server access write contents format\n";
 
-				str += "		// access callback \n";
+	str += "		}, \n";
 
-				str += "		access: function(data){ \n";
-	
-				str += "\n";
-					
-				str += "			data.res.write(\"<h1>Welcome Hachiware Server</h1>\"); \n\n";
-					
-				str += "			data.res.write(\"<p>Currently displaying test text.</p>\"); \n";
-					
-				str += "		}, \n";	
-	
-			}
-		}
-		if(init.callbacks.error){
-
-			if(init.callbacks.syncError){
-
-				str += "		// error callback sync \n";
-
-				str += "		syncError: true, \n\n";
-
-				str += "		// error callback \n";
-
-				str += "		error: function(resolve, error, data){ \n";
-	
-				str += "\n";
-					
-				str += "			data.res.write(\"<h1>Server Error</h1>\"); \n\n";
+	str += "		error: {  // <= server error log \n";
+		
+	str += "			enable: true, // <= server error enable \n";
 				
-				str += "			// error output \n";
-
-				str += "			data.res.write(error.toString()); \n\n";
-
-				str += "			// Be sure to execute the solution.\n";
-
-				str += "			resolve(); \n";
-
-				str += "		}, \n";	
+	str += "			path: \"logs/error/error-{YYYY}-{MM}.log\", // <= server error write path \n";
 	
-			}
-			else{
+	str += "			contents: \"[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE} {ERROR_STACK}\", // <= server error write contents format \n";
 
-				str += "		// error callback \n";
+	str += "		}, \n";
 
-				str += "		error: function(error, data){ \n";
+	str += "	}, \n\n";
 
-				str += "\n";
-					
-				str += "			data.res.write(\"<h1>Server Error</h1>\"); \n\n";
-
-				str += "			data.res.write(error.toString()); \n";
-					
-				str += "		}, \n";	
-			}
-		}
-
-		str += "	}, \n";
+	if(!init.logs){
+		str += "	*/ \n";
 	}
 
+	if(!init.callbacks){
+		str += "	/** \n";
+	}
 
+	str += "	callbacks: { // <= callbacks \n";
+	
+	str += "		syncAccess: true, // <= access callback sync \n";
 
+	str += "		access: function(resolve, data){ // <= access callback \n\n";
+			
+	str += "			data.res.write(\"<h1>Welcome Hachiware Server</h1>\"); \n";
+					
+	str += "			data.res.write(\"<p>Currently displaying test text.</p>\"); \n\n";
 
+	str += "			resolve(); // <= Be sure to execute the solution.\n";
 
+	str += "		}, \n\n";	
+	
+	str += "		syncError: true, // <= error callback sync \n";
 
-	str += "});"
+	str += "		error: function(resolve, error, data){ // <= error callback \n\n";
+	
+	str += "			data.res.write(\"<h1>Server Error</h1>\"); \n\n";
+				
+	str += "			data.res.write(error.toString()); // <= error output \n\n";
+
+	str += "			resolve(); // <= Be sure to execute the solution. \n";
+
+	str += "		}, \n";	
+	
+	str += "	}, \n\n";
+
+	if(!init.callbacks){
+		str += "	*/ \n";
+	}
+
+	str += "	modules: [ // <= use modules list \n";
+
+	str += "		// \"filtering\", \n";
+
+	str += "		// \"basicAuth\", \n";
+
+	str += "		// \"publics\", \n";
+
+	str += "		// \"request\", \n";
+
+	str += "		// \"proxy\", \n";
+
+	str += "		// \"routings\", \n";
+	
+	str += "		// \"mvcFramework\", \n";
+
+	str += "	], \n\n";
+
+	str += "	/** \n";
+
+	str += "	filtering: { // <= request filtering \n";
+
+	str += "		mode: \"block\", // <= accpet/block \n";
+	
+	str += "		address: [ // <= accept/block ip address list \n";
+
+	str += "			\"52.195.22.312\", \n";
+
+	str += "		], \n";
+
+	str += "	}, \n";
+
+	str += "	*/ \n\n";
+
+	str += "	/** \n";
+
+	str += "	basicAuth: {  // <= basic Authoricate \n";
+
+	str += "		username: \"admin\", // <= user name \n";
+
+	str += "		password: \"12345\", // <= password \n";
+
+	str += "		onFailed: function(res){ // <= on failed callback \n";
+
+	str += "			res.write(\"......orz....\"); \n";
+
+	str += "			res.end(); \n";
+
+	str += "		}, \n";
+
+	str += "	}, \n";
+
+	str += "	*/ \n";
+
+	str += "	/** \n";
+
+	str += "	assets: [ // <= public area setting \n";
+
+	str += "		{ \n";
+	
+	str += "			url: \"/assets\", // <= public url \n",
+	
+	str += "			mount: \"/publics\", // <= public mount directory path  \n",
+	
+	str += "			headers: { // <= public file access response headers \n";
+
+	str += "				name:\"Hachiware Server\", \n";
+
+	str += "				\"Cache-Control\":\"max-age=31536000\", \n";
+
+	str += "			}, \n";
+
+	str += "			indexed: [ // <= public area indexed file \n";
+	
+	str += "				\"index.html\", \n";
+
+	str += "			],\n";
+
+	str += "		}, \n";
+
+	str += "	], \n";
+
+	str += "	*/ \n\n";
+
+	str += "	/** \n";
+
+	str += "	proxy: { // <= proxy setting \n";
+
+	str += "		\"/page_a\" : \"http://localhost:1000\", \n";
+
+	str += "		\"/page_b\" : \"http://localhost:1001\", \n";
+
+	str += "	}, \n"
+
+	str += "	*/ \n\n";
+
+	str += "};"
 
 	return str;
 };
-/*
-{
-	server_name: 'server_01',
-	ssl: true,
-	certificate: {
-		 key: 'server.key',
-		 cert: 'server.crt'
-	},
-	combine: true,
-	host: '',
-	port: '443',
-	httpAllowHalfOpen: true,
-	errorConsoleOutput: true,
-	logs:{
-		startup:{
-			 enable: true,
-        	path: 'logs/startup/startup-{YYYY}.log',
-        	contents:'[{DATETIME}] {MODE} {HOST}:{PORT} server_name = {SERVERNAME}'
-		},
-    	access:{
-			 enable: true,
-        	path: 'logs/access/access-{YYYY}-{MM}.log',
-        	contents: '[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE}' 
-		},
-    	error:{
-			 enable: true,
-        	path: 'logs/error/error-{YYYY}-{MM}.log',
-        	contents: '[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE} {ERROR_EXCEPTION} {ERROR_STACK}' 
-		} 
-	},
-}
-*/
