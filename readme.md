@@ -346,6 +346,17 @@ modules: [
 ],
 ```
 
+The description of each module is as follows.
+
+|module name|overview|
+|:--|:--|
+|[filtering](#mod_filtering)|Controls access by IP address|
+|basicAuth|Implement basic authentication|
+|publics|Implement public areas accessible to static files such as css and image files|
+|request|Get the request data contents (GET, POST, etc.)|
+
+
+
 ### - (modules) filtering
 
 It is a module that performs filtering to allow or block access from IP addresses.
