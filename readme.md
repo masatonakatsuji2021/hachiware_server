@@ -430,35 +430,31 @@ The following for each setting item
 |password|〇|Login password|
 |onFailed|-|This is the callback when authentication fails.|
 
-
-
-### - (modules ) Public area
+### - (modules) Public area
 
 The public area is an area for installing and reading static files such as css and images.
+
+To use this function, it is assumed that module d is set to ``publics``.
 
 Multiple areas can be specified.
 
 ```javascript
-module.exports = {
+assets:[
+    {
+        url:"/ast",
 
-    assets:[
-        {
-            url:"/ast",
+        mount: "/assets",
 
-            mount: "/assets",
-
-            headers: {
-                name:"Hachiware Server",
-                "Cache-Control":"max-age=31536000",
-            },
-
-            indexed: [
-                "index.html",
-            ],
+        headers: {
+            name:"Hachiware Server",
+            "Cache-Control":"max-age=31536000",
         },
-    ],
 
-};
+        indexed: [
+            "index.html",
+        ],
+    },
+],
 ```
 
 The contents of each item are as follows.
@@ -466,9 +462,23 @@ The contents of each item are as follows.
 |item|require|contents|
 |:--|:--|:--|
 |url|〇|URL that is a public area|
-|mount|〇|Area mount destination directory path<br>Specifies the path where the static files are located.|
+|mount|〇|Area mount destination directory path<br>Specifies the path where the static files are located.<br>Access is possible by creating a directory with the specified mount path and placing static files there.|
 |headers|-|Response header applied<br>If there is Cache-Control etc., specify it here|
 |indexed|-|If you specify the part up to the directory when requesting the URL path, you can specify which file to return.|
+
+### - (modules) request data support
+
+It is a module to automatically acquire request data such as GET/POST.
+
+To use this function, it is assumed that module d is set to ``request``.
+
+There are currently no options set for this module.
+
+If this module is enabled, the Get parameter will be set inside ``req.query`` and form data such as POST or PUT will be set inside ``req.body``.
+
+### - (modules) proxy support
+
+Adjusting ....
 
 ### - HTTPS support (SSL)
 
@@ -491,7 +501,7 @@ module.exports = {
     callbacks: {
         access: function(data){
 
-            data.res.write("Hallo HTTP Web Server!");
+            data.res.write("Hallo HTTPS Web Server!");
             data.res.end();
         },
     },
@@ -516,6 +526,10 @@ certificate: {
 },
 ```
 ---
+
+This completes the SSL settings.  
+After running and starting the server,   
+access ``https://www.sample1.com`` with a browser "Hallo HTTPS Web Server!" Is displayed
 
 ## # About the console
 

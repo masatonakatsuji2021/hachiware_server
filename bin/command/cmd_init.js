@@ -178,36 +178,7 @@ module.exports = function(rootPath, exitResolve){
 
 	}).then(function(resolve){
 
-		this.br();
-
-		var outData = {
-			"conf File Name" : init.fileName.toString(),
-			"SSL" : init.ssl.toString(),
-		};
-
-		if(init.ssl){
-			outData["  SSL certificate key"] = init.certificate.key;
-			outData["  SSL certificate cert"] = init.certificate.cert;
-			if(init.certificate.ca){
-				outData["  SSL certificate CA"] = init.certificate.ca;
-			}
-		}
-		
-		outData["host"] = init.host;
-		outData["port"] = init.port;
-		outData["Log Output"] = init.logs.toString();
-		outData["Callbacks function"] = init.callbacks.toString();
-
-		this.outData(outData,{
-			fieldMaxLength:40,
-			valueMaxLength:80,
-		});
-
-		this.br();
-
-		this.outn("Create a server with the above contents.");
-
-		this.in("Q. Do you want to make more detailed settings? [y/n] (n)",function(value){
+		this.in("Q. Use more modules? [y/n] (n)",function(value){
 
 			if(!value){
 				value = "n";
@@ -231,7 +202,149 @@ module.exports = function(rootPath, exitResolve){
 			return resolve();
 		}
 
+		this.then(function(resolve2){
+
+			this.in("  Q. Use \"filtering\" module? [y/n] (n)", function(value){
+
+				if(!value){
+					value = "n";
+				}
+	
+				value = value.toLowerCase();
+	
+				if(value == "y"){
+					init.module_filtering = true;
+				}
+				else{
+					init.module_filtering = false;
+				}
+	
+				resolve2();
+			});
+
+		}).then(function(resolve2){
+
+			this.in("  Q. Use \"basicAuth\" module? [y/n] (n)", function(value){
+
+				if(!value){
+					value = "n";
+				}
+	
+				value = value.toLowerCase();
+	
+				if(value == "y"){
+					init.module_basicauth = true;
+				}
+				else{
+					init.module_basicauth = false;
+				}
+	
+				resolve2();
+			});
+
+		}).then(function(resolve2){
+
+			this.in("  Q. Use \"publics\" module? [y/n] (n)", function(value){
+
+				if(!value){
+					value = "n";
+				}
+	
+				value = value.toLowerCase();
+	
+				if(value == "y"){
+					init.module_publics = true;
+				}
+				else{
+					init.module_publics = false;
+				}
+	
+				resolve2();
+			});
+
+		}).then(function(resolve2){
+
+			this.in("  Q. Use \"request\" module? [y/n] (n)", function(value){
+
+				if(!value){
+					value = "n";
+				}
+	
+				value = value.toLowerCase();
+	
+				if(value == "y"){
+					init.module_request = true;
+				}
+				else{
+					init.module_request = false;
+				}
+	
+				resolve2();
+			});
+
+		}).then(function(){
+
+			this.in("  Q. Use \"proxy\" module? [y/n] (n)", function(value){
+
+				if(!value){
+					value = "n";
+				}
+	
+				value = value.toLowerCase();
+	
+				if(value == "y"){
+					init.module_proxy = true;
+				}
+				else{
+					init.module_proxy = false;
+				}
+	
+				resolve();
+			});
+
+		}).start();
+
+
 	}).then(function(resolve){
+
+		this.br();
+
+		var outData = {
+			"conf File Name" : init.fileName.toString(),
+			"SSL" : init.ssl.toString(),
+		};
+
+		if(init.ssl){
+			outData["  SSL certificate key"] = init.certificate.key;
+			outData["  SSL certificate cert"] = init.certificate.cert;
+			if(init.certificate.ca){
+				outData["  SSL certificate CA"] = init.certificate.ca;
+			}
+		}
+		
+		outData["host"] = init.host;
+		outData["port"] = init.port;
+		outData["Log Output"] = init.logs.toString();
+		outData["Callbacks function"] = init.callbacks.toString();
+
+		if(init.options){
+			outData["Use MModule"] = {};
+
+			outData["Use MModule"]["filtering"] = init.module_filtering;
+			outData["Use MModule"]["basicAuth"] = init.module_basicauth;
+			outData["Use MModule"]["publics"] = init.module_publics;
+			outData["Use MModule"]["request"] = init.module_request;
+			outData["Use MModule"]["proxy"] = init.module_proxy;
+		}
+
+		this.outData(outData,{
+			fieldMaxLength:40,
+			valueMaxLength:80,
+		});
+
+		this.br();
+
+		this.outn("Create a server with the above contents.");
 
 		this.in("Q. Is it OK? [y/n] (y)", function(value, retry){
 
