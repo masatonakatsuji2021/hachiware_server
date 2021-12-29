@@ -563,7 +563,7 @@ Enter command  :
 From here onward, enter the command to proceed,  
 Alternatively, it is also possible to execute by passing the execution command as a command line argument as shown below.
 
-``
+```
 node . start
 ```
 
