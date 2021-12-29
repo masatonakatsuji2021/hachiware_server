@@ -2,6 +2,8 @@
 
 JavaScript Framework "Hachiware" Web Server Application.
 
+[Click here for about page in Japanese](ja_about.md)
+
 ---
 
 ## # How do you use this?
@@ -27,6 +29,8 @@ hachiware_server(__dirname);
 
 Depending on the command line argument at startup, the server is started or various scaffolds are executed by the console.
 
+See [here](#console) for a description of the functions of various commands.
+
 ---
 
 ## # Server construction
@@ -34,7 +38,7 @@ Depending on the command line argument at startup, the server is started or vari
 To start the server, execute the following command on the directory where ``index.js`` is installed.
 
 ```
-node . listen
+node . start
 ```
 
 In the initial state, the server cannot be started because the configuration file is not prepared at all.  
@@ -48,10 +52,13 @@ The file and directory structure is as follows.
 ```
 index.js
 conf
-    L conf.js 	
+    L conf.js
 ```
 
-Describe as follows in the configuration file `` conf/conf.js``
+The js files in the conf directory serve the same as the virtual hosts in Apache's conf.d directory.  
+Consider one server (domain-based/port-based) per conf file.
+
+Describe as follows in the configuration file ``conf/conf.js``
 
 ```javascript
 module.exports = {
@@ -119,9 +126,6 @@ module.exports = {
 Now, if you access ``http://www.sample2.com`` with a browser, the characters "Hello Web Server 2 !!" .
 
 In this way, it is possible to set up multiple servers by domain or port number with one ``listen`` method.
-
-The details of the values ​​of various setting items will be explained later.
-(2021.12.19 comming soon....)
 
 ---
 
@@ -355,8 +359,6 @@ The description of each module is as follows.
 |publics|Implement public areas accessible to static files such as css and image files|
 |request|Get the request data contents (GET, POST, etc.)|
 
-
-
 ### - (modules) filtering
 
 It is a module that performs filtering to allow or block access from IP addresses.
@@ -525,15 +527,130 @@ certificate: {
     ca: "key/www.sample1.com/1/server.ca",
 },
 ```
----
 
 This completes the SSL settings.  
 After running and starting the server,   
 access ``https://www.sample1.com`` with a browser "Hallo HTTPS Web Server!" Is displayed
 
+---
+
+<a id="console"></a>
 ## # About the console
 
-Adjusting ....
+hachiware_server provides some command execution.  
+After preparing the following `` index.js`` file, execute the command from node
+
+```javascript
+const hachiware_server = require("hachiware_server");
+hachiware_server(__dirname);
+```
+
+If you execute the following command, a simple dedicated console menu will be displayed.
+
+``
+node . 
+```
+
+The dedicated console menu is displayed as shown below.  
+It may be slightly different depending on the version
+
+```
+** Hachiware Server *****************
+
+Enter command  :
+```
+
+From here onward, enter the command to proceed,  
+Alternatively, it is also possible to execute by passing the execution command as a command line argument as shown below.
+
+``
+node . start
+```
+
+It doesn't matter which one you use.
+
+The commands that can be used are as follows
+
+|command|Overview|
+|:--|:--|
+|start|Start server startup|
+|init|Create a new server <br>Generate a conf file.|
+|status|View server status|
+
+### - Start the server
+
+Use the start command to start the server.
+
+```
+node . start
+```
+
+Due to the server trajectory, if an error occurs, it will be forcibly terminated.
+
+### - Create a new server (Generating a conf file)
+
+If you want to create a new server, use the init command.
+
+```
+node . init
+```
+
+After executing the init command, the dialogue will start.  
+
+```
+** Create server settings **
+Create a new server setting. Please answer the following questions.
+
+
+Q. Enter the configuration file name (conf_6.js) :
+Q. Enter the host name. (localhost) :
+Q. SSL connection? [y/n] (n) : y
+  Q. Specify the path of the private key file of the server certificate. (key/server.key) :
+  Q. Specify the path of the server certificate. (key/server.crt) :
+  Q. Specify the CA intermediate certificate path of the server certificate if required. () :
+Q. Enter the port number. (443) :
+Q. Add Log output. [y/n] (y) :
+Q. Add Callback function. [y/n] (y) :
+Q. Use more modules? [y/n] (n) : y
+  Q. Use "filtering" module? [y/n] (n) :
+  Q. Use "basicAuth" module? [y/n] (n) :
+  Q. Use "publics" module? [y/n] (n) :
+  Q. Use "request" module? [y/n] (n) :
+  Q. Use "proxy" module? [y/n] (n) :
+
+
+  conf File Name         : conf_6.js
+  SSL                    : true
+    SSL certificate key  : key/server.key
+    SSL certificate cert : key/server.crt
+  host                   : localhost
+  port                   : 443
+  Log Output             : true
+  Callbacks function     : true
+  Use MModule
+    filtering            : false
+    basicAuth            : false
+    publics              : false
+    request              : false
+    proxy                : false
+
+
+Create a server with the above contents.
+Q. Is it OK? [y/n] (y) :
+```
+
+Answer each question and select y(yes) at the final confirmation.
+A server configuration file (conf file) is generated.
+
+After that, it will be updated if you restart the server with the start command etc.
+
+### - View server status
+
+Use the status command to display the server operating status
+
+```
+node . status
+```
 
 ---
 

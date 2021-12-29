@@ -9,20 +9,20 @@
  * ====================================================================
  */
 
-const tool = require("hachiware_tool");
+ const path0 = require("path");
+ const tool = require("hachiware_tool");
 const fs = require("hachiware_fs");
 
 const log = require("./log.js");
 const http = require(".//http.js");
 const https = require("./https.js");
 
-module.exports = function(rootPath){
+module.exports = function(rootPath, exitResolve){
 
 	try{
-		console.log("***********************************");
-		console.log("*** Hachiware Server *****");
-		console.log("");
-		console.log("[" + tool.getDateFormat("{DATETIME}") + "] Listen Start");
+
+		this.color.blue("**************************************************************************").br();
+		this.outn("Hachieare Server Listen [" + tool.getDateFormat("{DATETIME}") + "] Listen Start!").br();
 	
 		var confPath = rootPath + "/conf";
 	
@@ -46,8 +46,7 @@ module.exports = function(rootPath){
 		var loadConf = [];
 		var loadModules = [];
 	
-		console.log("**** Connect URL ******************");
-		console.log("");
+		this.outn("**** Connect URL ******************").br();
 	
 		for(var n = 0 ; n < confList.file.length ; n++){
 			var path = confList.file[n];
@@ -74,7 +73,7 @@ module.exports = function(rootPath){
 				}
 			}
 			
-			var connectStr = " ";
+			var connectStr = " - " + path0.basename(conf._file).padEnd(30) + " ";
 			if(conf.ssl){
 				connectStr += "https://";
 				connectStr += conf.host;
@@ -90,7 +89,7 @@ module.exports = function(rootPath){
 				}
 			}
 	
-			console.log(connectStr);
+			this.outn(connectStr);
 	
 			conf._host = conf.host;
 			if(conf.ssl){
@@ -107,8 +106,8 @@ module.exports = function(rootPath){
 			loadConf.push(conf);
 		}
 	
-		console.log("\n--\n");
-	
+		this.br().color.green("....Listen Start.").br(2);
+
 		for(var n = 0 ; n < loadConf.length ; n++){
 			var conf = loadConf[n];
 	
@@ -182,7 +181,10 @@ module.exports = function(rootPath){
 	
 			https.bind(this)(port, confs);
 		}
-	
+
+		var connectLockStr = JSON.stringify(loadConf);
+		fs.writeFileSync(rootPath + "/connection.lock", connectLockStr);
+
 		process.on("exit",function(){
 			console.log("[" + tool.getDateFormat("{DATETIME}") + "] Server Exit.");
 	
@@ -210,11 +212,15 @@ module.exports = function(rootPath){
 	
 		});
 		process.on("SIGINT", function () {
+			try{
+				fs.unlinkSync(rootPath + "/connection.lock");
+			}catch(err){}
 			process.exit(0);
 		});
 	
 	}catch(error){
-		console.log("\nERROR : " + error);
+		this.br().color.red("[ERROR] ").outn(error);
+		exitResolve();
 	}
 
 };

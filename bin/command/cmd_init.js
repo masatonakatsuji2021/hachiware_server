@@ -75,46 +75,44 @@ module.exports = function(rootPath, exitResolve){
 			return resolve();
 		}
 
-		this.in("  Q. Specify the path of the private key file of the server certificate. (key/server.key)",function(value, retry){
+		init.certificate = {};
 
-			if(!value){
-				value = "key/server.key";
-			}
+		this.then(function(resolve2){
 
-			init.certificate = {
-				key: value,
-			};
+			this.in("  Q. Specify the path of the private key file of the server certificate. (key/server.key)",function(value, retry){
 
-			resolve();
-		});
+				if(!value){
+					value = "key/server.key";
+				}
+	
+				init.certificate.key = value;
+	
+				resolve2();
+			});
+	
+		}).then(function(resolve2){
 
-	}).then(function(resolve){
+			this.in("  Q. Specify the path of the server certificate. (key/server.crt)",function(value, retry){
 
-		if(!init.ssl){
-			return resolve();
-		}
-		this.in("  Q. Specify the path of the server certificate. (key/server.crt)",function(value, retry){
+				if(!value){
+					value = "key/server.crt";
+				}
+	
+				init.certificate.cert = value;
+	
+				resolve2();
+			});
 
-			if(!value){
-				value = "key/server.crt";
-			}
+		}).then(function(){
 
-			init.certificate.cert = value;
+			this.in("  Q. Specify the CA intermediate certificate path of the server certificate if required. ()",function(value){
 
-			resolve();
-		});
+				init.certificate.ca = value;
+	
+				resolve();
+			});
 
-	}).then(function(resolve){
-		
-		if(!init.ssl){
-			return resolve();
-		}
-		this.in("  Q. Specify the CA intermediate certificate path of the server certificate if required. ()",function(value){
-
-			init.certificate.ca = value;
-
-			resolve();
-		});
+		}).start();
 		
 	}).then(function(resolve){
 

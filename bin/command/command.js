@@ -7,57 +7,40 @@
  * Author : Nakatsuji Masato 
  * ====================================================================
  */
+module.exports = function(rootPath, exitResolve){
 
-const CLI = require("hachiware_cli");
+	this.outn("** Hachiware Server *****************")
+		.br()
+	;
 
-module.exports = function(rootPath){
+	this.in("Enter command ", function(value, retry){
 
-	const cli = new CLI();
+		if(!value){
+			this.color.red("[ERROR] ").outn("No command entered. retry.");
+			return retry();
+		}
 
-	cli.then(function(resolve){
+		var values = value.split(" ");
 
-		this.outn("** Hachiware Server *****************")
-			.br()
-		;
+		var fcmd = values[0];
+		values.shift();
 
-		this.in("Enter command ", function(value, retry){
+		if(fcmd == "start"){
+			const listen = require("../listen.js");
+			listen.bind(this)(rootPath, exitResolve);
+		}
+		else if(fcmd == "init"){
+			const cmd_init = require("./cmd_init.js");
+			cmd_init.bind(this)(rootPath, exitResolve);
+		}
+		else if(arg[0] == "status"){
+			const cmd_status = require("./bin/command/cmd_status.js");
+			cmd_status.bind(this)(rootPath, resolve);	
+		}
+		else{
+			this.color.red("[ERROR] ").outn("The command \"" + fcmd + "\ does not exist. retry.");
+			return retry();
+		}
 
-			if(!value){
-				this.color.red("[ERROR] ").outn("No command entered. retry.");
-				return retry();
-			}
-
-			var values = value.split(" ");
-
-			var fcmd = values[0];
-			values.shift();
-
-			if(fcmd == "init"){
-				const cmd_init = require("./cmd_init.js");
-				cmd_init.bind(this)(rootPath, resolve);
-			}
-			else if(fcmd == "delete"){
-
-			}
-			else if(fcmd == "start"){
-//				const cmd_start = require("./cmd_start.js");
-//				cmd_start.bind(this)(values, rootPath, resolve);
-			}
-			else if(fcmd == "forever-start"){
-
-			}
-			else if(fcmd == "forever-stop"){
-
-			}
-			else{
-				this.color.red("[ERROR] ").outn("The command \"" + fcmd + "\ does not exist. retry.");
-				return retry();
-			}
-
-		});
-
-	}).then(function(){
-		this.exit();
-	}).start();
-
+	});
 };

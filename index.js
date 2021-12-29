@@ -7,22 +7,36 @@
  * Author : Nakatsuji Masato 
  * ====================================================================
  */
+const CLI = require("hachiware_cli");
+
+const cli = new CLI();
 
 module.exports = function(rootPath){
 	
-	var args = process.argv;
-	args.shift();
-	args.shift();
+	cli.then(function(resolve){
 
-	if(args[0] == "listen"){
+		var arg = this.getArgs();
 
-		const listen = require("./bin/listen.js");
-		listen(rootPath);		
+		if(!arg){
+			const command = require("./bin/command/command.js");
+			command.bind(this)(rootPath, resolve);
+			return;
+		}
 
-	}
-	else{
-		const command = require("./bin/command/command.js");
-		command(rootPath);
-	}
+		if(arg[0] == "start"){
+			const listen = require("./bin/listen.js");
+			listen.bind(this)(rootPath, resolve);
+		}
+		else if(arg[0] == "init"){
+			const cmd_init = require("./bin/command/cmd_init.js");
+			cmd_init.bind(this)(rootPath, resolve);	
+		}
+		else if(arg[0] == "status"){
+			const cmd_status = require("./bin/command/cmd_status.js");
+			cmd_status.bind(this)(rootPath, resolve);	
+		}
 
+	}).then(function(){
+		process.exit();
+	}).start();
 };

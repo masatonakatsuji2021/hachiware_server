@@ -13,6 +13,7 @@ const log = require("./log.js");
 const server = require("./server.js");
 const fs = require('fs');
 const tls = require("tls");
+const path0 = require("path");
 
 module.exports = function(port, params){
 
@@ -26,30 +27,32 @@ module.exports = function(port, params){
 			var p_ = params[n];
 
 			if(!p_.certificate){
-				throw Error("Insufficient server certificate information for SSL connection.");
+				throw("Insufficient server certificate information for SSL connection.\n\n conf name : " + path0.basename(p_._file));
 			}
 	
 			if(!p_.certificate.key){
-				throw Error("Insufficient private key information in server certificate for SSL connection.");
+				throw("Insufficient private key information in server certificate for SSL connection.\n\n conf name : " + path0.basename(p_._file));
 			}
-	
+
 			if(
 				!fs.existsSync(p_.rootPath + "/" + p_.certificate.key) ||
 				!fs.statSync(p_.rootPath + "/" + p_.certificate.key).isFile()
 			){
-				throw Error("Private key file for the specified server certificate does not exist. \"" + p_.rootPath + "/" + p_.certificate.key + "\"");
+
+				throw("Private key file for the specified server certificate does not exist. \n\n conf name          : " + path0.basename(p_._file) + "\n cert Key File path : " + p_.rootPath + "/" + p_.certificate.key);
 			}
 
 			cetf_.key = fs.readFileSync(p_.rootPath + "/" + p_.certificate.key);
 
 			if(!p_.certificate.cert){
-				throw Error("Insufficient certificate information in server certificate for SSL connection.");
+				throw("Insufficient certificate information in server certificate for SSL connection.\n\n conf name : " + path0.basename(p_._file));
 			}
+
 			if(
 				!fs.existsSync(p_.rootPath + "/" + p_.certificate.cert) ||
 				!fs.statSync(p_.rootPath + "/" + p_.certificate.cert).isFile()
 			){
-				throw Error("certificate file for the specified server certificate does not exist. \"" + p_.rootPath + "/" + p_.certificate.cert + "\"");
+				throw("certificate file for the specified server certificate does not exist. \n\n conf name      : " + path0.basename(p_._file) + "\n cert File path : " + p_.rootPath + "/" + p_.certificate.cert);
 			}
 
 			cetf_.cert = fs.readFileSync(p_.rootPath + "/" + p_.certificate.cert);
@@ -69,7 +72,7 @@ module.exports = function(port, params){
 						!fs.existsSync(p_.rootPath + "/" + ca) ||
 						!fs.statSync(p_.rootPath + "/" + ca).isFile()
 					){
-						throw Error("The intermediate CA certificate file for the specified server certificate does not exist. \"" + p_.rootPath + "/" + ca + "\"");
+						throw("The intermediate CA certificate file for the specified server certificate does not exist. \n\n conf name        : " + path0.basename(p_._file) + "\n CA cert File path : " + p_.rootPath + "/" + ca);
 					}
 	
 					cetf_.ca.push(fs.readFileSync(p_.rootPath + "/" + ca));
@@ -80,7 +83,7 @@ module.exports = function(port, params){
 		}
 
 	}catch(error){
-		console.log(error);
+		this.color.red("[ERROR] ").outn(error).br().color.red(".....Canceled.");
 		process.exit();
 	}
 
