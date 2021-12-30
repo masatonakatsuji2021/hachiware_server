@@ -19,6 +19,8 @@ const https = require("./https.js");
 
 module.exports = function(rootPath, exitResolve){
 
+	var context = this;
+
 	try{
 
 		this.color.blue("**************************************************************************").br();
@@ -45,7 +47,8 @@ module.exports = function(rootPath, exitResolve){
 	
 		var loadConf = [];
 		var loadModules = [];
-	
+		var staticModules = {};
+
 		this.outn("**** Connect URL ******************").br();
 	
 		for(var n = 0 ; n < confList.file.length ; n++){
@@ -120,17 +123,33 @@ module.exports = function(rootPath, exitResolve){
 						modulesRe.push(module);
 						continue;
 					}
-	
-					var mPath = "modules/" + module + "/index.js";
-	
-					if(!fs.existsSync(__dirname + "/" + mPath)){
-						console.log(" [WARM] " + conf.host + ":" + conf.port + " | \"" + module + "\" is not found module.");
-						continue;
+
+					var mods = null;
+
+					if(module.indexOf("node_modules|") > -1){
+						var mPath = module.replace("node_modules|","");
+						try{
+							var mods = require(mPath);
+						}catch(error){
+							this.color.orange(" [WARM] ").outn(conf.host + ":" + conf.port + " | \"" + module + "\" is not found module.");
+							continue;
+						}
 					}
-	
-					// require cache
-					require("./" + mPath);
+					else{
+						var mPath = "modules/" + module + "/index.js";
+						if(!fs.existsSync(__dirname + "/" + mPath)){
+							this.color.orange(" [WARM] ").outn(conf.host + ":" + conf.port + " | \"" + module + "\" is not found module.");
+							continue;
+						}
+
+						// require cache
+						var mods = require("./" + mPath);
+					}
 					
+					if(mods.static){						
+						staticModules[module] = new mods.static(conf);
+					}
+
 					modulesRe.push(module);
 					loadModules.push(module);
 				}
@@ -138,6 +157,8 @@ module.exports = function(rootPath, exitResolve){
 				conf.modules = modulesRe;
 			}
 		}
+
+		this.modules = staticModules;
 	
 		for(var n = 0 ; n < loadConf.length ; n++){
 			var conf = loadConf[n];
@@ -165,7 +186,7 @@ module.exports = function(rootPath, exitResolve){
 				confListOnPort[conf.port].push(conf);
 			}
 		}
-	
+			
 		var colums = Object.keys(confListOnPort);
 		for(var n = 0 ; n < colums.length ; n++){
 			var port = colums[n];
@@ -195,6 +216,10 @@ module.exports = function(rootPath, exitResolve){
 	
 				for(var n2 = 0 ; n2 < confs.length ; n2++){
 					var c_ = confs[n2];
+
+					if(staticModules.logs){
+						staticModules.logs.writeStartUp(false, c_);
+					}
 					log.writeStartUp(false, c_);
 				}
 			}
@@ -206,6 +231,10 @@ module.exports = function(rootPath, exitResolve){
 	
 				for(var n2 = 0 ; n2 < confs.length ; n2++){
 					var c_ = confs[n2];
+
+					if(staticModules.logs){
+						staticModules.logs.writeStartUp(false, c_);
+					}
 					log.writeStartUp(false, c_);
 				}
 			}

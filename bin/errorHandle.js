@@ -14,8 +14,14 @@ const log = require("./log.js");
 
 module.exports = function(error, params, req, res){
 
+	var context = this;
+
 	if(res.statusCode == 200){
 		res.statusCode = 500;
+	}
+
+	if(context.modules.logs){
+		context.modules.logs.writeError(error, params, req, res);
 	}
 
 	log.writeError(error, params, req, res);
@@ -30,10 +36,10 @@ module.exports = function(error, params, req, res){
 		sync.then(function(resolve){
 
 			if(tool.objExists(params,"callbacks.syncError")){
-				params.callbacks.error(resolve, error, data);
+				params.callbacks.error.bind(context)(resolve, error, data);
 			}
 			else{
-				params.callbacks.error(error, data);
+				params.callbacks.error.bind(context)(error, data);
 				resolve();
 			}
 

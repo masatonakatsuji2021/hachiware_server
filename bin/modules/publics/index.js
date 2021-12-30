@@ -11,163 +11,174 @@
 const fs = require("fs");
 const path = require("path");
 
-module.exports = function(resolve, params, req, res){
-
+module.exports = {
+	
 	/**
-	 * searchAssets
+	 * each
+	 * @param {*} resolve 
 	 * @param {*} params 
-	 * @param {*} requestUrl 
+	 * @param {*} req 
+	 * @param {*} res 
 	 * @returns 
 	 */
-	 const searchAssets = function(params, requestUrl){
+	each: function(resolve, params, req, res){
 
-		if(!params.assets){
-			return null;
-		}
+		/**
+		 * searchAssets
+		 * @param {*} params 
+		 * @param {*} requestUrl 
+		 * @returns 
+		 */
+		const searchAssets = function(params, requestUrl){
 
-		var assets = null;
-
-		for(var n = 0 ; n < params.assets.length ; n++){
-			var row = params.assets[n];
-
-			var url = row.url;
-
-			var baseUrl = requestUrl + "/";
-			if(baseUrl.indexOf(url + "/") === 0){
-				assets = row;
+			if(!params.assets){
+				return null;
 			}
-		}
 
-		return assets;
-	};
+			var assets = null;
 
-	/**
-	 * loadFile
-	 * @param {*} assets 
-	 * @param {*} filePath 
-	 * @param {*} req 
-	 * @param {*} res 
-	 */
-	 const loadFile = function(assets, filePath, req, res){
+			for(var n = 0 ; n < params.assets.length ; n++){
+				var row = params.assets[n];
 
-		var headers = {};
-		headers["Content-Type"] = mime(assets, path.extname(filePath));
+				var url = row.url;
 
-		if(assets.headers){
-			var colums = Object.keys(assets.headers);
-			for(var n = 0 ; n < colums.length ; n++){
-				var key = colums[n];
-				var val = assets.headers[key];
-				headers[key] = val;
+				var baseUrl = requestUrl + "/";
+				if(baseUrl.indexOf(url + "/") === 0){
+					assets = row;
+				}
 			}
-		}
 
-		res.writeHead(200,headers);
-		var file = fs.readFileSync(filePath);
-		res.write(file);
-	};
+			return assets;
+		};
 
-	/**
-	 * loadAssets
-	 * @param {*} assets 
-	 * @param {*} req 
-	 * @param {*} res 
-	 */
-	const loadAssets = function(assets, req, res){
-		var filePath = params.rootPath + "/" + assets.mount + req.url.replace(assets.url,"");
+		/**
+		 * loadFile
+		 * @param {*} assets 
+		 * @param {*} filePath 
+		 * @param {*} req 
+		 * @param {*} res 
+		 */
+		const loadFile = function(assets, filePath, req, res){
 
-		res.statusCode = 200;
+			var headers = {};
+			headers["Content-Type"] = mime(assets, path.extname(filePath));
 
-		if(fs.existsSync(filePath)){
-
-			if(fs.statSync(filePath).isFile()){
-				loadFile(assets, filePath, req, res);
+			if(assets.headers){
+				var colums = Object.keys(assets.headers);
+				for(var n = 0 ; n < colums.length ; n++){
+					var key = colums[n];
+					var val = assets.headers[key];
+					headers[key] = val;
+				}
 			}
-			else{
 
-				if(assets.indexed){
-					if(typeof assets.indexed == "string"){
-						assets.indexed = [assets.indexed];
-					}
+			res.writeHead(200,headers);
+			var file = fs.readFileSync(filePath);
+			res.write(file);
+		};
 
-					var juge = false;
-					for(var n = 0 ; n < assets.indexed.length ; n++){
-						var fName = assets.indexed[n];
+		/**
+		 * loadAssets
+		 * @param {*} assets 
+		 * @param {*} req 
+		 * @param {*} res 
+		 */
+		const loadAssets = function(assets, req, res){
+			var filePath = params.rootPath + "/" + assets.mount + req.url.replace(assets.url,"");
 
-						if(filePath[filePath.length - 1] != "/"){
-							filePath += "/";
+			res.statusCode = 200;
+
+			if(fs.existsSync(filePath)){
+
+				if(fs.statSync(filePath).isFile()){
+					loadFile(assets, filePath, req, res);
+				}
+				else{
+
+					if(assets.indexed){
+						if(typeof assets.indexed == "string"){
+							assets.indexed = [assets.indexed];
 						}
-						filePath += fName;
 
-						if(fs.existsSync(filePath)){
-							if(fs.statSync(filePath).isFile()){
-								juge = true;
-								break;
+						var juge = false;
+						for(var n = 0 ; n < assets.indexed.length ; n++){
+							var fName = assets.indexed[n];
+
+							if(filePath[filePath.length - 1] != "/"){
+								filePath += "/";
+							}
+							filePath += fName;
+
+							if(fs.existsSync(filePath)){
+								if(fs.statSync(filePath).isFile()){
+									juge = true;
+									break;
+								}
 							}
 						}
+
+						if(juge){
+							loadFile(assets, filePath, req, res);
+						}
 					}
 
-					if(juge){
-						loadFile(assets, filePath, req, res);
-					}
+					res.statusCode = 404;
 				}
-
+			}
+			else{
 				res.statusCode = 404;
 			}
-		}
-		else{
-			res.statusCode = 404;
-		}
-		res.end();
-	};
-
-	/**
-	 * mime
-	 * @param {*} assets 
-	 * @param {*} extName 
-	 * @returns 
-	 */
-	const mime = function(assets, extName){
-
-		extName = extName.split(".").join("");
-	
-		var mimeList = {
-				"txt":"text/plain",
-				"jpg":"image/jpeg",
-				"jpeg":"image/jpeg",
-				"png":"image/png",
-				"gif":"image/gif",
-				"svg":"image/svg",
-				"bmp":"image/bmp",
-				"json":"text/json",
-				"js":"text/javascript",
-				"css":"text/css",
-				"html":"text/html",
-				"htm":"text/html",
+			res.end();
 		};
-	
-		if(assets.mimes){
-			var colums = Object.keys(assets.mimes);
-			for(var n = 0 ; n < colums.length ; n++){
-				var type = colums[n];
-				var mime = assets.mimes[type];
-				mimeList[type] = mime;
+
+		/**
+		 * mime
+		 * @param {*} assets 
+		 * @param {*} extName 
+		 * @returns 
+		 */
+		const mime = function(assets, extName){
+
+			extName = extName.split(".").join("");
+		
+			var mimeList = {
+					"txt":"text/plain",
+					"jpg":"image/jpeg",
+					"jpeg":"image/jpeg",
+					"png":"image/png",
+					"gif":"image/gif",
+					"svg":"image/svg",
+					"bmp":"image/bmp",
+					"json":"text/json",
+					"js":"text/javascript",
+					"css":"text/css",
+					"html":"text/html",
+					"htm":"text/html",
+			};
+		
+			if(assets.mimes){
+				var colums = Object.keys(assets.mimes);
+				for(var n = 0 ; n < colums.length ; n++){
+					var type = colums[n];
+					var mime = assets.mimes[type];
+					mimeList[type] = mime;
+				}
 			}
-		}
-	
-		if(mimeList[extName]){
-			return mimeList[extName];
-		}
-		else{
-			return "text/plain";
-		}
-	};
+		
+			if(mimeList[extName]){
+				return mimeList[extName];
+			}
+			else{
+				return "text/plain";
+			}
+		};
 
-	var assets = searchAssets(params, req.url);
+		var assets = searchAssets(params, req.url);
 
-	if(!assets){
-		return resolve();
+		if(!assets){
+			return resolve();
+		}
+
+		loadAssets(assets, req, res);
 	}
-
-	loadAssets(assets, req, res);
 };

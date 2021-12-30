@@ -14,6 +14,8 @@ const server = require("./server.js");
 
 module.exports = function(port, params){
 
+	var context = this;
+
 	var h = http.createServer(function(req,res){
 
 		var decisionParam = null;
@@ -35,7 +37,7 @@ module.exports = function(port, params){
 			return;
 		}
 	
-		server.bind(this)(decisionParam, req, res);
+		server.bind(context)(decisionParam, req, res);
 	});
 	
 	h.httpAllowHalfOpen = true;
@@ -44,6 +46,10 @@ module.exports = function(port, params){
 
 	for(var n = 0 ; n < params.length ; n++){
 		var p_ = params[n];
+		
+		if(context.modules.logs){
+			context.modules.logs.writeStartUp(true, p_);
+		}
 		log.writeStartUp(true, p_);
 	}
 };

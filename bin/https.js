@@ -17,6 +17,8 @@ const path0 = require("path");
 
 module.exports = function(port, params){
 
+	var context = this;
+
 	var cetificates = {};
 
 	try{
@@ -125,7 +127,7 @@ module.exports = function(port, params){
 			return;
 		}
 
-		server.bind(this)(decisionParam, req, res);
+		server.bind(context)(decisionParam, req, res);
 	});
 
 	hs.httpAllowHalfOpen = true;

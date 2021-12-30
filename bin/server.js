@@ -16,6 +16,8 @@ const log = require("./log.js");
 
 module.exports = function(params ,req ,res){
 
+	var context = this;
+
 	sync.then(function(resolve){
 
 		if(!params.modules){
@@ -26,11 +28,21 @@ module.exports = function(params ,req ,res){
 			params.modules, 
 			function(next, module){
 
-				var mPath = "modules/" + module + "/index.js";
+				if(module.indexOf("node_modules|") > -1){
+					var mPath = module.replace("node_modules|","");
+				}
+				else{
+					var mPath = "modules/" + module + "/index.js";
+				}
 
-				var mod = require("./" + mPath);
+				var mods = require("./" + mPath);
 
-				mod(next, params, req, res);
+				if(mods.each){
+					mods.each(next, params, req, res);
+				}
+				else{
+					next();
+				}
 			},
 			function(){
 				resolve();
@@ -51,6 +63,10 @@ module.exports = function(params ,req ,res){
 				}
 			}
 			
+			if(context.modules.logs){
+				context.modules.logs.writeAccess(params, req, res);
+			}
+
 			log.writeAccess(params, req, res);
 	
 			if(tool.objExists(params,"callbacks.access")){
@@ -63,10 +79,10 @@ module.exports = function(params ,req ,res){
 				sync.then(function(resolve){
 		
 					if(tool.objExists(params,"callbacks.SyncAccess")){
-						params.callbacks.access(resolve, data);
+						params.callbacks.access.bind(context)(resolve, data);
 					}
 					else{
-						params.callbacks.access(data);
+						params.callbacks.access.bind(context)(data);
 						resolve();
 					}
 		
@@ -80,7 +96,7 @@ module.exports = function(params ,req ,res){
 			}
 
 		}catch(error){
-			errorHandle(error, params, req, res);
+			errorHandle.bind(context)(error, params, req, res);
 		}
 		
 	}).start();
