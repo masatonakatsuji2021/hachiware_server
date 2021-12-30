@@ -136,6 +136,9 @@ module.exports = function(port, params){
 
 	for(var n = 0 ; n < params.length ; n++){
 		var p_ = params[n];
-		log.writeStartUp(true, p_);
+
+		if(context.modules.logs){
+			context.modules.logs.writeStartUp(true, p_);
+		}
 	}
 };

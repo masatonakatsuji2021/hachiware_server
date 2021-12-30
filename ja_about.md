@@ -353,7 +353,6 @@ modules: [
     "basicAuth",
     "publics",
     "request",
-    "proxy",
 ],
 ```
 

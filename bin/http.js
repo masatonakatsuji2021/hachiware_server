@@ -46,10 +46,9 @@ module.exports = function(port, params){
 
 	for(var n = 0 ; n < params.length ; n++){
 		var p_ = params[n];
-		
+
 		if(context.modules.logs){
 			context.modules.logs.writeStartUp(true, p_);
 		}
-		log.writeStartUp(true, p_);
 	}
-};
+}; 

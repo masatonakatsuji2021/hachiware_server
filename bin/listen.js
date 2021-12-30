@@ -9,11 +9,10 @@
  * ====================================================================
  */
 
- const path0 = require("path");
- const tool = require("hachiware_tool");
+const path0 = require("path");
+const tool = require("hachiware_tool");
 const fs = require("hachiware_fs");
 
-const log = require("./log.js");
 const http = require(".//http.js");
 const https = require("./https.js");
 
@@ -220,7 +219,6 @@ module.exports = function(rootPath, exitResolve){
 					if(staticModules.logs){
 						staticModules.logs.writeStartUp(false, c_);
 					}
-					log.writeStartUp(false, c_);
 				}
 			}
 	
@@ -235,7 +233,6 @@ module.exports = function(rootPath, exitResolve){
 					if(staticModules.logs){
 						staticModules.logs.writeStartUp(false, c_);
 					}
-					log.writeStartUp(false, c_);
 				}
 			}
 	

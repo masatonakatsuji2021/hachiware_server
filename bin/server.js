@@ -12,7 +12,6 @@ const sync = require("hachiware_sync");
 const tool = require("hachiware_tool");
 
 const errorHandle = require("./errorHandle.js");
-const log = require("./log.js");
 
 module.exports = function(params ,req ,res){
 
@@ -66,8 +65,6 @@ module.exports = function(params ,req ,res){
 			if(context.modules.logs){
 				context.modules.logs.writeAccess(params, req, res);
 			}
-
-			log.writeAccess(params, req, res);
 	
 			if(tool.objExists(params,"callbacks.access")){
 		
