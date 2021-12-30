@@ -261,10 +261,37 @@ callbacks: {
 
 }
 ```
+### - モジュール
 
-### - ログの出力
+hachieare_serverでは各オプション機能をモジュール化しています。  
+そのモジュールについて利用する分は下記のように``modules``にてリストに配置してください。
 
-ログは``logs``で設定。
+```javascript
+modules: [
+    "logs",
+    "filtering",
+    "basicAuth",
+    "publics",
+    "request",
+],
+```
+
+2021年12月時点で標準で用意されているモジュールは下記の通り。
+
+|モジュール|概要|
+|:--|:--|
+|[logs](#mode_logs)|ログ出力用|
+|[filtering](#mod_filtering)|送信元IPアドレスによるアクセス制限|
+|[basicAuth](#mod_basicauth)|ベーシック認証の実装用|
+|[publics](#mod_publics)|画像イメージ等の静的ファイル用パブリック領域の構築|
+|[request](#mod_request)|リクエストデータ(GET/POST等)の取得|
+|[pavilion](#mod_pavilion)|ファイル単位のWebサーバー構築|
+
+<a href="logs"></a>
+
+### - (モジュール) ログの出力
+
+ログ出力機能を利用する場合は必ず``modules``にて``logs``を列挙してください。
 
 サーバー起動/終了時(startUp)、アクセス時(access)、エラー発生時(error)の大きく3つのログを指定可能。
 
@@ -342,19 +369,90 @@ access: {
 },
 ```
 
-### - モジュール
+<a href="mod_filtering"></a>
 
-hachieare_serverでは各オプション機能をモジュール化しています。  
-そのモジュールについて利用する分は下記のように``modules``にてリストに配置してください。
+### - (モジュール) フィルタリング
+
+送信元IPアドレスからアクセスを許可あるいは遮断するためのフィルタリング用モジュールです。
+
+使用する場合は``modules``に必ず``filtering``を列挙してください。
+
+実際のフィルタリング設定は下記の通りに設定します。 
+下記の場合、「address」のIPアドレス群からのアクセスがあった場合は即遮断されます。
 
 ```javascript
-modules: [
-    "filtering",
-    "basicAuth",
-    "publics",
-    "request",
-],
+filtering: {
+    mode: "block",
+    address: [
+        "**.**.**.**",
+        "**.**.**.**",
+        "**.**.**.**",
+        ....
+    ],
+},
 ```
+
+各項目の内容は以下のとおりです。
+
+|項目|必須|概要|
+|:--|:--|:--|
+|mode|〇|許可/遮断|
+|address|〇|送信元IPアドレス群|
+
+反対に「address」にてIPアドレス群からのアクセスのみを許可したい場合は、次のように設定してください。  
+modeを「accept」(許可)とします。
+
+```javascript
+filtering: {
+    mode: "accept",
+    address: [
+        "**.**.**.**",
+        "**.**.**.**",
+        "**.**.**.**",
+        ....
+    ],
+},
+```
+
+filteringによって遮断されたリクエストはaccessコールバックに到達せず、レスポンスコード404のみを返して終了します。  
+(同時にアクセスログも出力されません。)
+
+<a href="mod_basicauth"></a>
+
+### - (モジュール) ベーシック認証
+
+ドメイン、ポート毎のサーバー全体に対してベーシック認証を実装させるためのモジュールです。
+
+使用する場合は``modules``に必ず``basicAuth``を列挙してください。
+
+<a href="mod_publics"></a>
+
+### - (モジュール) パブリック領域の構築
+
+画像イメージ等、静的ファイルを設置して直接アクセスできるようにするパブリック領域を設定するためのモジュールです。
+
+使用する場合は``modules``に必ず``publics``を列挙してください。
+
+<a href="mod_request"></a>
+
+### - (モジュール) リクエストデータ取得
+
+GET/POST等のリクエストデータを取得するためのモジュールです。
+
+使用する場合は``modules``に必ず``request``を列挙してください。
+
+<a href="mod_pavilion"></a>
+
+### - (モジュール) ファイル単位のWebサーバー構築
+
+ファイル単位でページ作成が可能なWebサーバーを構築できるモジュールです。  
+独自開発のテンプレートエンジン``hachiware_te``のファイル形式(hte)とそのスクリプトを使用することができます。
+
+※ ``hachiware_te``については下記参照
+[https://github.com/masatonakatsuji2021/hachiware_te](https://github.com/masatonakatsuji2021/hachiware_te)
+
+
+....
 
 以上。ここになかった項目は英語版を見てください....。
 
