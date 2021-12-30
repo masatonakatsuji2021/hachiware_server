@@ -1,3 +1,13 @@
+/**
+ * ====================================================================
+ * Hachiware_Server
+ * 
+ * Web server application with Node.js
+ * 
+ * Author : Nakatsuji Masato 
+ * ====================================================================
+ */
+
 var hte = null;
 try{
     hte = require("hachiware_te");
@@ -55,8 +65,11 @@ module.exports = {
             load: file,
             request: req,
             response: res,
-            callback: function(html, req, res){
+            callback: function(html, req, res, error){
 
+                if(conf.callback){
+                    conf.callback(html, req, res, error);
+                }
                 res.write(html);
                 res.end();
             }
