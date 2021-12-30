@@ -278,6 +278,7 @@ The description of each module is as follows.
 |[basicAuth](#mod_basicauth)|Implement basic authentication|
 |[publics](#mod_publics)|Implement public areas accessible to static files such as css and image files|
 |[request]($mod_request)|Get the request data contents (GET, POST, etc.)|
+|[pavilion](#mod_pavilion)|Providing a simple file-based Web server|
 
 <a id="mod_logs"></a>
 
@@ -555,6 +556,136 @@ To use this function, it is assumed that module d is set to ``request``.
 There are currently no options set for this module.
 
 If this module is enabled, the Get parameter will be set inside ``req.query`` and form data such as POST or PUT will be set inside ``req.body``.
+
+### - (modules) pavilion
+
+This is a module to realize a simple web server using the template engine.
+
+It is compatible with ``hachiware_te``, which is a proprietary template engine.  
+By placing the template format hte file on any directory
+You can easily set up pages and implement scripts.
+
+To use this function, it is assumed that module d is set to ``pavilion``.
+
+In the configuration file, add the settings for pabilion as shown below.
+
+```javascript
+pavilion: {
+    path: "htmls",
+    topPage: "index.hte",
+}
+```
+The items that can be set are as follows.
+
+|item|require|Overview|
+|:--|:--|:--|
+|path|〇|Target directory of template file<br>Place the required hte files in this directory|
+|topPage|〇|Specify the hte file name as the top page|
+|errorDebug|-|Set whether to output the error debug contents on the page|
+|callback|-|You can specify a callback before starting screen rendering|
+
+In the case of the above code, the directory/file structure is as follows.
+
+```
+index.js
+htmls
+    L common
+        L header.hte
+        L footer.hte
+    L index.hte
+```
+
+In inex.hte, set HTML tags to be displayed on the screen or <? Te tags for templates.
+
+``index.hte``.
+
+```php
+<?te 
+var data = { title: "TOP Page"}
+load("common/header.hte",data); 
+?>
+
+<p>Hellow Web Server.</p>
+
+<?te load("common/footer.hte"); ?>
+```
+
+``common/header.hte``
+
+```php
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+
+<header>
+    TEST APP - <?te if(this.title){ echo(this.title); } ?>
+</header>
+```
+
+``common/footer.hte``
+
+```php
+<footer>
+    FOOTER AREA..
+</footer>
+</body>
+</html>
+```
+
+After running the server, access it with a browser.
+
+If "Hellow Web Server." And the header and footer are displayed on the screen, it's OK.
+
+Another page can be easily created by simply creating an hte file.
+
+For example, create a new ``page_1.hte`` and add that link to ``index.hte``.
+
+```
+index.js
+htmls
+    L common
+        L header.hte
+        L footer.hte
+    L index.hte
+    L page_1.hte            <= New addition
+```
+
+``page_1.hte``.
+
+```php
+<?te 
+var data = { title: "Page 1"}
+load("common/header.hte",data); 
+?>
+
+<p>Page 1</p>
+
+<?te load("common/footer.hte"); ?>
+```
+
+``index.hte``.
+
+```php
+<?te 
+var data = { title: "TOP Page"}
+load("common/header.hte",data); 
+?>
+
+<p>Hellow Web Server.</p>
+
+<p><a href="/page_1">Page 1</a></p>
+
+<?te load("common/footer.hte"); ?>
+```
+
+Now, when you click the page 1 link from the TOP page, the newly installed page_1.hte screen will be displayed.
+
+In this way, you can easily add pages on a file-by-file basis.
+
+See below for details on how to use the template engine ``hachiware_te``.
+[https://github.com/masatonakatsuji2021/hachiware_te](https://github.com/masatonakatsuji2021/hachiware_te).
 
 ### - Use external npm package as hachieare_server module
 
