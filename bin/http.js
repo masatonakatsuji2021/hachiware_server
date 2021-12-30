@@ -9,7 +9,6 @@
  */
 
 const http = require("http");
-const log = require("./log.js");
 const server = require("./server.js");
 
 module.exports = function(port, params){

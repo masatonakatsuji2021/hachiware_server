@@ -13,7 +13,7 @@
 
  module.exports = {
 	
-    static: function(params){
+    static: function(){
 
         /**
          * defaultConvert

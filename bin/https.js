@@ -9,7 +9,6 @@
  */
 
 const https = require("https");
-const log = require("./log.js");
 const server = require("./server.js");
 const fs = require('fs');
 const tls = require("tls");

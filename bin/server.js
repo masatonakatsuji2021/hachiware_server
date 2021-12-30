@@ -8,10 +8,11 @@
  * ====================================================================
  */
 
+const fs = require("fs");
 const sync = require("hachiware_sync");
 const tool = require("hachiware_tool");
 
-const errorHandle = require("./errorHandle.js");
+const errors = require("./errors.js");
 
 module.exports = function(params ,req ,res){
 
@@ -29,12 +30,13 @@ module.exports = function(params ,req ,res){
 
 				if(module.indexOf("node_modules|") > -1){
 					var mPath = module.replace("node_modules|","");
+					var mods = require(mPath);
 				}
 				else{
 					var mPath = "modules/" + module + "/index.js";
+					var mods = require("./" + mPath);
 				}
 
-				var mods = require("./" + mPath);
 
 				if(mods.each){
 					mods.each(next, params, req, res);
@@ -82,18 +84,30 @@ module.exports = function(params ,req ,res){
 						params.callbacks.access.bind(context)(data);
 						resolve();
 					}
-		
+
 				}).then(function(){
+
+
+
+
+
 					res.end();
 				}).start();
 			}
 			else{
 				res.statusCode = 404;
+
+				if(params.notFoundPage){
+					var file = params.notFoundPage;
+					var pageContent = fs.readFileSync(params.rootPath + "/" + file);
+					res.write(pageContent);	
+				}
+
 				res.end();
 			}
 
 		}catch(error){
-			errorHandle.bind(context)(error, params, req, res);
+			errors.bind(context)(error, params, req, res);
 		}
 		
 	}).start();

@@ -136,26 +136,6 @@ module.exports = function(rootPath, exitResolve){
 		
 	}).then(function(resolve){
 
-		this.in("Q. Add Log output. [y/n] (y)", function(value){
-
-			if(!value){
-				value = "y";
-			}
-
-			value = value.toLowerCase();
-
-			if(value == "y"){
-				init.logs = true;
-			}
-			else{
-				init.logs = false;
-			}
-
-			resolve();
-		});
-
-	}).then(function(resolve){
-
 		this.in("Q. Add Callback function. [y/n] (y)", function(value){
 
 			if(!value){
@@ -195,12 +175,32 @@ module.exports = function(rootPath, exitResolve){
 		});
 
 	}).then(function(resolve){
-
+		
 		if(!init.options){
 			return resolve();
 		}
 
 		this.then(function(resolve2){
+
+			this.in("  Q. Use \"logs\" module?. [y/n] (n)", function(value){
+
+				if(!value){
+					value = "n";
+				}
+	
+				value = value.toLowerCase();
+	
+				if(value == "y"){
+					init.module_logs = true;
+				}
+				else{
+					init.module_logs = false;
+				}
+	
+				resolve2();
+			});
+
+		}).then(function(resolve2){
 
 			this.in("  Q. Use \"filtering\" module? [y/n] (n)", function(value){
 
@@ -322,17 +322,16 @@ module.exports = function(rootPath, exitResolve){
 		
 		outData["host"] = init.host;
 		outData["port"] = init.port;
-		outData["Log Output"] = init.logs.toString();
 		outData["Callbacks function"] = init.callbacks.toString();
 
 		if(init.options){
-			outData["Use MModule"] = {};
-
-			outData["Use MModule"]["filtering"] = init.module_filtering;
-			outData["Use MModule"]["basicAuth"] = init.module_basicauth;
-			outData["Use MModule"]["publics"] = init.module_publics;
-			outData["Use MModule"]["request"] = init.module_request;
-			outData["Use MModule"]["proxy"] = init.module_proxy;
+			outData["Use Module"] = {};
+			outData["Use Module"]["logs"] = init.module_logs;
+			outData["Use Module"]["filtering"] = init.module_filtering;
+			outData["Use Module"]["basicAuth"] = init.module_basicauth;
+			outData["Use Module"]["publics"] = init.module_publics;
+			outData["Use Module"]["request"] = init.module_request;
+			outData["Use Module"]["proxy"] = init.module_proxy;
 		}
 
 		this.outData(outData,{

@@ -76,6 +76,7 @@ module.exports = {
     },
 
     modules: [
+        "logs",
         "filtering",
         "basicAuth",
         "publics",
@@ -153,6 +154,56 @@ It will be set automatically.
 port: 80,
 ```
 
+### - HTTPS support (SSL)
+
+If you want to set up a server with HTTP (SSL connection), write as follows.
+
+ssl (value is true), host, certificate to specify the certificate file path certificate is required.
+
+```javascript
+module.exports = {
+
+    host:"www.sample1.com",
+
+    ssl: true,
+
+    certificate: {
+        key: "key/www.sample1.com/1/server.key",
+        cert: "key/www.sample1.com/1/server.crt",
+    },
+
+    callbacks: {
+        access: function(data){
+
+            data.res.write("Hallo HTTPS Web Server!");
+            data.res.end();
+        },
+    },
+
+};
+```
+
+First make sure ssl is true.
+
+```javascript
+ssl: true,
+```
+
+For the certificate file, prepare three points, the private key,   
+the certificate, and the intermediate CA certificate if necessary, and specify the path.
+
+```javascript
+certificate: {
+    key: "key/www.sample1.com/1/server.key",
+    cert: "key/www.sample1.com/1/server.crt",
+    ca: "key/www.sample1.com/1/server.ca",
+},
+```
+
+This completes the SSL settings.  
+After running and starting the server,   
+access ``https://www.sample1.com`` with a browser "Hallo HTTPS Web Server!" Is displayed
+
 ### - callbacks
 
 The callback can specify the function when the request arrives or an error occurs.
@@ -183,6 +234,15 @@ headers: {
 },
 ```
 
+### - Not Found Page
+
+You can specify the html file to be displayed by default when there is no page display (404 not found).  
+Please prepare ``404.html`` by yourself.
+
+```javascript
+notFoundPage: "404.html",
+```
+
 ### - Error Console Output 
 
 Specify true to set the display of the result when an error is issued on the console.
@@ -191,7 +251,41 @@ Specify true to set the display of the result when an error is issued on the con
 errorConsoleOutput: true,
 ```
 
-### - Log output
+
+
+### - modules
+
+Individual optional functions are divided into modules.
+
+It is possible to add / omit them as needed.
+
+```javascript
+modules: [
+    "logs",
+    "filtering",
+    "basicAuth",
+    "publics",
+    "request",
+],
+```
+
+The description of each module is as follows.
+
+|module name|overview|
+|:--|:--|
+|[logs](#mod_logs)|Log Output|
+|[filtering](#mod_filtering)|Controls access by IP address|
+|[basicAuth](#mod_basicauth)|Implement basic authentication|
+|[publics](#mod_publics)|Implement public areas accessible to static files such as css and image files|
+|[request]($mod_request)|Get the request data contents (GET, POST, etc.)|
+
+<a id="mod_logs"></a>
+
+### - (module) Log output
+
+This is a module for outputting the log when the server is started/stopped, when a request is received, or when an error occurs.
+
+To use this function, it is assumed that module d is set to ``logs``.
 
 Log output settings are described as follows.
 
@@ -335,29 +429,7 @@ callback: function(contents, exception, params, req, res){
 
 It is also possible to adjust the log output with just a callback.
 
-### - modules
-
-Individual optional functions are divided into modules.
-
-It is possible to add / omit them as needed.
-
-```javascript
-modules: [
-    "filtering",
-    "basicAuth",
-    "publics",
-    "request",
-],
-```
-
-The description of each module is as follows.
-
-|module name|overview|
-|:--|:--|
-|[filtering](#mod_filtering)|Controls access by IP address|
-|basicAuth|Implement basic authentication|
-|publics|Implement public areas accessible to static files such as css and image files|
-|request|Get the request data contents (GET, POST, etc.)|
+<a id="mod_filtering"></a>
 
 ### - (modules) filtering
 
@@ -405,6 +477,8 @@ filtering: {
 Requests blocked by filtering will not reach the access callback and will only return an empty response code 404.  
 (Access log is not output either.)
 
+<a id="mod_basicauth"></a>
+
 ### - (modules) Basic authentication
 
 A module for implementing basic authentication across servers by individual domain or port.
@@ -431,6 +505,8 @@ The following for each setting item
 |username|〇|Login username|
 |password|〇|Login password|
 |onFailed|-|This is the callback when authentication fails.|
+
+<a id="mod_public"></a>
 
 ### - (modules) Public area
 
@@ -468,6 +544,8 @@ The contents of each item are as follows.
 |headers|-|Response header applied<br>If there is Cache-Control etc., specify it here|
 |indexed|-|If you specify the part up to the directory when requesting the URL path, you can specify which file to return.|
 
+<a id="mod_request"></a>
+
 ### - (modules) request data support
 
 It is a module to automatically acquire request data such as GET/POST.
@@ -478,59 +556,46 @@ There are currently no options set for this module.
 
 If this module is enabled, the Get parameter will be set inside ``req.query`` and form data such as POST or PUT will be set inside ``req.body``.
 
-### - (modules) proxy support
+### - Use external npm package as hachieare_server module
 
-Adjusting ....
+As for the hachiware_server module, you can basically use the module preset in the core part.
 
-### - HTTPS support (SSL)
+If for some reason you want to use an external npm package as a hachieare_server module,
+List as ``node_module|{npm package name} `` in the configuration file as shown below
 
-If you want to set up a server with HTTP (SSL connection), write as follows.
+The following uses the npm package for the MVC framework currently under development as the hachiware_server module.
 
-ssl (value is true), host, certificate to specify the certificate file path certificate is required.
+```javascript
+module: [
+    "logs",
+    "filtering",
+    "basicAuth",
+    "publics",
+    "request",
+    "node_modules|hachiware_server_module_mvcfw",   // <= Used as a module from an external npm package.
+],
+```
+
+When converting to hachiware_server module, please write in the following code in ``index.js``.
 
 ```javascript
 module.exports = {
 
-    host:"www.sample1.com",
+    static: function(){
 
-    ssl: true,
-
-    certificate: {
-        key: "key/www.sample1.com/1/server.key",
-        cert: "key/www.sample1.com/1/server.crt",
     },
 
-    callbacks: {
-        access: function(data){
+    each: function(exitResolve, params, req, res){
 
-            data.res.write("Hallo HTTPS Web Server!");
-            data.res.end();
-        },
     },
 
 };
 ```
 
-First make sure ssl is true.
-
-```javascript
-ssl: true,
-```
-
-For the certificate file, prepare three points, the private key,   
-the certificate, and the intermediate CA certificate if necessary, and specify the path.
-
-```javascript
-certificate: {
-    key: "key/www.sample1.com/1/server.key",
-    cert: "key/www.sample1.com/1/server.crt",
-    ca: "key/www.sample1.com/1/server.ca",
-},
-```
-
-This completes the SSL settings.  
-After running and starting the server,   
-access ``https://www.sample1.com`` with a browser "Hallo HTTPS Web Server!" Is displayed
+|key|overview|
+|:--|:--|
+|static|Objects that can be used statically as modules.<br>It is used when the method in the module is used functionally regardless of the request reception.|
+|each|Method executed every time a request occurs<br>It will be executed as a callback immediately after the request arrives.<br>This request is not executed in the case of request blocking by filtering or static file expansion in public. <br>Depends on the status of the module used|
 
 ---
 

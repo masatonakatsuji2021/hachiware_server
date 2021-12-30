@@ -29,44 +29,6 @@ module.exports = function(init){
 
 	str += "	errorConsoleOutput: true, // <= error Console Output \n\n";
 
-	if(init.logs){
-
-		str += "	logs: {  // <= log setting \n";
-	
-		str += "		startup: { 	// <= server Start/End log \n";
-		
-		str += "			enable: true, // <= server Start/end enable \n";
-		
-		str += "			path: \"logs/startup/startup-{YYYY}.log\", // <= server Start/end write path \n";
-		
-		str += "			contents: \"[{DATETIME}] {MODE} {HOST}:{PORT} URL= {LISTEN_URI} CONF= {CONF_FILE}\", // <= server Start/end write contents format\n";
-		
-		str += "		}, \n";
-		
-		str += "		access: {  // <= server access log \n";
-		
-		str += "			enable: true, // <= server access enable \n";
-		
-		str += "			path: \"logs/access/access-{YYYY}-{MM}.log\", // <= server access write path \n";
-		
-		str += "			contents: \"[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE}\", // <= server access write contents format\n";
-		
-		str += "		}, \n";
-	
-		str += "		error: {  // <= server error log \n";
-				
-		str += "			enable: true, // <= server error enable \n";
-						
-		str += "			path: \"logs/error/error-{YYYY}-{MM}.log\", // <= server error write path \n";
-			
-		str += "			contents: \"[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE} {ERROR_STACK}\", // <= server error write contents format \n";
-		
-		str += "		}, \n";
-		
-		str += "	}, \n\n";
-		
-	}
-
 	if(init.callbacks){
 
 		str += "	callbacks: { // <= callbacks \n";
@@ -103,6 +65,10 @@ module.exports = function(init){
 
 		str += "	modules: [ // <= use modules list \n";
 
+		if(init.module_logs){
+			str += "		\"logs\", \n";
+		}
+
 		if(init.module_filtering){
 			str += "		\"filtering\", \n";
 		}
@@ -124,6 +90,44 @@ module.exports = function(init){
 		}
 
 		str += "	], \n\n";
+
+		if(init.module_logs){
+
+			str += "	logs: {  // <= log setting \n";
+		
+			str += "		startup: { 	// <= server Start/End log \n";
+			
+			str += "			enable: true, // <= server Start/end enable \n";
+			
+			str += "			path: \"logs/startup/startup-{YYYY}.log\", // <= server Start/end write path \n";
+			
+			str += "			contents: \"[{DATETIME}] {MODE} {HOST}:{PORT} URL= {LISTEN_URI} CONF= {CONF_FILE}\", // <= server Start/end write contents format\n";
+			
+			str += "		}, \n";
+			
+			str += "		access: {  // <= server access log \n";
+			
+			str += "			enable: true, // <= server access enable \n";
+			
+			str += "			path: \"logs/access/access-{YYYY}-{MM}.log\", // <= server access write path \n";
+			
+			str += "			contents: \"[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE}\", // <= server access write contents format\n";
+			
+			str += "		}, \n";
+		
+			str += "		error: {  // <= server error log \n";
+					
+			str += "			enable: true, // <= server error enable \n";
+							
+			str += "			path: \"logs/error/error-{YYYY}-{MM}.log\", // <= server error write path \n";
+				
+			str += "			contents: \"[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE} {ERROR_STACK}\", // <= server error write contents format \n";
+			
+			str += "		}, \n";
+			
+			str += "	}, \n\n";
+			
+		}
 
 		if(init.module_filtering){
 
