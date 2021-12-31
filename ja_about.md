@@ -425,6 +425,28 @@ filteringによって遮断されたリクエストはaccessコールバック�
 
 使用する場合は``modules``に必ず``basicAuth``を列挙してください。
 
+ベーシック認証を実装するには、次のように記述します。
+
+```javascript
+basicAuth: {
+    username: "abcd",
+    password: "1234",
+    onFailed: function(res){
+        res.write("......orz....");
+        res.end();
+    },
+},
+```
+
+設定項目ごとの内容については下記の通り。
+
+|項目|必須|概要|
+|:--|:--|:--|
+|username|〇|ログインユーザー名|
+|password|〇|ログインパスワード|
+|onFailed|-|認証失敗時のコールバック|
+
+
 <a href="mod_publics"></a>
 
 ### - (モジュール) パブリック領域の構築
@@ -433,13 +455,46 @@ filteringによって遮断されたリクエストはaccessコールバック�
 
 使用する場合は``modules``に必ず``publics``を列挙してください。
 
+下記のようにコード記述することで、複数のパブリック領域を指定できます。
+
+```javascript
+assets:[
+    {
+        url:"/ast",
+
+        mount: "/assets",
+
+        headers: {
+            name:"Hachiware Server",
+            "Cache-Control":"max-age=31536000",
+        },
+
+        indexed: [
+            "index.html",
+        ],
+    },
+],
+```
+
+各項目の内容は以下のとおりです。
+
+|項目|必須|概要|
+|:--|:--|:--|
+|url|〇|パブリック猟奇であるURL|
+|mount|〇|マウント先のディレクトリパス<br>静的ファイルが配置されているパスを指定します。<br>指定したマウントパスでディレクトリを作成し、そこに静的ファイルを配置することでアクセスできます。|
+|headers|-|レスポンスヘッダー<br>Cache-Controlなどを必要とする場合は、ここでレスポンスヘッダーとして指定してください。|
+|indexed|-|URLパスを要求するときにディレクトリまでの部分を指定すると、返すファイルを指定できます。|
+
 <a href="mod_request"></a>
 
 ### - (モジュール) リクエストデータ取得
 
 GET/POST等のリクエストデータを取得するためのモジュールです。
 
-使用する場合は``modules``に必ず``request``を列挙してください。
+
+現時点でこのモジュールに設定可能なオプションはありません。
+
+このモジュールが有効になっている場合、Getパラメーターは``req.query``、POSTやPUTなどのフォームデータは``req.body``に自動的に指定されます。
 
 <a href="mod_pavilion"></a>
 
@@ -451,6 +506,125 @@ GET/POST等のリクエストデータを取得するためのモジュールで
 ※ ``hachiware_te``については下記参照
 [https://github.com/masatonakatsuji2021/hachiware_te](https://github.com/masatonakatsuji2021/hachiware_te)
 
+使用する場合は``modules``に必ず``pavilion``を列挙してください。
+
+構成ファイルに、以下に示すようにpabilionの設定を追加します。
+
+```javascript
+pavilion: {
+    path: "htmls",
+    topPage: "index.hte",
+}
+```
+
+設定できる項目は以下のとおりです。
+
+|項目|必須|概要|
+|:--|:--|:--|
+|path|〇|テンプレートファイルの対象ディレクトリ<br>このディレクトリに必要なhteファイルを配置してください。|
+|topPage|〇|トップページとして表示するhteファイル名を指定します|
+|errorDebug|-|エラーデバッグ内容をページ上に出力するかどうかを設定します|
+|callback|-|画面レンダリングを開始する前に実行するコールバック|
+
+上記のコードの場合、ディレクトリ/ファイルの構造は次のように設置してください。
+
+```
+index.js
+htmls
+    L common
+        L header.hte
+        L footer.hte
+    L index.hte
+```
+
+まずinex.hteで、画面に表示されるHTMLタグを設定します。 
+
+``index.hte``.
+
+```php
+<?te 
+var data = { title: "TOP Page"}
+load("common/header.hte",data); 
+?>
+
+<p>Hellow Web Server.</p>
+
+<?te load("common/footer.hte"); ?>
+```
+
+``common/header.hte``
+
+```php
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+
+<header>
+    TEST APP - <?te if(this.title){ echo(this.title); } ?>
+</header>
+```
+
+``common/footer.hte``
+
+```php
+<footer>
+    FOOTER AREA..
+</footer>
+</body>
+</html>
+```
+
+サーバーを起動後、ブラウザでサーバーにアクセスしてみて下さい。
+
+「Hellow Web Server」の表示とヘッダーとフッターが画面に表示れれば、OKです。
+
+hteファイルを作成するだけで、別ページを簡単に作成できます。
+
+たとえば、新しいページ``page_1.hte``を作成し、そのリンクを ``index.hte``に追加します。
+
+```
+index.js
+htmls
+    L common
+        L header.hte
+        L footer.hte
+    L index.hte
+    L page_1.hte            <= New addition
+```
+
+``page_1.hte``.
+
+```php
+<?te 
+var data = { title: "Page 1"}
+load("common/header.hte",data); 
+?>
+
+<p>Page 1</p>
+
+<?te load("common/footer.hte"); ?>
+```
+
+``index.hte``.
+
+```php
+<?te 
+var data = { title: "TOP Page"}
+load("common/header.hte",data); 
+?>
+
+<p>Hellow Web Server.</p>
+
+<p><a href="/page_1">Page 1</a></p>
+
+<?te load("common/footer.hte"); ?>
+```
+
+これで、TOPページからpage 1のリンクをクリックすると、新しくインストールされたpage_1.hteの画面が表示されます。
+
+このようにして、ファイルごとにページを簡単に追加できます。
 
 ....
 
