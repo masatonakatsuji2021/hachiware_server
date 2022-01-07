@@ -2,6 +2,8 @@
 
 <a href="https://github.com/masatonakatsuji2021/hachiware_server/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/masatonakatsuji2021/hachiware_server"></a>
 <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/masatonakatsuji2021/hachiware_server">
+<img alt="GitHub top language" src="https://img.shields.io/github/languages/top/masatonakatsuji2021/hachiware_server">
+<img alt="Libraries.io dependency status for GitHub repo" src="https://img.shields.io/librariesio/github/masatonakatsuji2021/hachiware_server">
 
 JavaScript Framework "Hachiware" Web Server Application.
 
