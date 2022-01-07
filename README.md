@@ -1,5 +1,8 @@
 # Hachiware_Server
 
+<a href="https://github.com/masatonakatsuji2021/hachiware_server/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/masatonakatsuji2021/hachiware_server"></a>
+<img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/masatonakatsuji2021/hachiware_server">
+
 JavaScript Framework "Hachiware" Web Server Application.
 
 [Click here for about page in Japanese](ja_about.md)
