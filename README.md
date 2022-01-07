@@ -4,6 +4,8 @@
 <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/masatonakatsuji2021/hachiware_server">
 <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/masatonakatsuji2021/hachiware_server">
 <img alt="Libraries.io dependency status for GitHub repo" src="https://img.shields.io/librariesio/github/masatonakatsuji2021/hachiware_server">
+<img src="https://img.shields.io/badge/author-Nakatsuji%20Masato-brightgreen" alt="author Nakatsuji Masato">
+<img src="https://img.shields.io/badge/made%20in-Japan-brightgreen" alt="made in japan">
 
 JavaScript Framework "Hachiware" Web Server Application.
 
