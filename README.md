@@ -1,4 +1,6 @@
-<div style="text-align:center"><img src="logo.png" alt="hachiware" style="padding:20px;background:#fff;margin:0 auto;margin-bottom:5px;"></div>
+<p align="center">
+    <img src="https://github.com/masatonakatsuji2021/hachiware_server/raw/master/logo.png" alt="hachiware server">
+</p>
 
 # Hachiware_Server
 
