@@ -1,18 +1,6 @@
-<style>
-.logo_image{
-    text-align:center;
-}
-.logo_image img{
-    padding:20px;
-    background:#fff;
-    margin:0 auto;
-    margin-bottom:5px;
-    border-radius:20px;
-}
-</style>
-<div class="logo_image">
-    <img src="logo.png" alt="hachiware">
-</div>
+<p align="center">
+    <img src="https://github.com/masatonakatsuji2021/hachiware_server/raw/master/logo.png" alt="hachiware server">
+</p>
 
 # Hachieare_server (簡易日本語訳ページ)
 
