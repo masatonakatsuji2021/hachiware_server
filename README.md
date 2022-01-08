@@ -1,3 +1,5 @@
+<div style="text-align:center"><img src="logo.png" alt="hachiware" style="padding:20px;background:#fff;margin:0 auto;margin-bottom:5px;"></div>
+
 # Hachiware_Server
 
 <a href="https://github.com/masatonakatsuji2021/hachiware_server/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/masatonakatsuji2021/hachiware_server"></a>
