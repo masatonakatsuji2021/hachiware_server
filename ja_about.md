@@ -211,60 +211,29 @@ port: 120,
 
 正常(レスポンスコードが200)の場合はsuccess、それ以外の異常(レスポンスコードが200以外)の場合はerrorのコールバックが処理されます。
 
-引数はdataで、中にリクエスト(data.req)とレスポンス(data.res)が入っている。   
-(リクエスト、レスポンスはhttpモジュールのとほぼ同じ)
+引数はリクエスト(req)とレスポンス(res)。     
+(httpモジュールのとほぼ同じ)
 
 errorの場合はエラー内容が先頭に追加されます。
 
 ```javascript
 callbacks: {
-    
-    success: function(data){
 
-        data.res.write("Hallo World");
+    success: function(req, res){
+
+        res.write("Hallo World");
+        res.end();
     },
 
-    error: function(error, data){
+    error: function(error, req, res){
 
-        data.res.write(error);
-    },
-
-}
-```
-
-このコールバックではres.endは不要。
-
-ちなみに同期処理に対応させる場合はsyncAccssまたはsyncErrorにtrueを指定して、
-引数に新たにresolveを追加して、必ずresolveしてください。
-
-```javascript
-callbacks: {
-    
-    syncSuccess: true,
-
-    success: function(resolve, data){
-
-        setTimeout(function(){
-        
-            data.res.write("Hallo World");
-
-            resolve();
-
-
-        },1000);
-    },
-
-    syncError: true,
-
-    error: function(resolve, error, data){
-
-        res.write(error);
-        resolve();
-
+        res.write(error.toString());
+        res.end();
     },
 
 }
 ```
+
 ### - モジュール
 
 hachieare_serverでは各オプション機能をモジュール化しています。  
@@ -290,6 +259,7 @@ modules: [
 |[publics](#mod_publics)|画像イメージ等の静的ファイル用パブリック領域の構築|
 |[request](#mod_request)|リクエストデータ(GET/POST等)の取得|
 |[pavilion](#mod_pavilion)|ファイル単位のWebサーバー構築|
+|[framework](#mod_framework)|Webフレームワーク構築用|
 
 <a href="logs"></a>
 
@@ -629,6 +599,13 @@ load("common/header.hte",data);
 これで、TOPページからpage 1のリンクをクリックすると、新しくインストールされたpage_1.hteの画面が表示されます。
 
 このようにして、ファイルごとにページを簡単に追加できます。
+
+
+<a href="mod_framework"></a>
+
+### - (モジュール) Webフレームワーク
+
+現在開発中....
 
 ....
 

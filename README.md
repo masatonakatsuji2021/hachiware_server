@@ -79,10 +79,10 @@ module.exports = {
     port: 80,
 
     callbacks: {
-        access: function(data){
+        access: function(req, res){
 
-            data.res.write("Hallo Web Server!");
-            data.res.end();
+            res.write("Hallo Web Server!");
+            res.end();
         },
     },
 
@@ -119,10 +119,10 @@ module.exports = {
     port: 80,
 
     callbacks: {
-        access: function(data){
+        access: function(req, res){
 
-            data.res.write("Hello Web Server2!!");
-            data.res.end();
+            res.write("Hello Web Server2!!");
+            res.end();
         },
     },
 
@@ -184,10 +184,10 @@ module.exports = {
     },
 
     callbacks: {
-        access: function(data){
+        access: function(req, res){
 
-            data.res.write("Hallo HTTPS Web Server!");
-            data.res.end();
+            res.write("Hallo HTTPS Web Server!");
+            res.end();
         },
     },
 
@@ -223,15 +223,15 @@ Describe the logic content in each of access when all requests are reached and e
 
 ```javascript
 callbacks: {
-    access: function(data){
+    access: function(req, res){
 
-        data.res.write("Hello Web Server!");
-        data.res.end();
+        res.write("Hello Web Server!");
+        res.end();
     },
-    error: function(error, data){
+    error: function(error, req, res){
 
-        data.res.write(error);
-        data.res.end();
+        res.write(error);
+        res.end();
     },
 },
 ```
