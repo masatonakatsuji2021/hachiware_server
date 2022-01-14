@@ -6,7 +6,9 @@
   "dependencies": {
     "hachiware_sync": "^1.0.0",
     "hachiware_tool": "^1.0.0",
-    "hachiware_cli": "^1.0.0"
+    "hachiware_cli": "^1.0.0",
+    "hachiware_fs": "^1.0.0",
+    "hachiware_routing":"^1.0.0"
   },
   "devDependencies": {},
   "scripts": {

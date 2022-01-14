@@ -6,54 +6,76 @@ module.exports = function(init){
 
 	str += "module.exports = { \n\n";
 
-	str += "	host: \"" + init.host + "\", // <= host name \n\n";
+	str += "	// host name \n";
 
-	str += "	ssl: " + init.ssl.toString() + ", // <= ssl enable (true/false) \n\n";
+	str += "	host: \"" + init.host + "\", \n\n";
+
+	str += "	// SSL enable (true/false) \n";
+
+	str += "	ssl: " + init.ssl.toString() + ", \n\n";
 
 	if(init.ssl){
 		
-		str += "	certificate: {  // <= ssl certificate \n";
+		str += "	// SSL certificate \n";
 
-		str += "		key: \"" + init.certificate.key + "\", // <= certificate key \n";
+		str += "	certificate: {  \n\n";
+		
+		str += "		// certificate key \n";
 
-		str += "		cert: \"" + init.certificate.cert + "\",  // <= certificate cert \n";
+		str += "		key: \"" + init.certificate.key + "\", \n\n";
+
+		str += "		// certificate cert \n";
+
+		str += "		cert: \"" + init.certificate.cert + "\", \n\n";
 
 		if(init.certificate.ca){
-			str += "		ca: \"" + init.certificate.ca + "\", // <= certificate CA cert \n";
+			str += "		// certificate CA certs \n";
+
+			str += "		ca: \"" + init.certificate.ca + "\", \n\n";
 		}
 
 		str += "	}, \n\n";
 	}
 
-	str += "	port: " + init.port + ",  // <= port number \n\n";
+	str += "	// Port Number \n";
 
-	str += "	errorConsoleOutput: true, // <= error Console Output \n\n";
+	str += "	port: " + init.port + ",  \n\n";
+
+	str += "	// error Console Output flg \n";
+
+	str += "	errorConsoleOutput: true, \n\n";
+
+	str += "	// Welcome To Page HTML \n";
+
+	str += "	// welcomeToPage: \"conf/welcome.html\", \n\n";
 
 	if(init.callbacks){
 
-		str += "	callbacks: { // <= callbacks \n";
-	
-		str += "		syncAccess: true, // <= access callback sync \n";
+		str += "	// Callbacks \n";
 
-		str += "		access: function(resolve, data){ // <= access callback \n\n";
+		str += "	callbacks: { \n\n";
+
+		str += "		// Access Callback \n";
+
+		str += "		access: function(req, res){ \n\n";
 			
-		str += "			data.res.write(\"<h1>Welcome Hachiware Server</h1>\"); \n";
+		str += "			res.write(\"<h1>Welcome Hachiware Server</h1>\"); \n";
 					
-		str += "			data.res.write(\"<p>Currently displaying test text.</p>\"); \n\n";
+		str += "			res.write(\"<p>Currently displaying test text.</p>\"); \n";
 
-		str += "			resolve(); // <= Be sure to execute the solution.\n";
+		str += "			res.end(); \n";
 
-		str += "		}, \n\n";	
+		str += "		}, \n\n";
+
+		str += "		// error callback \n";
+
+		str += "		error: function(error, req, res){ \n\n";
 	
-		str += "		syncError: true, // <= error callback sync \n";
-
-		str += "		error: function(resolve, error, data){ // <= error callback \n\n";
-	
-		str += "			data.res.write(\"<h1>Server Error</h1>\"); \n\n";
+		str += "			data.res.write(\"<h1>Server Error</h1>\"); \n";
 				
-		str += "			data.res.write(error.toString()); // <= error output \n\n";
+		str += "			data.res.write(error.toString()); // <= error output \n";
 
-		str += "			resolve(); // <= Be sure to execute the solution. \n";
+		str += "			res.end(); \n";
 
 		str += "		}, \n";	
 	
@@ -63,7 +85,9 @@ module.exports = function(init){
 
 	if(init.options){
 
-		str += "	modules: [ // <= use modules list \n";
+		str += "	// Use Modules List \n";
+
+		str += "	modules: [ \n";
 
 		if(init.module_logs){
 			str += "		\"logs\", \n";
@@ -93,35 +117,61 @@ module.exports = function(init){
 
 		if(init.module_logs){
 
-			str += "	logs: {  // <= log setting \n";
+			str += "	// Log Output Setting \n";
+
+			str += "	logs: { \n\n";
 		
-			str += "		startup: { 	// <= server Start/End log \n";
+			str += "		// Server Start/End Write Log \n";
+
+			str += "		startup: { \n\n";
 			
-			str += "			enable: true, // <= server Start/end enable \n";
+			str += "			// Server Start/end Write Log Enable \n";
+
+			str += "			enable: true, \n\n";
 			
-			str += "			path: \"logs/startup/startup-{YYYY}.log\", // <= server Start/end write path \n";
+			str += "			// server Start/end write path \n";
+
+			str += "			path: \"logs/startup/startup-{YYYY}.log\", \n\n";
 			
-			str += "			contents: \"[{DATETIME}] {MODE} {HOST}:{PORT} URL= {LISTEN_URI} CONF= {CONF_FILE}\", // <= server Start/end write contents format\n";
+			str += "			// Server Start/end Write Contents Format \n";
+
+			str += "			contents: \"[{DATETIME}] {MODE} {HOST}:{PORT} URL= {LISTEN_URI} CONF= {CONF_FILE}\", \n";
 			
 			str += "		}, \n";
 			
-			str += "		access: {  // <= server access log \n";
+			str += "		 // Server Access Write Log \n";
+
+			str += "		access: { \n\n";
 			
-			str += "			enable: true, // <= server access enable \n";
+			str += "			// Server Access Write Log Enable \n";
+
+			str += "			enable: true, \n";
 			
-			str += "			path: \"logs/access/access-{YYYY}-{MM}.log\", // <= server access write path \n";
+			str += "			// Server Access Write Path \n";
+
+			str += "			path: \"logs/access/access-{YYYY}-{MM}.log\", \n\n";
 			
-			str += "			contents: \"[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE}\", // <= server access write contents format\n";
+			str += "			// Server Access Write Contents Format \n";
+
+			str += "			contents: \"[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE}\", \n\n";
 			
 			str += "		}, \n";
 		
-			str += "		error: {  // <= server error log \n";
+			str += "		// Server Error Write Log \n";
+
+			str += "		error: { \n";
 					
-			str += "			enable: true, // <= server error enable \n";
+			str += "			// Server Error Write Log Enable \n";
+
+			str += "			enable: true, \n\n";
 							
-			str += "			path: \"logs/error/error-{YYYY}-{MM}.log\", // <= server error write path \n";
+			str += "			// Server Error Write Path \n";
+
+			str += "			path: \"logs/error/error-{YYYY}-{MM}.log\", \n\n";
 				
-			str += "			contents: \"[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE} {ERROR_STACK}\", // <= server error write contents format \n";
+			str += "			// Server Error Write Contents Format \n";
+
+			str += "			contents: \"[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE} {ERROR_STACK}\", \n\n";
 			
 			str += "		}, \n";
 			
@@ -131,11 +181,17 @@ module.exports = function(init){
 
 		if(init.module_filtering){
 
-			str += "	filtering: { // <= request filtering \n";
+			str += "	// Request Filtering \n";
+
+			str += "	filtering: { \n";
 	
-			str += "		mode: \"block\", // <= accpet/block \n";
+			str += "		// Mode (accpet/block) \n";
+			
+			str += "		mode: \"block\", \n";
 				
-			str += "		address: [ // <= accept/block ip address list \n";
+			str += "		// accept/block IP Address List \n";
+
+			str += "		address: [ \n";
 			
 			str += "			\"52.195.22.312\", \n";
 			
@@ -147,9 +203,13 @@ module.exports = function(init){
 	
 		if(init.module_basicauth){
 	
-			str += "	basicAuth: {  // <= basic Authoricate \n";
+			str += "	// Basic Authoricate \n";
+
+			str += "	basicAuth: { \n\n";
 	
-			str += "		username: \"admin\", // <= user name \n";
+			str += "		// User Name \n";
+
+			str += "		username: \"admin\",  \n";
 	
 			str += "		password: \"12345\", // <= password \n";
 	
@@ -205,6 +265,12 @@ module.exports = function(init){
 	
 			str += "	}, \n\n"
 	
+		}
+
+		if(init.framework){
+
+
+			
 		}
 	
 	}

@@ -69,40 +69,13 @@ module.exports = function(params ,req ,res){
 			}
 	
 			if(tool.objExists(params,"callbacks.access")){
-		
-				var data = {
-					req: req,
-					res: res,
-				};
-		
-				sync.then(function(resolve){
-		
-					if(tool.objExists(params,"callbacks.SyncAccess")){
-						params.callbacks.access.bind(context)(resolve, data);
-					}
-					else{
-						params.callbacks.access.bind(context)(data);
-						resolve();
-					}
-
-				}).then(function(){
-
-
-
-
-
-					res.end();
-				}).start();
+				params.callbacks.access.bind(context)(req, res);
+				return;
 			}
-			else{
-				res.statusCode = 404;
-
-				if(params.notFoundPage){
-					var file = params.notFoundPage;
-					var pageContent = fs.readFileSync(params.rootPath + "/" + file);
-					res.write(pageContent);	
-				}
-
+			
+			if(params.welcomeToPage){
+				var pageContent = fs.readFileSync(params.rootPath + "/" + params.welcomeToPage);
+				res.write(pageContent);	
 				res.end();
 			}
 
