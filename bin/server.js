@@ -25,25 +25,24 @@ module.exports = function(params ,req ,res){
 		}
 
 		sync.foreach(
-			params.modules, 
+			context.modules,
 			function(next, module){
 
-				if(module.indexOf("node_modules|") > -1){
-					var mPath = module.replace("node_modules|","");
-					var mods = require(mPath);
-				}
-				else{
-					var mPath = "modules/" + module + "/index.js";
-					var mods = require("./" + mPath);
+				if(!module.fooKAccess){
+					return next();
 				}
 
+				try{
+					module.fooKAccess(next, req, res);
+				}catch(error){
 
-				if(mods.each){
-					mods.each(next, params, req, res);
+					if(!module.fookError){
+						return next();
+					}
+
+					module.fookError(next, error, req, res);
 				}
-				else{
-					next();
-				}
+
 			},
 			function(){
 				resolve();
@@ -62,10 +61,6 @@ module.exports = function(params ,req ,res){
 					var value = params.headers[field];
 					res.setHeader(field, value);
 				}
-			}
-			
-			if(context.modules.logs){
-				context.modules.logs.writeAccess(params, req, res);
 			}
 	
 			if(tool.objExists(params,"callbacks.access")){

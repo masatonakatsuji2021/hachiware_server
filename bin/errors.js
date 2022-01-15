@@ -17,9 +17,12 @@ module.exports = function(error, params, req, res){
 		res.statusCode = 500;
 	}
 
-	if(context.modules.logs){
-		context.modules.logs.writeError(error, params, req, res);
-	}
+	context.loadFookModule("error",[
+		function(){},
+		error, 
+		req, 
+		res,
+	]);
 
 	if(tool.objExists(params,"callbacks.error")){
 

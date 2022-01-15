@@ -15,8 +15,36 @@ const fs = require("hachiware_fs");
 
 const http = require(".//http.js");
 const https = require("./https.js");
+//const loadModule = require("./module.js");
 
 module.exports = function(rootPath, exitResolve){
+
+	this.loadFookModule = function(fookName, data){
+
+		var colums = Object.keys(this.modules);
+		for(var n = 0; n < colums.length ; n++){
+			var moduleName = colums[n];
+			var mc = this.modules[moduleName];
+
+			if(!mc){
+				continue;
+			}
+
+			var _fookName = "fook" + tool.ucFirst(fookName);
+
+			if(!mc[_fookName]){
+				continue;
+			}
+
+			if(data){
+				mc[_fookName](...data);
+			}
+			else{
+				mc[_fookName]();
+			}
+		}
+
+	};
 
 	var context = this;
 
@@ -46,7 +74,6 @@ module.exports = function(rootPath, exitResolve){
 	
 		var loadConf = [];
 		var loadModules = [];
-		var staticModules = {};
 
 		this.outn("**** Connect URL ******************").br();
 	
@@ -110,8 +137,11 @@ module.exports = function(rootPath, exitResolve){
 	
 		this.br().color.green("....Listen Start.").br(2);
 
+		this.modules = {};
+
 		for(var n = 0 ; n < loadConf.length ; n++){
 			var conf = loadConf[n];
+
 	
 			if(conf.modules){
 				var modulesRe = [];
@@ -124,7 +154,23 @@ module.exports = function(rootPath, exitResolve){
 					}
 
 					var mods = null;
+					
+					try{
+						var mods = require(module);
 
+						mods = new mods(conf, context.modules);
+
+						modulesRe.push(module);
+						loadModules.push(module);
+
+						this.modules[module] = mods;
+
+					}catch(error){
+						this.color.red("[Error] ").outn(error.toString());
+					}
+					
+
+/*
 					if(module.indexOf("node_modules|") > -1){
 						var mPath = module.replace("node_modules|","");
 						try{
@@ -135,29 +181,17 @@ module.exports = function(rootPath, exitResolve){
 						}
 					}
 					else{
-						var mPath = "modules/" + module + "/index.js";
-						if(!fs.existsSync(__dirname + "/" + mPath)){
-							this.color.orange(" [WARM] ").outn(conf.host + ":" + conf.port + " | \"" + module + "\" is not found module.");
-							continue;
-						}
+						*/
 
 						// require cache
-						var mods = require("./" + mPath);
-					}
-					
-					if(mods.static){						
-						staticModules[module] = new mods.static(conf);
-					}
+					//}
 
-					modulesRe.push(module);
-					loadModules.push(module);
 				}
 	
 				conf.modules = modulesRe;
 			}
 		}
 
-		this.modules = staticModules;
 	
 		for(var n = 0 ; n < loadConf.length ; n++){
 			var conf = loadConf[n];
@@ -216,9 +250,7 @@ module.exports = function(rootPath, exitResolve){
 				for(var n2 = 0 ; n2 < confs.length ; n2++){
 					var c_ = confs[n2];
 
-					if(staticModules.logs){
-						staticModules.logs.writeStartUp(false, c_);
-					}
+					context.loadFookModule("end");
 				}
 			}
 	
@@ -230,9 +262,7 @@ module.exports = function(rootPath, exitResolve){
 				for(var n2 = 0 ; n2 < confs.length ; n2++){
 					var c_ = confs[n2];
 
-					if(staticModules.logs){
-						staticModules.logs.writeStartUp(false, c_);
-					}
+					context.loadFookModule("end");
 				}
 			}
 	
