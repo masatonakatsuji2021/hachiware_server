@@ -20,25 +20,24 @@ module.exports = function(rootPath, exitResolve){
 			return retry();
 		}
 
-		var values = value.split(" ");
+		var arg = this.convertArgs(value);
 
-		var fcmd = values[0];
-		values.shift();
+		var cmd = arg.get(0);
 
-		if(fcmd == "start"){
+		if(cmd == "start"){
 			const listen = require("../listen.js");
 			listen.bind(this)(rootPath, exitResolve);
 		}
-		else if(fcmd == "init"){
+		else if(cmd == "init"){
 			const cmd_init = require("./cmd_init.js");
-			cmd_init.bind(this)(rootPath, exitResolve);
+			cmd_init.bind(this)(rootPath, arg, exitResolve);
 		}
-		else if(arg[0] == "status"){
+		else if(cmd == "status"){
 			const cmd_status = require("./bin/command/cmd_status.js");
 			cmd_status.bind(this)(rootPath, resolve);	
 		}
 		else{
-			this.color.red("[ERROR] ").outn("The command \"" + fcmd + "\ does not exist. retry.");
+			this.color.red("[ERROR] ").outn("The command \"" + cmd + "\ does not exist. retry.");
 			return retry();
 		}
 

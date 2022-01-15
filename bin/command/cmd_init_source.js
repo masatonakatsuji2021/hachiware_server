@@ -83,6 +83,7 @@ module.exports = function(init){
 
 	}
 
+	/*
 	if(init.options){
 
 		str += "	// Use Modules List \n";
@@ -272,9 +273,10 @@ module.exports = function(init){
 
 			
 		}
-	
+
 	}
 
+		*/
 	str += "};"
 
 	return str;

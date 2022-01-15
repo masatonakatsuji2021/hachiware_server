@@ -17,21 +17,23 @@ module.exports = function(rootPath){
 
 		var arg = this.getArgs();
 
-		if(!arg){
+		if(!arg.length){
 			const command = require("./bin/command/command.js");
 			command.bind(this)(rootPath, resolve);
 			return;
 		}
 
-		if(arg[0] == "start"){
+		var cmd = arg.get(0);
+
+		if(cmd == "start"){
 			const listen = require("./bin/listen.js");
 			listen.bind(this)(rootPath, resolve);
 		}
-		else if(arg[0] == "init"){
+		else if(cmd == "init"){
 			const cmd_init = require("./bin/command/cmd_init.js");
-			cmd_init.bind(this)(rootPath, resolve);	
+			cmd_init.bind(this)(rootPath, arg, resolve);	
 		}
-		else if(arg[0] == "status"){
+		else if(cmd == "status"){
 			const cmd_status = require("./bin/command/cmd_status.js");
 			cmd_status.bind(this)(rootPath, resolve);	
 		}

@@ -1,7 +1,7 @@
 const tool = require("hachiware_tool");
 const fs = require("fs");
 
-module.exports = function(rootPath, exitResolve){
+module.exports = function(rootPath, args, exitResolve){
 
 	var init = {};
 
@@ -13,6 +13,16 @@ module.exports = function(rootPath, exitResolve){
 			.outn("Create a new server setting. Please answer the following questions.")
 			.br(2)
 		;
+
+		if(args.getOpt("name")){
+			init.fileName = args.getOpt("name");
+
+			if(init.fileName.substring(-3) != ".js"){
+				init.fileName += ".js";
+			}
+
+			return resolve();
+		}
 
 		var confDefFileName = "";
 
@@ -38,6 +48,11 @@ module.exports = function(rootPath, exitResolve){
 
 	}).then(function(resolve){
 
+		if(args.getOpt("host")){
+			init.host = args.getOpt("host");
+			return resolve();
+		}
+
 		this.in("Q. Enter the host name. (localhost)",function(value, retry){
 
 			if(!value){
@@ -50,6 +65,16 @@ module.exports = function(rootPath, exitResolve){
 		});
 
 	}).then(function(resolve){
+
+		if(args.getExists("ssl")){
+			if(args.getOpt("ssl") == "false"){
+				init.ssl = false;
+			}
+			else{
+				init.ssl = true;
+			}
+			return resolve();
+		}
 
 		this.in("Q. SSL connection? [y/n] (n)", function(value){
 
@@ -74,10 +99,15 @@ module.exports = function(rootPath, exitResolve){
 		if(!init.ssl){
 			return resolve();
 		}
-
+		
 		init.certificate = {};
 
 		this.then(function(resolve2){
+
+			if(args.getOpt("certkey")){
+				init.certificate.key = args.getOpt("certkey");
+				return resolve2();
+			}
 
 			this.in("  Q. Specify the path of the private key file of the server certificate. (key/server.key)",function(value, retry){
 
@@ -92,6 +122,11 @@ module.exports = function(rootPath, exitResolve){
 	
 		}).then(function(resolve2){
 
+			if(args.getOpt("cert")){
+				init.certificate.cert = args.getOpt("cert");
+				return resolve2();
+			}
+
 			this.in("  Q. Specify the path of the server certificate. (key/server.crt)",function(value, retry){
 
 				if(!value){
@@ -105,6 +140,11 @@ module.exports = function(rootPath, exitResolve){
 
 		}).then(function(){
 
+			if(args.getOpt("ca")){
+				init.certificate.ca = args.getOpt("ca");
+				return resolve();
+			}
+
 			this.in("  Q. Specify the CA intermediate certificate path of the server certificate if required. ()",function(value){
 
 				init.certificate.ca = value;
@@ -115,6 +155,11 @@ module.exports = function(rootPath, exitResolve){
 		}).start();
 		
 	}).then(function(resolve){
+
+		if(args.getOpt("port")){
+			init.port = args.getOpt("port");
+			return resolve();
+		}
 
 		if(init.ssl){
 			var port = "443";
@@ -136,6 +181,17 @@ module.exports = function(rootPath, exitResolve){
 		
 	}).then(function(resolve){
 
+		if(args.getExists("callbacks")){
+			init.port = args.getOpt("callbacks");
+			if(args.getOpt("callbacks") == "false"){
+				init.callbacks = false;
+			}
+			else{
+				init.callbacks = true;
+			}
+			return resolve();
+		}
+
 		this.in("Q. Add Callback function. [y/n] (y)", function(value){
 
 			if(!value){
@@ -153,155 +209,6 @@ module.exports = function(rootPath, exitResolve){
 
 			resolve();
 		});
-
-	}).then(function(resolve){
-
-		this.in("Q. Use more modules? [y/n] (n)",function(value){
-
-			if(!value){
-				value = "n";
-			}
-
-			value = value.toLowerCase();
-
-			if(value == "y"){
-				init.options = true;
-			}
-			else{
-				init.options = false;
-			}
-
-			resolve();
-		});
-
-	}).then(function(resolve){
-		
-		if(!init.options){
-			return resolve();
-		}
-
-		this.then(function(resolve2){
-
-			this.in("  Q. Use \"logs\" module?. [y/n] (n)", function(value){
-
-				if(!value){
-					value = "n";
-				}
-	
-				value = value.toLowerCase();
-	
-				if(value == "y"){
-					init.module_logs = true;
-				}
-				else{
-					init.module_logs = false;
-				}
-	
-				resolve2();
-			});
-
-		}).then(function(resolve2){
-
-			this.in("  Q. Use \"filtering\" module? [y/n] (n)", function(value){
-
-				if(!value){
-					value = "n";
-				}
-	
-				value = value.toLowerCase();
-	
-				if(value == "y"){
-					init.module_filtering = true;
-				}
-				else{
-					init.module_filtering = false;
-				}
-	
-				resolve2();
-			});
-
-		}).then(function(resolve2){
-
-			this.in("  Q. Use \"basicAuth\" module? [y/n] (n)", function(value){
-
-				if(!value){
-					value = "n";
-				}
-	
-				value = value.toLowerCase();
-	
-				if(value == "y"){
-					init.module_basicauth = true;
-				}
-				else{
-					init.module_basicauth = false;
-				}
-	
-				resolve2();
-			});
-
-		}).then(function(resolve2){
-
-			this.in("  Q. Use \"publics\" module? [y/n] (n)", function(value){
-
-				if(!value){
-					value = "n";
-				}
-	
-				value = value.toLowerCase();
-	
-				if(value == "y"){
-					init.module_publics = true;
-				}
-				else{
-					init.module_publics = false;
-				}
-	
-				resolve2();
-			});
-
-		}).then(function(resolve2){
-
-			this.in("  Q. Use \"request\" module? [y/n] (n)", function(value){
-
-				if(!value){
-					value = "n";
-				}
-	
-				value = value.toLowerCase();
-	
-				if(value == "y"){
-					init.module_request = true;
-				}
-				else{
-					init.module_request = false;
-				}
-	
-				resolve2();
-			});
-
-		}).then(function(){
-
-			this.in("  Q. Use \"proxy\" module? [y/n] (n)", function(value){
-
-				if(!value){
-					value = "n";
-				}
-	
-				value = value.toLowerCase();
-	
-				if(value == "y"){
-					init.module_proxy = true;
-				}
-				else{
-					init.module_proxy = false;
-				}
-	
-				resolve();
-			});
-
-		}).start();
-
 
 	}).then(function(resolve){
 
@@ -323,16 +230,6 @@ module.exports = function(rootPath, exitResolve){
 		outData["host"] = init.host;
 		outData["port"] = init.port;
 		outData["Callbacks function"] = init.callbacks.toString();
-
-		if(init.options){
-			outData["Use Module"] = {};
-			outData["Use Module"]["logs"] = init.module_logs;
-			outData["Use Module"]["filtering"] = init.module_filtering;
-			outData["Use Module"]["basicAuth"] = init.module_basicauth;
-			outData["Use Module"]["publics"] = init.module_publics;
-			outData["Use Module"]["request"] = init.module_request;
-			outData["Use Module"]["proxy"] = init.module_proxy;
-		}
 
 		this.outData(outData,{
 			fieldMaxLength:40,
