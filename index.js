@@ -9,10 +9,10 @@
  */
 const CLI = require("hachiware_cli");
 
-const cli = new CLI();
-
 module.exports = function(rootPath){
 	
+	const cli = new CLI();
+
 	cli.then(function(resolve){
 
 		var arg = this.getArgs();
