@@ -225,7 +225,7 @@ module.exports = function(rootPath, args, exitResolve){
 				fs.mkdirSync(path);
 			}
 
-			var initStr = require("./cmd_init_source.js");
+			var initStr = require("./source.js");
 
 			fs.writeFileSync(path + "/" + init.fileName, initStr(init));
 

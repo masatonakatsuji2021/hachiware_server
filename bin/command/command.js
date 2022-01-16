@@ -29,12 +29,16 @@ module.exports = function(rootPath, exitResolve){
 			listen.bind(this)(rootPath, exitResolve);
 		}
 		else if(cmd == "init"){
-			const cmd_init = require("./cmd_init.js");
-			cmd_init.bind(this)(rootPath, arg, exitResolve);
+			const init = require("./init/");
+			init.bind(this)(rootPath, arg, exitResolve);
 		}
 		else if(cmd == "status"){
-			const cmd_status = require("./cmd_status.js");
-			cmd_status.bind(this)(rootPath, resolve);	
+			const status = require("./status/");
+			status.bind(this)(rootPath, resolve);	
+		}
+		else if(cmd == "config"){
+			const cmd_config = require("./cmd_config.js");
+			cmd_config.bind(this)(rootPath, arg, exitResolve);
 		}
 		else{
 			this.color.red("[ERROR] ").outn("The command \"" + cmd + "\ does not exist. retry.");
