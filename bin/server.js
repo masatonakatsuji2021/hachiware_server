@@ -12,8 +12,6 @@ const fs = require("fs");
 const sync = require("hachiware_sync");
 const tool = require("hachiware_tool");
 
-const errors = require("./errors.js");
-
 module.exports = function(params ,req ,res){
 
 	var context = this;
@@ -28,56 +26,31 @@ module.exports = function(params ,req ,res){
 			context.modules,
 			function(next, module){
 
-				if(!module.fooKAccess){
+				if(!module.fookRequest){
 					return next();
 				}
 
 				try{
-					module.fooKAccess(next, req, res);
+					module.fookRequest(next, req, res);
 				}catch(error){
-
-					if(!module.fookError){
-						return next();
-					}
-
-					module.fookError(next, error, req, res);
+					console.log(error);
+					process.exit();
 				}
-
 			},
 			function(){
 				resolve();
 			});
 
 	}).then(function(){
-
-		try{
-
-			res.setHeader("server","hachiware server");
-
-			if(params.headers){
-				var colums = Object.keys(params.headers);
-				for(var n = 0 ; n < colums.length ; n++){
-					var field = colums[n];
-					var value = params.headers[field];
-					res.setHeader(field, value);
-				}
-			}
-	
-			if(tool.objExists(params,"callbacks.access")){
-				params.callbacks.access.bind(context)(req, res);
-				return;
-			}
-			
-			if(params.welcomeToPage){
-				var pageContent = fs.readFileSync(params.rootPath + "/" + params.welcomeToPage);
-				res.write(pageContent);	
-				res.end();
-			}
-
-		}catch(error){
-			errors.bind(context)(error, params, req, res);
-		}
 		
+		if(conf.welcomeToPage){
+			var pageContent = fs.readFileSync(conf.rootPath + "/" + conf.welcomeToPage);
+			res.write(pageContent);	
+		}
+
+		res.statusCode = 400;
+		res.end();
+
 	}).start();
 
 };

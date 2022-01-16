@@ -33,7 +33,7 @@ module.exports = function(rootPath, exitResolve){
 			cmd_init.bind(this)(rootPath, arg, exitResolve);
 		}
 		else if(cmd == "status"){
-			const cmd_status = require("./bin/command/cmd_status.js");
+			const cmd_status = require("./cmd_status.js");
 			cmd_status.bind(this)(rootPath, resolve);	
 		}
 		else{

@@ -78,21 +78,7 @@ module.exports = {
 
     port: 80,
 
-    callbacks: {
-        access: function(req, res){
-
-            res.write("Hallo Web Server!");
-            res.end();
-        },
-    },
-
-    modules: [
-        "logs",
-        "filtering",
-        "basicAuth",
-        "publics",
-        "request",
-    ],
+    welcomeToPage: "welcome.html",
 };
 ```
 
@@ -118,20 +104,7 @@ module.exports = {
 
     port: 80,
 
-    callbacks: {
-        access: function(req, res){
-
-            res.write("Hello Web Server2!!");
-            res.end();
-        },
-    },
-
-    modules: [
-        "filtering",
-        "basicAuth",
-        "publics",
-        "request",
-    ],
+    welcomeToPage: "welcome.html",
 };
 ```
 
@@ -183,14 +156,7 @@ module.exports = {
         cert: "key/www.sample1.com/1/server.crt",
     },
 
-    callbacks: {
-        access: function(req, res){
-
-            res.write("Hallo HTTPS Web Server!");
-            res.end();
-        },
-    },
-
+    welcomeToPage: "welcome.html",
 };
 ```
 
@@ -215,45 +181,6 @@ This completes the SSL settings.
 After running and starting the server,   
 access ``https://www.sample1.com`` with a browser "Hallo HTTPS Web Server!" Is displayed
 
-### - callbacks
-
-The callback can specify the function when the request arrives or an error occurs.
-
-Describe the logic content in each of access when all requests are reached and error when an error occurs.
-
-```javascript
-callbacks: {
-    access: function(req, res){
-
-        res.write("Hello Web Server!");
-        res.end();
-    },
-    error: function(error, req, res){
-
-        res.write(error);
-        res.end();
-    },
-},
-```
-### - Response Header
-
-Specifies the default response header.
-
-```javascript
-headers: {
-    name: "sample server 01",
-},
-```
-
-### - Not Found Page
-
-You can specify the html file to be displayed by default when there is no page display (404 not found).  
-Please prepare ``404.html`` by yourself.
-
-```javascript
-notFoundPage: "404.html",
-```
-
 ### - Error Console Output 
 
 Specify true to set the display of the result when an error is issued on the console.
@@ -262,506 +189,77 @@ Specify true to set the display of the result when an error is issued on the con
 errorConsoleOutput: true,
 ```
 
+### - welcome to page
 
+To display the page at the initial stage when the request to the server is completed normally,  
+Specify the path of the display page HTML file in welcomeToPage.
+
+```javascript
+welcomeToPage: "welcome.html",
+```
+
+In the above case, by installing the `` welcome.html`` file directly under the current directory,  
+Its contents are displayed.
 
 ### - modules
 
-Individual optional functions are divided into modules.
+For individual functions, the functions are divided into units called modules (server modules).
+With hachiware server, you can build the optimum server environment by using this server module properly.  
+(Only necessary functions can be activated.)
 
-It is possible to add / omit them as needed.
+The server module specifies the one provided by the npm package.
+
+First, specify all the server module names to be used in ``modules`` like the configuration file.
 
 ```javascript
 modules: [
-    "logs",
-    "filtering",
-    "basicAuth",
-    "publics",
-    "request",
+    "hachiware_server_module_log",
+    "hachiware_server_module_firewall",
+    "hachiware_server_module_basic_auth",
+    //.....
 ],
 ```
 
-The description of each module is as follows.
+After that, please set while referring to the explanation on GitHub for each server module.  
+The following is an overview of the server modules currently available.
 
 |module name|overview|
 |:--|:--|
-|[logs](#mod_logs)|Log Output|
-|[filtering](#mod_filtering)|Controls access by IP address|
-|[basicAuth](#mod_basicauth)|Implement basic authentication|
-|[publics](#mod_publics)|Implement public areas accessible to static files such as css and image files|
-|[request]($mod_request)|Get the request data contents (GET, POST, etc.)|
-|[pavilion](#mod_pavilion)|Providing a simple file-based Web server|
+|[hachiware_server_module_log](https://github.com/masatonakatsuji2021/hachiware_server_module_log/blob/main/README.md)|It is a server module that outputs various logs.|
+|[hachiware_server_module_firewall](https://github.com/masatonakatsuji2021/hachiware_server_module_firewall/blob/main/README.md)|Server module for firewall.|
+|[hachiware_server_module_basic_auth](https://github.com/masatonakatsuji2021/hachiware_server_module_basic_auth/blob/main/README.md)|Perform basic authentication|
+|[hachiware_server_module_public](https://github.com/masatonakatsuji2021/hachiware_server_module_public/blob/main/README.md)|Set the bizarre that can publish source files such as css and image files.|
+|[hachiware_server_module_get_request](https://github.com/masatonakatsuji2021/hachiware_server_module_get_request/blob/main/README.md)|Get the request data contents (GET, POST, etc.)|
+|[hachiware_server_module_proxy](https://github.com/masatonakatsuji2021/hachiware_server_module_proxy/blob/main/README.md)|It is a server module that realizes a proxy server.|
+|[hachiware_server_module_callback](https://github.com/masatonakatsuji2021/hachiware_server_module_callback/blob/main/README.md)|Implement a simple callback that can receive requests.<br>※ This module cannot be used with ``hachiware_server_module_framework``|
+|[hachiware_server_module_framework](https://github.com/masatonakatsuji2021/hachiware_server_module_framework/blob/main/README.md)|A module that provides a web framework.<br>* This module cannot be used with ``hachiware_server_module_callback``.|
 
-<a id="mod_logs"></a>
-
-### - (module) Log output
-
-This is a module for outputting the log when the server is started/stopped, when a request is received, or when an error occurs.
-
-To use this function, it is assumed that module d is set to ``logs``.
-
-Log output settings are described as follows.
-
-```javascript
-logs: {
-
-    // startup write log
-    startUp: {
-        enable: true,
-        path: "logs/startup/startup-{YYYY}.log",
-        contents: "[{DATETIME}] {MODE} {HOST}:{PORT} server_name = {SERVERNAME}",
-    },
-
-    // access write log
-    access: {
-        enable: true,
-        path: "logs/access/access-{YYYY}-{MM}.log",
-        contents: "[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE}",
-    },
-
-    // error write log
-    error: {
-        enable: true,
-        path: "logs/error/error-{YYYY}-{MM}.log",
-        contents: "[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE} {ERROR_EXCEPTION} {ERROR_STACK}",
-    },
-},
-```
-
-The high temperature setting for each log is as follows
-
-|item|Overview|
-|:--|:--|
-|enable|Specify enable/disable of log output|
-|path|Specify the log output destination path|
-|contents|Specify the output format for log output|
-
-``startUp`` outputs the log at the time of server start and end.
-
-```javascript
-startUp: {
-    enable: true,
-    path: "logs/startup/startup-{YYYY}.log",
-    contents: "[{DATETIME}] {MODE} {HOST}:{PORT} server_name = {SERVERNAME}",
-},
-```
-
-``access`` outputs the access log when the request reaches the access callback.
-
-```javascript
-access: {
-    enable: true,
-    path: "logs/access/access-{YYYY}-{MM}.log",
-    contents: "[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE}",
-},
-```
-
-``error`` outputs an error log when an error occurs after the request reaches the access callback.
-
-```javascript
-error: {
-    enable: true,
-    path: "logs/error/error-{YYYY}-{MM}.log",
-    contents: "[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE} {ERROR_EXCEPTION} {ERROR_STACK}",
-},
-```
-
-By describing the format (`` {} part``) in path and contents,
-Dynamic results are output at that location.
-
-The shortcodes of each format and their output results are as follows.
-
-|Short code|startUp|access|error|Output result|
-|:--|:--|:--|:--|:--|
-|{DATETIME}|〇|〇|〇|Log output date and time<br>{YYYY}/{MM}/{DD} {HH}:{mm}:{ss}|
-|{DATE}|〇|〇|〇|Log output date<br>{YYYY}/{MM}/{DD}|
-|{TIME}|〇|〇|〇|Log output time<br>{HH}:{mm}:{ss}|
-|{YYYY}|〇|〇|〇|Log output year|
-|{MM}|〇|〇|〇|Log output month|
-|{DD}|〇|〇|〇|Log output day|
-|{HH}|〇|〇|〇|Log output hour|
-|{mm}|〇|〇|〇|Log output minutes|
-|{ss}|〇|〇|〇|Log output second|
-|{HOST}|〇|〇|〇|Host name|
-|{PORT}|〇|〇|〇|Port Number|
-|{SSL}|〇|〇|〇|SSL enabled/disabled|
-|{LISTEN_URI}|〇|〇|〇|Requestable URL|
-|{CONF_FILE}|〇|〇|〇|Read setting file name|
-|{MODE}|〇|-|-|Server start\end|
-|{METHOD}|-|〇|〇|Request method|
-|{REQUEST_URL}|-|〇|〇|Requested URL|
-|{RESPONSE_CODE}|-|〇|〇|Response code number|
-|{REMOTE_IP}|-|〇|〇|Source IP address information|
-|{REQUEST_QUERY}|-|〇|〇|Query information(GET)|
-|{REQUEST_BODY}|-|〇|〇|Request body|
-|{ERROR_EXCEPTION}|-|-|〇|Error message|
-|{ERROR_STACK}|-|-|〇|Error details|
-
-If you want to include information other than the above shortcode in the error log, you can add the original error information using a callback.
-
-```javascript
-access: {
-    enable: true,
-    path: "logs/access/access-{YYYY}-{MM}.log",
-    contents: "[{DATETIME}] {METHOD} {REQUEST_URL} {REMOTE_IP} {RESPONSE_CODE}",
-    callback: function(contents, req ,res){
-        contents += " HEADERS=" + JSON.stringify(req.headers);
-        return contents;
-    },
-},
-```
-
-One thing to keep in mind when implementing a callback is that the arguments are different for startUp, access, and error.
-
-In the case of strtUp, it will be the error content and setting information.
-
-```javascript
-callback: function(contents, params){
-    contents += " SNAME=" + params.servername;
-    return contents;
-},
-```
-
-In the case of access, the order is error content, setting information, request information, and response information.
-
-```javascript
-callback: function(contents, params, req, res){
-    contents += " HEADERS=" + JSON.stringify(req.headers);
-    return contents;
-},
-```
-
-In the case of error, the order is content content, error content, setting information, request information, and response information.
-
-```javascript
-callback: function(contents, exception, params, req, res){
-    contents += "\n\n HEADERS=" + JSON.stringify(req.headers);
-    return contents;
-},
-```
-
-It is also possible to adjust the log output with just a callback.
-
-<a id="mod_filtering"></a>
-
-### - (modules) filtering
-
-It is a module that performs filtering to allow or block access from IP addresses.
-
-To use this function, it is assumed that module d is set to ``filtering``.
-
-The actual filtering settings are described as follows.  
-In the following cases, access to the IP address group at ``address`` is blocked.
-
-```javascript
-filtering: {
-    mode: "block",
-    address: [
-        "**.**.**.**",
-        "**.**.**.**",
-        "**.**.**.**",
-        ....
-    ],
-},
-```
-
-The contents of each item are as follows
-
-|item|require|Contents|
-|:--|:--|:--|
-|mode|〇|accept/block mode|
-|address|〇|Target IP address list|
-
-
-On the contrary, if you want to allow access only to the IP address group of ``address``, as follows
-Let mode be ``accept``.
-
-```javascript
-filtering: {
-    mode: "accept",
-    address: [
-        "**.**.**.**",
-        "**.**.**.**",
-        "**.**.**.**",
-        ....
-    ],
-},
-```
-Requests blocked by filtering will not reach the access callback and will only return an empty response code 404.  
-(Access log is not output either.)
-
-<a id="mod_basicauth"></a>
-
-### - (modules) Basic authentication
-
-A module for implementing basic authentication across servers by individual domain or port.
-
-To use this function, it is assumed that module d is set to ``basicAuth``.
-
-To implement basic authentication, write as follows.
-
-```javascript
-basicAuth: {
-    username: "abcd",
-    password: "1234",
-    onFailed: function(res){
-        res.write("......orz....");
-        res.end();
-    },
-},
-```
-
-The following for each setting item
-
-|item|require|Contents|
-|:--|:--|:--|
-|username|〇|Login username|
-|password|〇|Login password|
-|onFailed|-|This is the callback when authentication fails.|
-
-<a id="mod_public"></a>
-
-### - (modules) Public area
-
-The public area is an area for installing and reading static files such as css and images.
-
-To use this function, it is assumed that module d is set to ``publics``.
-
-Multiple areas can be specified.
-
-```javascript
-assets:[
-    {
-        url:"/ast",
-
-        mount: "/assets",
-
-        headers: {
-            name:"Hachiware Server",
-            "Cache-Control":"max-age=31536000",
-        },
-
-        indexed: [
-            "index.html",
-        ],
-    },
-],
-```
-
-The contents of each item are as follows.
-
-|item|require|contents|
-|:--|:--|:--|
-|url|〇|URL that is a public area|
-|mount|〇|Area mount destination directory path<br>Specifies the path where the static files are located.<br>Access is possible by creating a directory with the specified mount path and placing static files there.|
-|headers|-|Response header applied<br>If there is Cache-Control etc., specify it here|
-|indexed|-|If you specify the part up to the directory when requesting the URL path, you can specify which file to return.|
-
-<a id="mod_request"></a>
-
-### - (modules) request data support
-
-It is a module to automatically acquire request data such as GET/POST.
-
-To use this function, it is assumed that module d is set to ``request``.
-
-There are currently no options set for this module.
-
-If this module is enabled, the Get parameter will be set inside ``req.query`` and form data such as POST or PUT will be set inside ``req.body``.
-
-### - (modules) pavilion
-
-This is a module to realize a simple web server using the template engine.
-
-It is compatible with ``hachiware_te``, which is a proprietary template engine.  
-By placing the template format hte file on any directory
-You can easily set up pages and implement scripts.
-
-To use this function, it is assumed that module d is set to ``pavilion``.
-
-In the configuration file, add the settings for pabilion as shown below.
-
-```javascript
-pavilion: {
-    path: "htmls",
-    topPage: "index.hte",
-}
-```
-The items that can be set are as follows.
-
-|item|require|Overview|
-|:--|:--|:--|
-|path|〇|Target directory of template file<br>Place the required hte files in this directory|
-|topPage|〇|Specify the hte file name as the top page|
-|errorDebug|-|Set whether to output the error debug contents on the page|
-|callback|-|You can specify a callback before starting screen rendering|
-
-In the case of the above code, the directory/file structure is as follows.
-
-```
-index.js
-htmls
-    L common
-        L header.hte
-        L footer.hte
-    L index.hte
-```
-
-In inex.hte, set HTML tags to be displayed on the screen or <? Te tags for templates.
-
-``index.hte``.
-
-```php
-<?te 
-var data = { title: "TOP Page"}
-load("common/header.hte",data); 
-?>
-
-<p>Hellow Web Server.</p>
-
-<?te load("common/footer.hte"); ?>
-```
-
-``common/header.hte``
-
-```php
-<!DOCTYPE html>
-<html>
-<head>
-</head>
-<body>
-
-<header>
-    TEST APP - <?te if(this.title){ echo(this.title); } ?>
-</header>
-```
-
-``common/footer.hte``
-
-```php
-<footer>
-    FOOTER AREA..
-</footer>
-</body>
-</html>
-```
-
-After running the server, access it with a browser.
-
-If "Hellow Web Server." And the header and footer are displayed on the screen, it's OK.
-
-Another page can be easily created by simply creating an hte file.
-
-For example, create a new ``page_1.hte`` and add that link to ``index.hte``.
-
-```
-index.js
-htmls
-    L common
-        L header.hte
-        L footer.hte
-    L index.hte
-    L page_1.hte            <= New addition
-```
-
-``page_1.hte``.
-
-```php
-<?te 
-var data = { title: "Page 1"}
-load("common/header.hte",data); 
-?>
-
-<p>Page 1</p>
-
-<?te load("common/footer.hte"); ?>
-```
-
-``index.hte``.
-
-```php
-<?te 
-var data = { title: "TOP Page"}
-load("common/header.hte",data); 
-?>
-
-<p>Hellow Web Server.</p>
-
-<p><a href="/page_1">Page 1</a></p>
-
-<?te load("common/footer.hte"); ?>
-```
-
-Now, when you click the page 1 link from the TOP page, the newly installed page_1.hte screen will be displayed.
-
-In this way, you can easily add pages on a file-by-file basis.
-
-See below for details on how to use the template engine ``hachiware_te``.
-[https://github.com/masatonakatsuji2021/hachiware_te](https://github.com/masatonakatsuji2021/hachiware_te).
-
-### - Use external npm package as hachieare_server module
-
-As for the hachiware_server module, you can basically use the module preset in the core part.
-
-If for some reason you want to use an external npm package as a hachieare_server module,
-List as ``node_module|{npm package name} `` in the configuration file as shown below
-
-The following uses the npm package for the MVC framework currently under development as the hachiware_server module.
-
-```javascript
-module: [
-    "logs",
-    "filtering",
-    "basicAuth",
-    "publics",
-    "request",
-    "node_modules|hachiware_server_module_mvcfw",   // <= Used as a module from an external npm package.
-],
-```
-
-When converting to hachiware_server module, please write in the following code in ``index.js``.
-
-```javascript
-module.exports = {
-
-    static: function(){
-
-    },
-
-    each: function(exitResolve, params, req, res){
-
-    },
-
-};
-```
-
-|key|overview|
-|:--|:--|
-|static|Objects that can be used statically as modules.<br>It is used when the method in the module is used functionally regardless of the request reception.|
-|each|Method executed every time a request occurs<br>It will be executed as a callback immediately after the request arrives.<br>This request is not executed in the case of request blocking by filtering or static file expansion in public. <br>Depends on the status of the module used|
 
 ---
 
 <a id="console"></a>
+
 ## # About the console
 
 hachiware_server provides some command execution.  
-After preparing the following `` index.js`` file, execute the command from node
+After preparing the following ``index.js`` file, execute the command from node
 
 ```javascript
-const hachiware_server = require("hachiware_server");
-hachiware_server(__dirname);
+const server = require("hachiware_server");
+server(__dirname);
 ```
 
 If you execute the following command, a simple dedicated console menu will be displayed.
 
-```
-node . 
+```console
+> node . 
 ```
 
 The dedicated console menu is displayed as shown below.  
 It may be slightly different depending on the version
 
-```
+```console
+> node .
 ** Hachiware Server *****************
 
 Enter command  :
@@ -770,8 +268,8 @@ Enter command  :
 From here onward, enter the command to proceed,  
 Alternatively, it is also possible to execute by passing the execution command as a command line argument as shown below.
 
-```
-node . start
+```console
+> node . start
 ```
 
 It doesn't matter which one you use.
@@ -780,66 +278,40 @@ The commands that can be used are as follows
 
 |command|Overview|
 |:--|:--|
-|start|Start server startup|
 |init|Create a new server <br>Generate a conf file.|
+|start|Start server startup|
 |status|View server status|
-
-### - Start the server
-
-Use the start command to start the server.
-
-```
-node . start
-```
-
-Due to the server trajectory, if an error occurs, it will be forcibly terminated.
 
 ### - Create a new server (Generating a conf file)
 
 If you want to create a new server, use the init command.
 
-```
-node . init
+```console
+> node . init
 ```
 
 After executing the init command, the dialogue will start.  
 
-```
+```console
+> node . init
 ** Create server settings **
 Create a new server setting. Please answer the following questions.
 
 
-Q. Enter the configuration file name (conf_6.js) :
+Q. Enter the configuration file name (conf_1.js) :
 Q. Enter the host name. (localhost) :
 Q. SSL connection? [y/n] (n) : y
   Q. Specify the path of the private key file of the server certificate. (key/server.key) :
   Q. Specify the path of the server certificate. (key/server.crt) :
   Q. Specify the CA intermediate certificate path of the server certificate if required. () :
 Q. Enter the port number. (443) :
-Q. Add Log output. [y/n] (y) :
-Q. Add Callback function. [y/n] (y) :
-Q. Use more modules? [y/n] (n) : y
-  Q. Use "filtering" module? [y/n] (n) :
-  Q. Use "basicAuth" module? [y/n] (n) :
-  Q. Use "publics" module? [y/n] (n) :
-  Q. Use "request" module? [y/n] (n) :
-  Q. Use "proxy" module? [y/n] (n) :
 
-
-  conf File Name         : conf_6.js
+  conf File Name         : conf_1.js
   SSL                    : true
     SSL certificate key  : key/server.key
     SSL certificate cert : key/server.crt
   host                   : localhost
   port                   : 443
-  Log Output             : true
-  Callbacks function     : true
-  Use MModule
-    filtering            : false
-    basicAuth            : false
-    publics              : false
-    request              : false
-    proxy                : false
 
 
 Create a server with the above contents.
@@ -851,12 +323,44 @@ A server configuration file (conf file) is generated.
 
 After that, it will be updated if you restart the server with the start command etc.
 
+### - Start the server
+
+Use the start command to start the server.
+
+```console
+> node . start
+**************************************************************************
+Hachieare Server Listen [2022/01/16 15:28:18] Listen Start!
+
+**** Connect URL ******************
+
+ - conf_1.js                      https://localhost
+
+....Listen Start.
+```
+
+Due to the server trajectory, if an error occurs, it will be forcibly terminated.
+
 ### - View server status
 
-Use the status command to display the server operating status
+Use the status command to display the server operating status.
 
+```console
+> node . status
+Server Status.
+Status : Listen
+--------------------------------------------------------------------------------------------------------------
+ name                    host                    port                    ssl                     url
+--------------------------------------------------------------------------------------------------------------
+ conf_1                  localhost               80                      false                   http://localhost
 ```
-node . status
+
+If the server is down, see below.
+
+```console
+> node . status
+Server Status.
+Status : Stop
 ```
 
 ---

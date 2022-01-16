@@ -158,7 +158,7 @@ module.exports = function(rootPath, exitResolve){
 					try{
 						var mods = require(module);
 
-						mods = new mods(conf, context.modules);
+						mods = new mods(conf, this);
 
 						modulesRe.push(module);
 						loadModules.push(module);

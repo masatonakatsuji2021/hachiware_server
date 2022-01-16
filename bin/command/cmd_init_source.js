@@ -47,8 +47,9 @@ module.exports = function(init){
 
 	str += "	// Welcome To Page HTML \n";
 
-	str += "	// welcomeToPage: \"conf/welcome.html\", \n\n";
+	str += "	welcomeToPage: \"welcome.html\", \n\n";
 
+	/*
 	if(init.callbacks){
 
 		str += "	// Callbacks \n";
@@ -83,7 +84,6 @@ module.exports = function(init){
 
 	}
 
-	/*
 	if(init.options){
 
 		str += "	// Use Modules List \n";

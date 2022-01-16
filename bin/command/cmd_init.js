@@ -181,37 +181,6 @@ module.exports = function(rootPath, args, exitResolve){
 		
 	}).then(function(resolve){
 
-		if(args.getExists("callbacks")){
-			init.port = args.getOpt("callbacks");
-			if(args.getOpt("callbacks") == "false"){
-				init.callbacks = false;
-			}
-			else{
-				init.callbacks = true;
-			}
-			return resolve();
-		}
-
-		this.in("Q. Add Callback function. [y/n] (y)", function(value){
-
-			if(!value){
-				value = "y";
-			}
-
-			value = value.toLowerCase();
-
-			if(value == "y"){
-				init.callbacks = true;
-			}
-			else{
-				init.callbacks = false;
-			}
-
-			resolve();
-		});
-
-	}).then(function(resolve){
-
 		this.br();
 
 		var outData = {
@@ -229,7 +198,6 @@ module.exports = function(rootPath, args, exitResolve){
 		
 		outData["host"] = init.host;
 		outData["port"] = init.port;
-		outData["Callbacks function"] = init.callbacks.toString();
 
 		this.outData(outData,{
 			fieldMaxLength:40,

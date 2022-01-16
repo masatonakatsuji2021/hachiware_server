@@ -10,10 +10,11 @@
     "hachiware_fs": "^1.0.0",
     "hachiware_routing": "^1.0.0",
     "hachiware_server_module_log": "^1.0.0",
+    "hachiware_server_module_firewall": "^1.0.0",
     "hachiware_server_module_basic_auth": "^1.0.0",
     "hachiware_server_module_get_request": "^1.0.0",
-    "hachiware_server_module_public": "^1.0.0"
-
+    "hachiware_server_module_public": "^1.0.0",
+    "hachiware_server_module_callback": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {
