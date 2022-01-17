@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>Welcome Hachiware Server!</title>
 </head>
 <body>
 
@@ -8,6 +9,11 @@
         *{
             margin:0;
             padding:0;
+            color:#579;
+            background:#eef;
+        }
+        a{
+            color:#8ac;
         }
         .main{
             text-align:center;
@@ -23,10 +29,20 @@
             letter-spacing:5px;
             margin-bottom:40px;
         }
+        @media screen and (max-width:1300px){
+            body{
+                font-size:13px;
+            }
+            .main h1{
+                margin-bottom:20px;
+                font-size:23px;
+            }
+        }
     </style>
 
     <div class="main">
-        <h1>Welcome To Hachiware Server!</h1>
+        <img src="image.png">
+        <h1>Welcome! Hachiware Server!</h1>
         <p>If this page is displayed, it is working properly.</p>
         <p>Let's install the server module and build a web server system.</p>
         <br>

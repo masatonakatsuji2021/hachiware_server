@@ -12,7 +12,7 @@ const fs = require("fs");
 const sync = require("hachiware_sync");
 const tool = require("hachiware_tool");
 
-module.exports = function(params ,req ,res){
+module.exports = function(conf ,req ,res){
 
 	var context = this;
 
@@ -20,16 +20,16 @@ module.exports = function(params ,req ,res){
 
 		res.setHeader("server","hachiware server");
 
-		if(params.headers){
-			var colums = Object.keys(params.headers);
+		if(conf.headers){
+			var colums = Object.keys(conf.headers);
 			for(var n = 0 ; n < colums.length ; n++){
 				var field = colums[n];
-				var value = params.headers[field];
+				var value = conf.headers[field];
 				res.setHeader(field, value);
 			}
 		}
 
-		if(!params.modules){
+		if(!conf.modules){
 			return resolve();
 		}
 
@@ -54,12 +54,24 @@ module.exports = function(params ,req ,res){
 
 	}).then(function(){
 		
+		var pageContent = "";
+
 		if(conf.welcomeToPage){
-			var pageContent = fs.readFileSync(conf.rootPath + "/" + conf.welcomeToPage);
-			res.write(pageContent);	
+			if(fs.existsSync(conf.rootPath + "/" + conf.welcomeToPage)){
+				pageContent = fs.readFileSync(conf.rootPath + "/" + conf.welcomeToPage).toString();
+			}
 		}
 
-		res.statusCode = 400;
+		if(!pageContent){
+			if(req.url == "/image.png"){
+				pageContent = fs.readFileSync(__dirname + "/welcome/image.png");
+			}
+			else{
+				pageContent = fs.readFileSync(__dirname + "/welcome/index.html").toString();
+			}
+		}
+
+		res.write(pageContent);
 		res.end();
 
 	}).start();

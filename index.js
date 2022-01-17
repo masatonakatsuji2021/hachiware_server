@@ -15,28 +15,30 @@ module.exports = function(rootPath){
 
 	cli.then(function(resolve){
 
-		var arg = this.getArgs();
+		this.outn("** Hachiware Server *****************")
+			.br()
+		;
 
-		if(!arg.length){
-			const command = require("./bin/command/command.js");
-			command.bind(this)(rootPath, resolve);
+		var args = this.getArgs();
+
+		if(args.length){
+			const command = require("./bin/command/");
+			command.bind(this)(rootPath, args, resolve);
 			return;
 		}
 
-		var cmd = arg.get(0);
+		this.in("Enter command ", function(value, retry){
 
-		if(cmd == "start"){
-			const listen = require("./bin/listen.js");
-			listen.bind(this)(rootPath, resolve);
-		}
-		else if(cmd == "init"){
-			const cmd_init = require("./bin/command/cmd_init.js");
-			cmd_init.bind(this)(rootPath, arg, resolve);	
-		}
-		else if(cmd == "status"){
-			const cmd_status = require("./bin/command/cmd_status.js");
-			cmd_status.bind(this)(rootPath, resolve);	
-		}
+			var args = this.convertArgs(value);
+
+			if(!args.length){
+				this.color.red("[ERROR] ").outn("No command entered. retry.");
+				return retry();
+			}
+
+			const command = require("./bin/command/");
+			command.bind(this)(rootPath, args, resolve, retry);
+		});
 
 	}).then(function(){
 		process.exit();
