@@ -1,24 +1,30 @@
-
 /**
  * ====================================================================
  * Hachiware_Server
  * 
  * Web server application with Node.js
  * 
- * Author : Nakatsuji Masato 
+ * License : MIT License. 
+ * Since   : 2021.12.25
+ * Author  : Nakatsuji Masato 
+ * GitHub  : https://github.com/masatonakatsuji2021/hachiware_server
+ * npm     : https://www.npmjs.com/package/hachiware_server
  * ====================================================================
  */
 
 const path0 = require("path");
 const tool = require("hachiware_tool");
 const fs = require("hachiware_fs");
-
-const http = require(".//http.js");
+const http = require("./http.js");
 const https = require("./https.js");
-//const loadModule = require("./module.js");
 
 module.exports = function(rootPath, exitResolve){
 
+	/**
+	 * loadFookModule
+	 * @param {*} fookName 
+	 * @param {*} data 
+	 */
 	this.loadFookModule = function(fookName, data){
 
 		var colums = Object.keys(this.modules);

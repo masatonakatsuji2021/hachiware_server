@@ -4,7 +4,11 @@
  * 
  * Web server application with Node.js
  * 
- * Author : Nakatsuji Masato 
+ * License : MIT License. 
+ * Since   : 2021.12.25
+ * Author  : Nakatsuji Masato 
+ * GitHub  : https://github.com/masatonakatsuji2021/hachiware_server
+ * npm     : https://www.npmjs.com/package/hachiware_server
  * ====================================================================
  */
 
