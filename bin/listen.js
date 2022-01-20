@@ -22,15 +22,20 @@ module.exports = function(rootPath, exitResolve){
 
 	/**
 	 * loadFookModule
+	 * @param {*} conf
 	 * @param {*} fookName 
 	 * @param {*} data 
 	 */
-	this.loadFookModule = function(fookName, data){
+	this.loadFookModule = function(conf, fookName, data){
 
-		var colums = Object.keys(this.modules);
+		if(!this.modules[conf._file]){
+			return;
+		}
+
+		var colums = Object.keys(this.modules[conf._file]);
 		for(var n = 0; n < colums.length ; n++){
 			var moduleName = colums[n];
-			var mc = this.modules[moduleName];
+			var mc = this.modules[conf._file][moduleName];
 
 			if(!mc){
 				continue;
@@ -79,7 +84,6 @@ module.exports = function(rootPath, exitResolve){
 		var confListOnPortAndSSL = {};
 	
 		var loadConf = [];
-		var loadModules = [];
 
 		this.outn("**** Connect URL ******************").br();
 	
@@ -148,16 +152,9 @@ module.exports = function(rootPath, exitResolve){
 		for(var n = 0 ; n < loadConf.length ; n++){
 			var conf = loadConf[n];
 
-	
 			if(conf.modules){
-				var modulesRe = [];
 				for(var n2 = 0 ; n2 < conf.modules.length ; n2++){
 					var module = conf.modules[n2];
-	
-					if(loadModules.indexOf(module) !== -1){
-						modulesRe.push(module);
-						continue;
-					}
 
 					var mods = null;
 					
@@ -166,39 +163,19 @@ module.exports = function(rootPath, exitResolve){
 
 						mods = new mods(conf, this);
 
-						modulesRe.push(module);
-						loadModules.push(module);
+						if(!this.modules[conf._file]){
+							this.modules[conf._file] = {};
+						}
 
-						this.modules[module] = mods;
+						this.modules[conf._file][module] = mods;
 
 					}catch(error){
-						this.color.red("[Error] ").outn(error.toString());
+						this.color.red("[Error] ").outn("Host=" + conf._host + "  " + error.toString());
 					}
-					
-
-/*
-					if(module.indexOf("node_modules|") > -1){
-						var mPath = module.replace("node_modules|","");
-						try{
-							var mods = require(mPath);
-						}catch(error){
-							this.color.orange(" [WARM] ").outn(conf.host + ":" + conf.port + " | \"" + module + "\" is not found module.");
-							continue;
-						}
-					}
-					else{
-						*/
-
-						// require cache
-					//}
-
 				}
-	
-				conf.modules = modulesRe;
 			}
 		}
 
-	
 		for(var n = 0 ; n < loadConf.length ; n++){
 			var conf = loadConf[n];
 	
@@ -256,7 +233,7 @@ module.exports = function(rootPath, exitResolve){
 				for(var n2 = 0 ; n2 < confs.length ; n2++){
 					var c_ = confs[n2];
 
-					context.loadFookModule("end");
+					context.loadFookModule(c_, "end");
 				}
 			}
 	
@@ -268,7 +245,7 @@ module.exports = function(rootPath, exitResolve){
 				for(var n2 = 0 ; n2 < confs.length ; n2++){
 					var c_ = confs[n2];
 
-					context.loadFookModule("end");
+					context.loadFookModule(c_, "end");
 				}
 			}
 	
@@ -282,6 +259,7 @@ module.exports = function(rootPath, exitResolve){
 	
 	}catch(error){
 		this.br().color.red("[ERROR] ").outn(error);
+		console.log(error);
 		exitResolve();
 	}
 

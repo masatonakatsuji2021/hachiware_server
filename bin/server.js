@@ -14,7 +14,6 @@
 
 const fs = require("fs");
 const sync = require("hachiware_sync");
-const tool = require("hachiware_tool");
 
 module.exports = function(conf ,req ,res){
 
@@ -36,9 +35,17 @@ module.exports = function(conf ,req ,res){
 		if(!conf.modules){
 			return resolve();
 		}
+	
+		if(!context.modules[conf._file]){
+			return resolve();
+		}
+
+		if(Object.keys(!context.modules[conf._file]).length){
+			return resolve();
+		}
 
 		sync.foreach(
-			context.modules,
+			context.modules[conf._file],
 			function(next, module){
 
 				if(!module.fookRequest){
@@ -59,6 +66,11 @@ module.exports = function(conf ,req ,res){
 	}).then(function(){
 		
 		var pageContent = "";
+
+		context.loadFookModule(conf, "access", [
+			req, 
+			res,
+		]);
 
 		if(conf.welcomeToPage){
 			if(fs.existsSync(conf.rootPath + "/" + conf.welcomeToPage)){
