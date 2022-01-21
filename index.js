@@ -7,6 +7,8 @@
  * License : MIT License. 
  * Since   : 2021.12.25
  * Author  : Nakatsuji Masato 
+ * Email   : nakatsuji@teastalk.jp
+ * HP URL  : https://hachiware-js.com/
  * GitHub  : https://github.com/masatonakatsuji2021/hachiware_server
  * npm     : https://www.npmjs.com/package/hachiware_server
  * ====================================================================

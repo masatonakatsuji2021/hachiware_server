@@ -365,4 +365,12 @@ Status : Stop
 
 ---
 
-Author : Nakatsuji Masato.
+Hachiware_Server
+
+JavaScript Framework "Hachiware" Web Server Application.
+ 
+License : MIT License.   
+Author  : Nakatsuji Masato  
+HP URL  : [https://hachiware-js.com/](https://hachiware-js.com/)  
+GitHub  : [https://github.com/masatonakatsuji2021/Hachiware_server](https://github.com/masatonakatsuji2021/Hachiware_server)  
+npm     : [https://www.npmjs.com/package/Hachiware_server](https://www.npmjs.com/package/Hachiware_server)
