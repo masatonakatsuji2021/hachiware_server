@@ -80,15 +80,15 @@ module.exports = function(rootPath, exitResolve){
 		this.outn("**** Connect URL ******************").br();
 	
 		for(var n = 0 ; n < confList.length ; n++){
+			var ssName = confList[n];
+			
+			var dirPath = rootPath + "/" + confList[n];
+			
+			if(!fs.statSync(dirPath).isDirectory()){
+				continue;
+			}
+
 			var path = rootPath + "/" + confList[n] + "/conf.js";
-
-			if(fs.statSync(path).isDirectory()){
-				continue;
-			}
-
-			if(path0.extname(path) != ".js"){
-				continue;
-			}
 	
 			var conf = require(path);
 
@@ -96,7 +96,7 @@ module.exports = function(rootPath, exitResolve){
 				continue;
 			}
 	
-			conf.rootPath = rootPath + "/" + confList[n];
+			conf.rootPath = dirPath;
 			conf._file = path;
 	
 			if(!conf.host){
@@ -112,11 +112,11 @@ module.exports = function(rootPath, exitResolve){
 				}
 			}
 
-			var fileName = path0.basename(conf._file,".js");
+			var fileName = ssName;
 			if(conf.enable === false){
 				fileName += "(disable) ";
 			}
-			var connectStr = " - " + path0.basename(fileName).padEnd(50) + " ";
+			var connectStr = " - " + fileName.padEnd(50) + " ";
 
 			if(conf.ssl){
 				connectStr += "https://";
@@ -221,9 +221,7 @@ module.exports = function(rootPath, exitResolve){
 		for(var n = 0 ; n < colums.length ; n++){
 			var port = colums[n];
 			var confs = confListOnPort[port];
-	
-			console.log(confs);
-			
+
 			http.bind(this)(port, confs);
 		}
 	
