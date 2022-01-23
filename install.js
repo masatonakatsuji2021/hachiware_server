@@ -18,7 +18,7 @@ const { execSync } = require("child_process");
 
 console.log("hachiware_server installer begin.");
 
-const envPath = execSync("npm bin -g").toString().trim();
+const envPath = execSync("npm root -g").toString().trim();
 
 if(__dirname.indexOf(envPath) !== 0){
     console.log("local install");

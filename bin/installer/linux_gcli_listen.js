@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../../../gcli_listen.js');
+require('../../gcli_listen.js');
