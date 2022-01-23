@@ -16,14 +16,14 @@
 
 const fs = require("fs");
 
-module.exports = function(envPath){
+module.exports = function(binPath){
 
-    fs.copyFileSync(__dirname + "/win32", envPath + "/hachiware_server",);
-    fs.copyFileSync(__dirname + "/win32.cmd", envPath + "/hachiware_server.cmd");
+    fs.copyFileSync(__dirname + "/win32", binPath + "/hachiware_server",);
+    fs.copyFileSync(__dirname + "/win32.cmd", binPath + "/hachiware_server.cmd");
     console.log("# install hachiware_server");
     
-    fs.copyFileSync(__dirname + "/win32_listen", envPath + "/hachiware_server_listen",);
-    fs.copyFileSync(__dirname + "/win32_listen.cmd", envPath + "/hachiware_server_listen.cmd",);
+    fs.copyFileSync(__dirname + "/win32_listen", binPath + "/hachiware_server_listen",);
+    fs.copyFileSync(__dirname + "/win32_listen.cmd", binPath + "/hachiware_server_listen.cmd",);
     console.log("# install hachiware_server_listen");
     
 };

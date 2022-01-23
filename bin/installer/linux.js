@@ -14,12 +14,9 @@
  * ====================================================================
  */
 
-const { execSync } = require('child_process');
 const fs = require("fs");
 
-module.exports = function(){
-
-    var binPath = execSync("npm bin -g").toString().trim();
+module.exports = function(binPath){
 
     var source_hs = __dirname + "/linux_gcli.js";
     var source_hsl = __dirname + "/linux_gcli_listen.js";
