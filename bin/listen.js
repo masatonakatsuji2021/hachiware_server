@@ -7,6 +7,8 @@
  * License : MIT License. 
  * Since   : 2021.12.25
  * Author  : Nakatsuji Masato 
+ * Email   : nakatsuji@teastalk.jp
+ * HP URL  : https://hachiware-js.com/
  * GitHub  : https://github.com/masatonakatsuji2021/hachiware_server
  * npm     : https://www.npmjs.com/package/hachiware_server
  * ====================================================================
@@ -64,19 +66,9 @@ module.exports = function(rootPath, exitResolve){
 		this.color.blue("**************************************************************************").br();
 		this.outn("Hachieare Server Listen [" + tool.getDateFormat("{DATETIME}") + "] Listen Start!").br();
 	
-		var confPath = rootPath + "/conf";
-	
-		if(!fs.existsSync(confPath)){
-			throw("No configuration directory. \n Prepare a \"conf\" directory and install one or more configuration files.");
-		}
-	
-		if(!fs.statSync(confPath).isDirectory()){
-			throw("No configuration directory. \n Prepare a \"conf\" directory and install one or more configuration files.");
-		}
-	
-		var confList = fs.deepReadDir(confPath);
-	
-		if(!confList.file.length){
+		var confList = fs.readdirSync(rootPath);
+
+		if(!confList.length){
 			throw("There are no configuration files in the \"conf\" directory.");
 		}
 
@@ -87,16 +79,24 @@ module.exports = function(rootPath, exitResolve){
 
 		this.outn("**** Connect URL ******************").br();
 	
-		for(var n = 0 ; n < confList.file.length ; n++){
-			var path = confList.file[n];
+		for(var n = 0 ; n < confList.length ; n++){
+			var path = rootPath + "/" + confList[n] + "/conf.js";
+
+			if(fs.statSync(path).isDirectory()){
+				continue;
+			}
+
+			if(path0.extname(path) != ".js"){
+				continue;
+			}
 	
 			var conf = require(path);
-	
+
 			if(!Object.keys(conf).length){
 				continue;
 			}
 	
-			conf.rootPath = rootPath;
+			conf.rootPath = rootPath + "/" + confList[n];
 			conf._file = path;
 	
 			if(!conf.host){
@@ -111,8 +111,13 @@ module.exports = function(rootPath, exitResolve){
 					conf.port = 80;
 				}
 			}
-			
-			var connectStr = " - " + path0.basename(conf._file).padEnd(30) + " ";
+
+			var fileName = path0.basename(conf._file,".js");
+			if(conf.enable === false){
+				fileName += "(disable) ";
+			}
+			var connectStr = " - " + path0.basename(fileName).padEnd(50) + " ";
+
 			if(conf.ssl){
 				connectStr += "https://";
 				connectStr += conf.host;
@@ -127,8 +132,17 @@ module.exports = function(rootPath, exitResolve){
 					connectStr += ":" + conf.port;
 				}
 			}
-	
-			this.outn(connectStr);
+
+			if(conf.enable === false){
+				this.color.grayn(connectStr);
+			}
+			else{
+				this.outn(connectStr);
+			}
+
+			if(conf.enable === false){
+				continue;
+			}
 	
 			conf._host = conf.host;
 			if(conf.ssl){
@@ -208,6 +222,8 @@ module.exports = function(rootPath, exitResolve){
 			var port = colums[n];
 			var confs = confListOnPort[port];
 	
+			console.log(confs);
+			
 			http.bind(this)(port, confs);
 		}
 	

@@ -15,16 +15,17 @@
  */
 
 const CLI = require("hachiware_cli");
+const fs = require("fs");
 
 module.exports = function(rootPath){
 	
+	const versions = require("./package.json");
+
 	const cli = new CLI();
 
 	cli.then(function(resolve){
 
-		this.outn("** Hachiware Server *****************")
-			.br()
-		;
+		this.outn("** Hachiware Server [Version : " + versions.version + "] *****************").br(2);
 
 		var args = this.getArgs();
 

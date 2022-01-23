@@ -29,33 +29,45 @@ module.exports = function(rootPath, args, exitResolve){
 		;
 
 		if(args.getOpt("name")){
-			init.fileName = args.getOpt("name");
+			init.ssName = args.getOpt("name");
 
 			if(init.fileName.substring(-3) != ".js"){
-				init.fileName += ".js";
+				init.ssName += ".js";
 			}
 
-			return resolve();
+			if(fs.existsSync(rootPath + "/" + init.ssName)){
+				if(fs.statSync(rootPath + "/" + init.ssName).isDirectory()){
+					this.color.redn("[WARM] ").outn("The same server section \"" + init.ssName + "\" already exists.").br();
+				}
+				else{
+					return resolve();
+				}
+			}
+			else{
+				return resolve();
+			}
 		}
 
-		var confDefFileName = "";
+		var ssName = "";
 
-		if(fs.existsSync(rootPath + "/conf")){
-			var existFile = fs.readdirSync(rootPath + "/conf");
-			var fileLen = existFile.length + 1;
-			confDefFileName = "conf_" + fileLen + ".js";
-		}
-		else{
-			confDefFileName = "conf.js";
-		}
+		var existFile = fs.readdirSync(rootPath);
+		var fileLen = existFile.length + 1;
+		ssName = "sect_" + ("000" + fileLen).slice(-4);
 
-		this.in("Q. Enter the configuration file name (" + confDefFileName  + ")", function(value, retry){
+		this.in("Q. Enter the server-section name (" + ssName  + ")", function(value, retry){
 
 			if(!value){
-				value = confDefFileName;
+				value = ssName;
 			}
 
-			init.fileName = value;
+			if(fs.existsSync(rootPath + "/" + value)){
+				if(fs.statSync(rootPath + "/" + value).isDirectory()){
+					this.color.red("[WARM] ").outn("The same server section \"" + value + "\" already exists.").br();
+					return retry();
+				}
+			}
+
+			init.ssName = value;
 
 			resolve();
 		});
@@ -198,7 +210,7 @@ module.exports = function(rootPath, args, exitResolve){
 		this.br();
 
 		var outData = {
-			"conf File Name" : init.fileName.toString(),
+			"Server-Section Name" : init.ssName.toString(),
 			"SSL" : init.ssl.toString(),
 		};
 
@@ -233,7 +245,7 @@ module.exports = function(rootPath, args, exitResolve){
 				return exitResolve();
 			}
 
-			var path = rootPath + "/conf";
+			var path = rootPath + "/" + init.ssName;
 
 			if(!fs.existsSync(path)){
 				fs.mkdirSync(path);
@@ -241,7 +253,7 @@ module.exports = function(rootPath, args, exitResolve){
 
 			var initStr = require("./source.js");
 
-			fs.writeFileSync(path + "/" + init.fileName, initStr(init));
+			fs.writeFileSync(path + "/conf.js", initStr(init));
 
 			this.br(2).outn("Completed server creation.");
 

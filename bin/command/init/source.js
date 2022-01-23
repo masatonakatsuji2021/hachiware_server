@@ -14,9 +14,9 @@
 
 module.exports = function(init){
 
-	var str="";
+	var str = "";
 
-	str += "// server configure \n";
+	str += "// " + init.ssName + " server configure \n";
 
 	str += "module.exports = { \n\n";
 
@@ -59,9 +59,15 @@ module.exports = function(init){
 
 	str += "	errorConsoleOutput: true, \n\n";
 
-	str += "	// Welcome To Page HTML \n";
+	str += "	// use module list \n";
 
-	str += "	welcomeToPage: \"welcome.html\", \n\n";
+	str += "	\"modules\": [ \n";
+	
+	str += "		//\"hachiware_server_module_log\", \n";
+
+	str += "		//\"hachiware_server_module_callback\", \n";
+
+	str += "	],\n\n";
 
 	/*
 	if(init.callbacks){
