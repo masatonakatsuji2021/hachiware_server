@@ -1,6 +1,6 @@
 {
   "name": "hachiware_server",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "JavaScript Framework \"Hachiware\" Web Server Application.",
   "main": "index.js",
   "dependencies": {
@@ -19,7 +19,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall":"node install.js"
+    "postinstall": "node install.js"
   },
   "keywords": [
     "web",
