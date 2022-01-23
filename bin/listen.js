@@ -69,7 +69,7 @@ module.exports = function(rootPath, exitResolve){
 		var confList = fs.readdirSync(rootPath);
 
 		if(!confList.length){
-			throw("There are no configuration files in the \"conf\" directory.");
+			throw("No bootable server section.");
 		}
 
 		var confListOnPort = {};
@@ -273,7 +273,6 @@ module.exports = function(rootPath, exitResolve){
 	
 	}catch(error){
 		this.br().color.red("[ERROR] ").outn(error);
-		console.log(error);
 		exitResolve();
 	}
 

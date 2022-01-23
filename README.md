@@ -13,19 +13,29 @@
 
 JavaScript Framework "Hachiware" Web Server Application.
 
-[Click here for about page in Japanese](ja_about.md)
-
 ---
 
 ## # How do you use this?
 
 First, install the npm package with the following command.
 
-```
+```code
 npm i hachiware_server
 ```
 
-All you have to do is add the package require code to index.js etc. and you're ready to go.
+Below for global installation.
+
+```code
+npm i -g hachiware_server
+```
+
+If you install globally, you can use the command of hachiware_server as it is.
+
+```code
+hachiware
+```
+
+For local installation, All you have to do is add the package require code to index.js etc. and you're ready to go.
 
 ```javascript
 const server = require("hachiware_server");
@@ -44,32 +54,148 @@ See [here](#console) for a description of the functions of various commands.
 
 ---
 
+## # Global and local installations
+
+When using Hachiware_server, the specifications differ slightly depending on whether it is a global installation or a local installation.
+
+Global installation is when installing with the following command.
+
+```code
+npm i -g hachiware_server
+```
+
+Local installation is below.
+
+```code
+npm i hachiware_server
+```
+
+It is recommended to use the local installation for development testing or emergency batch support, and the global installation for publishing such as Linux.
+
+### - Command execution
+
+For global installations, you can use the hachiware_server command or the hachiware_server_listen command directly.
+
+The hachiware_server command opens a dedicated console.
+
+```code
+> hachiware_server
+** Hachiware Server [Version : 1.0.10] *****************
+
+
+Enter command  :
+```
+
+hachiware_server_listen is a command to start the server.  
+
+```code
+> hachiware_server_listen
+
+** Hachiware Server [Version : 1.0.10] *****************
+
+
+**************************************************************************
+Hachieare Server Listen [2022/01/23 15:49:01] Listen Start!
+
+**** Connect URL ******************
+
+ - sect_0001                                          http://localhost
+
+....Listen Start.
+```
+
+Persistence can be easily set by specifying ``systemctl enable hachiware_server_lissten`` on Linux etc.
+
+On the other hand, for local installation, you need to install the `` indes.js`` file on any directory.
+
+```javascript
+const hachiware_server = require("hachiware_server");
+hachiware_server(__dirname);
+```
+
+After writing the following code, execute it via the ``node`` command.
+
+```code
+> node .
+** Hachiware Server [Version : 1.0.10] *****************
+
+
+Enter command  :
+```
+
+To start the server, execute the ``node .start`` command.
+
+```code
+> node . start
+
+** Hachiware Server [Version : 1.0.10] *****************
+
+
+**************************************************************************
+Hachieare Server Listen [2022/01/23 15:49:01] Listen Start!
+
+**** Connect URL ******************
+
+ - sect_0001                                          http://localhost
+
+....Listen Start.
+```
+
+
+## - Configuration directory path
+
+For global installations, the ``/hachiware_server`` directory is the configuration directory.
+By setting the server section (collection of configuration files etc. to be published on the server) here, the server will be started in a batch by the ``hachiware_server_listen`` command.
+
+On the other hand, in the local installation, the setting directory is the directory area where the above ``index.js`` is executed.
+
+Since it is only on any directory that is made into a server, it is possible to start the server individually.
+
+---
+
 ## # Server construction
 
-To start the server, execute the following command on the directory where ``index.js`` is installed.
+For global installation, Server construction is possible only with the `` hachiware_server_listen`` command.
 
+```code
+hachiware_server_listen
 ```
+
+For local installation, To start the server, execute the following command on the directory where ``index.js`` is installed.
+
+```code
 node . start
 ```
 
-In the initial state, the server cannot be started because the configuration file is not prepared at all.  
-(Only the message "No configuration directory." Is displayed)
+In the initial state, the server section, which is a collection of server settings and sources, is not prepared at all, so the server cannot be started.
+(Only the message "There is no bootable server section" is displayed)
 
-Multiple servers can be set for each domain or port.  
-For that setting, you need to specify a configuration file separately in the ``conf`` directory.
+You can deploy multiple servers at the same time by installing a server section for each domain or port.
 
-The file and directory structure is as follows.
+The server section has different installation locations and conditions for global installation and local installation.
 
-```
+In the case of global installation, it can be installed only in the ``/hachiware_server`` directory, but instead, all servers are started by the server start command from any current directory.
+
+For local installation, start the server by installing the following directory structure.
+
+```code
 index.js
-conf
+sect_0001               <= Server Section 1
     L conf.js
+    L .....
+sect_0002               <= Server Section 2
+    L conf.js
+    L .....
+sect_0003               <= Server Section 3
+    L conf.js
+    L .....
+...
 ```
 
-The js files in the conf directory serve the same as the virtual hosts in Apache's conf.d directory.  
-Consider one server (domain-based/port-based) per conf file.
+Works like a virtual host in Apache's conf.d directory.  
+Within the server section is the configuration file conf.js, which determines one server (domain-based / port-based) for each conf.js file.
 
-Describe as follows in the configuration file ``conf/conf.js``
+``sect_0001/conf.js`` is coded as follows
 
 ```javascript
 module.exports = {
@@ -78,7 +204,7 @@ module.exports = {
 
     port: 80,
 
-    welcomeToPage: "welcome.html",
+    ....
 };
 ```
 
@@ -86,16 +212,7 @@ Specify the connection host, connection port number, callback at the time of acc
 
 Do this and access it from your browser with ``http://www.sample1.com`` and you should see the words "Hallo Web Server!" On your screen.
 
-Also, when setting multiple servers, add the configuration file as shown below.
-
-```
-index.js
-conf
-    L conf.js
-    L conf2.js
-```
-
-The configuration file ``conf2.js`` is below.  
+The configuration file ``sect_0002/conf.js`` is below.  
 
 ```javascript
 module.exports = {
@@ -110,7 +227,10 @@ module.exports = {
 
 Now, if you access ``http://www.sample2.com`` with a browser, the characters "Hello Web Server 2 !!" .
 
-In this way, it is possible to set up multiple servers by domain or port number with one ``listen`` method.
+
+When creating a new server section, it is convenient to use the ``init`` command of hachiware_server.
+
+[Click here for details](#cmd_init)
 
 ---
 
@@ -241,8 +361,15 @@ The following is an overview of the server modules currently available.
 
 ## # About the console
 
-hachiware_server provides some command execution.  
-After preparing the following ``index.js`` file, execute the command from node
+hachiware_server provides some command execution.
+
+For a global installation, just run the `` hachiware_server`` command.
+
+```
+> hachiware_server
+```
+
+For local installation, After preparing the following ``index.js`` file, execute the command from node.
 
 ```javascript
 const server = require("hachiware_server");
@@ -259,7 +386,7 @@ The dedicated console menu is displayed as shown below.
 It may be slightly different depending on the version
 
 ```console
-> node .
+> hachiware_server
 ** Hachiware Server *****************
 
 Enter command  :
@@ -267,6 +394,12 @@ Enter command  :
 
 From here onward, enter the command to proceed,  
 Alternatively, it is also possible to execute by passing the execution command as a command line argument as shown below.
+
+```
+> hachiware_server start
+```
+
+The same applies to local installation.
 
 ```console
 > node . start
@@ -278,27 +411,29 @@ The commands that can be used are as follows
 
 |command|Overview|
 |:--|:--|
-|init|Create a new server <br>Generate a conf file.|
+|init|Create a new Server-Section.|
 |start|Start server startup|
 |status|View server status|
 
-### - Create a new server (Generating a conf file)
+<a id="cmd_init"></a>
 
-If you want to create a new server, use the init command.
+### - Create a new Server-Section
+
+If you want to create a new Server-Section, use the init command.
 
 ```console
-> node . init
+> hachiware_server init
 ```
 
 After executing the init command, the dialogue will start.  
 
 ```console
-> node . init
+> hachiware_server init
 ** Create server settings **
 Create a new server setting. Please answer the following questions.
 
 
-Q. Enter the configuration file name (conf_1.js) :
+Q. Enter the Server-Section name (sect_0001.js) :
 Q. Enter the host name. (localhost) :
 Q. SSL connection? [y/n] (n) : y
   Q. Specify the path of the private key file of the server certificate. (key/server.key) :
@@ -306,7 +441,7 @@ Q. SSL connection? [y/n] (n) : y
   Q. Specify the CA intermediate certificate path of the server certificate if required. () :
 Q. Enter the port number. (443) :
 
-  conf File Name         : conf_1.js
+  Server-Sction Name     : sect_0001.js
   SSL                    : true
     SSL certificate key  : key/server.key
     SSL certificate cert : key/server.crt
@@ -318,8 +453,8 @@ Create a server with the above contents.
 Q. Is it OK? [y/n] (y) :
 ```
 
-Answer each question and select y(yes) at the final confirmation.
-A server configuration file (conf file) is generated.
+Answer each question and select y(yes) at the final confirmation.  
+A directory for the server section and a configuration file (conf.js file) will be generated.
 
 After that, it will be updated if you restart the server with the start command etc.
 
@@ -328,37 +463,37 @@ After that, it will be updated if you restart the server with the start command 
 Use the start command to start the server.
 
 ```console
-> node . start
+> hachiware_server start
 **************************************************************************
 Hachieare Server Listen [2022/01/16 15:28:18] Listen Start!
 
 **** Connect URL ******************
 
- - conf_1.js                      https://localhost
+ - sect_0001                      https://localhost
 
 ....Listen Start.
 ```
 
-Due to the server trajectory, if an error occurs, it will be forcibly terminated.
+Global installation can be done directly with ``hachiware_server_listen``.
 
 ### - View server status
 
 Use the status command to display the server operating status.
 
 ```console
-> node . status
+> hachiware_server status
 Server Status.
 Status : Listen
 --------------------------------------------------------------------------------------------------------------
  name                    host                    port                    ssl                     url
 --------------------------------------------------------------------------------------------------------------
- conf_1                  localhost               80                      false                   http://localhost
+ sect_0001               localhost               80                      false                   http://localhost
 ```
 
 If the server is down, see below.
 
 ```console
-> node . status
+> hachiware_server status
 Server Status.
 Status : Stop
 ```
