@@ -28,12 +28,16 @@ module.exports = function(port, params){
 		for(var n = 0 ; n < params.length ; n++){
 			var p_ = params[n];
 
+			if(p_.host == "*"){
+				decisionParam = p_;
+			}
+
 			if(targetHost === p_._host){
 				decisionParam = p_;
 				break;
 			}
 		}
-
+		
 		if(!decisionParam){
 			res.statusCode = 404;
 			res.end();
