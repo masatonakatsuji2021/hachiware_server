@@ -18,5 +18,5 @@ if(process.platform == "win32"){
 }
 else if(process.platform == "linux"){
     const linux = require("./bin/installer/linux.js");
-    linux(envPath);
+    linux(__dirname);
 }
