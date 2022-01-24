@@ -1,6 +1,6 @@
 {
   "name": "hachiware_server",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "JavaScript Framework \"Hachiware\" Web Server Application.",
   "main": "index.js",
   "dependencies": {
