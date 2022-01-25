@@ -83,15 +83,14 @@ module.exports = function(rootPath, exitResolve){
 			var ssName = confList[n];
 			
 			var dirPath = rootPath + "/" + confList[n];
-			
-			if(!fs.statSync(dirPath).isDirectory()){
+			var path = rootPath + "/" + confList[n] + "/conf.js";
+
+			try{
+				var conf = require(path);
+			}catch(err){
 				continue;
 			}
-
-			var path = rootPath + "/" + confList[n] + "/conf.js";
 	
-			var conf = require(path);
-
 			if(!Object.keys(conf).length){
 				continue;
 			}
@@ -158,7 +157,12 @@ module.exports = function(rootPath, exitResolve){
 	
 			loadConf.push(conf);
 		}
-	
+		
+		if(loadConf.length == 0){
+			this.br().outn(".....Quit because there is no server to start.");
+			return exitResolve();
+		}
+
 		this.br().color.green("....Listen Start.").br(2);
 
 		this.modules = {};
