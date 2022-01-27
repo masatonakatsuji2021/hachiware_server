@@ -32,7 +32,7 @@ npm i -g hachiware_server
 If you install globally, you can use the command of hachiware_server as it is.
 
 ```code
-hachiware
+hachiware_server
 ```
 
 For local installation, All you have to do is add the package require code to index.js etc. and you're ready to go.
@@ -204,7 +204,6 @@ module.exports = {
 
     port: 80,
 
-    ....
 };
 ```
 
@@ -221,7 +220,6 @@ module.exports = {
 
     port: 80,
 
-    welcomeToPage: "welcome.html",
 };
 ```
 
@@ -237,6 +235,18 @@ When creating a new server section, it is convenient to use the ``init`` command
 ## # Server settings
 
 Here is how to describe various settings in the configuration file.
+
+### - enable
+
+Enables / disables server publishing.  
+Specify by Boolean.
+
+If not specified, it will be published by default.  
+If specified with `` false``, server publishing will be disabled, but instead the notation `` (disable) `` will be displayed on the console.
+
+```javascript
+enable: true,
+```
 
 ### - Host name
 
@@ -258,6 +268,30 @@ It will be set automatically.
 port: 80,
 ```
 
+### - Timeout
+
+Specifies the default timeout.  
+Specify in milliseconds.
+
+If no timeout is set, the process will open indefinitely without timing out.  
+
+```javascript
+timeout: 3000,
+```
+
+### - Response Header
+
+Specifies the default response header.  
+Specify with an object as shown below.
+
+```javascript
+headers: {
+    "Content-Type": "text/html",
+},
+```
+
+
+
 ### - HTTPS support (SSL)
 
 If you want to set up a server with HTTP (SSL connection), write as follows.
@@ -275,8 +309,6 @@ module.exports = {
         key: "key/www.sample1.com/1/server.key",
         cert: "key/www.sample1.com/1/server.crt",
     },
-
-    welcomeToPage: "welcome.html",
 };
 ```
 
