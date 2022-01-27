@@ -274,6 +274,15 @@ module.exports = function(rootPath, exitResolve){
 			}catch(err){}
 			process.exit(0);
 		});
+
+		process.on("uncaughtException",function(error){
+
+			for(var n2 = 0 ; n2 < confs.length ; n2++){
+				var c_ = confs[n2];
+
+				context.loadFookModule(c_, "sysError", [error]);
+			}
+		});
 	
 	}catch(error){
 		this.br().color.red("[ERROR] ").outn(error);

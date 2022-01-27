@@ -44,21 +44,6 @@ module.exports = function(port, params){
 			return;
 		}
 
-		if(p_.activedTimeout){
-			var stt = setTimeout(function(){
-				res.statusCode = 500;
-				context.loadFookModule(p_, "timeout", [req, res]);
-				console.log("timeout..?");
-			}, p_.activedTimeout);
-
-			res._end = res.end;
-
-			res.end = function(arg1, arg2){
-				res._end(arg1, arg2);
-				clearTimeout(stt);
-			};
-		}
-
 		if(p_.timeout){
 			req.setTimeout(p_.timeout);	
 		}

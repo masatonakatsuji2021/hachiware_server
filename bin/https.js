@@ -129,6 +129,10 @@ module.exports = function(port, params){
 			res.end();
 			return;
 		}
+		
+		if(p_.timeout){
+			req.setTimeout(p_.timeout);	
+		}
 
 		server.bind(context)(decisionParam, req, res);
 	});
