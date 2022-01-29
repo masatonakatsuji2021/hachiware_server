@@ -25,8 +25,6 @@ module.exports = function(rootPath){
 
 	cli.then(function(resolve){
 
-		this.outn("** Hachiware Server [Version : " + versions.version + "] *****************").br(2);
-
 		var args = this.getArgs();
 
 		if(args.length){
@@ -34,6 +32,8 @@ module.exports = function(rootPath){
 			command.bind(this)(rootPath, args, resolve);
 			return;
 		}
+
+		this.outn("** Hachiware Server [Version : " + versions.version + "] *****************").br(2);
 
 		this.in("Enter command ", function(value, retry){
 

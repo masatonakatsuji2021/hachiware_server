@@ -50,9 +50,7 @@ module.exports = function(rootPath, exitResolve){
 		res.push(buff);
 	}
 
-	//console.log(res);
 
 	this.outListData(res);
-
-	exitResolve();
+	return exitResolve();
 };

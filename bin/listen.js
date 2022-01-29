@@ -14,11 +14,11 @@
  * ====================================================================
  */
 
-const path0 = require("path");
 const tool = require("hachiware_tool");
 const fs = require("hachiware_fs");
 const http = require("./http.js");
 const https = require("./https.js");
+const loaderCheck = require("./command/listen/loaderCheck.js");
 
 module.exports = function(rootPath, exitResolve){
 
@@ -63,107 +63,10 @@ module.exports = function(rootPath, exitResolve){
 
 	try{
 
-		this.color.blue("**************************************************************************").br();
-		this.outn("Hachieare Server Listen [" + tool.getDateFormat("{DATETIME}") + "] Listen Start!").br();
-	
-		var confList = fs.readdirSync(rootPath);
-
-		if(!confList.length){
-			throw("No bootable server section.");
-		}
-
 		var confListOnPort = {};
 		var confListOnPortAndSSL = {};
 	
-		var loadConf = [];
-
-		this.outn("**** Connect URL ******************").br();
-	
-		for(var n = 0 ; n < confList.length ; n++){
-			var ssName = confList[n];
-			
-			var dirPath = rootPath + "/" + confList[n];
-			var path = rootPath + "/" + confList[n] + "/conf.js";
-
-			try{
-				var conf = require(path);
-			}catch(err){
-				continue;
-			}
-	
-			if(!Object.keys(conf).length){
-				continue;
-			}
-	
-			conf.rootPath = dirPath;
-			conf._file = path;
-	
-			if(!conf.host){
-				conf.host = "localhost";
-			}
-	
-			if(!conf.port){
-				if(conf.ssl){
-					conf.port = 443;
-				}
-				else{
-					conf.port = 80;
-				}
-			}
-
-			var fileName = ssName;
-			if(conf.enable === false){
-				fileName += "(disable) ";
-			}
-			var connectStr = " - " + fileName.padEnd(50) + " ";
-
-			if(conf.ssl){
-				connectStr += "https://";
-				connectStr += conf.host;
-				if(conf.port !== 443){
-					connectStr += ":" + conf.port;
-				}
-			}
-			else{
-				connectStr += "http://";
-				connectStr += conf.host;
-				if(conf.port !== 80){
-					connectStr += ":" + conf.port;
-				}
-			}
-
-			if(conf.enable === false){
-				this.color.grayn(connectStr);
-			}
-			else{
-				this.outn(connectStr);
-			}
-
-			if(conf.enable === false){
-				continue;
-			}
-	
-			conf._host = conf.host;
-			if(conf.ssl){
-				if(conf.port != 443){
-					conf._host += ":" + conf.port;
-				}
-			}
-			else{
-				if(conf.port != 80){
-					conf._host += ":" + conf.port;
-				}
-			}
-	
-			loadConf.push(conf);
-		}
-		
-		if(loadConf.length == 0){
-			this.br().outn(".....Quit because there is no server to start.");
-			return exitResolve();
-		}
-
-		this.br().color.green("....Listen Start.").br(2);
+		var loadConf = loaderCheck.bind(this)(rootPath, true);
 
 		this.modules = {};
 
@@ -174,22 +77,15 @@ module.exports = function(rootPath, exitResolve){
 				for(var n2 = 0 ; n2 < conf.modules.length ; n2++){
 					var module = conf.modules[n2];
 
-					var mods = null;
-					
-					try{
-						var mods = require(module);
+					var mods = require(module);
 
-						mods = new mods(conf, this);
+					mods = new mods(conf, this);
 
-						if(!this.modules[conf._file]){
-							this.modules[conf._file] = {};
-						}
-
-						this.modules[conf._file][module] = mods;
-
-					}catch(error){
-						this.color.red("[Error] ").outn("Host=" + conf._host + "  " + error.toString());
+					if(!this.modules[conf._file]){
+						this.modules[conf._file] = {};
 					}
+
+					this.modules[conf._file][module] = mods;
 				}
 			}
 		}
@@ -236,9 +132,6 @@ module.exports = function(rootPath, exitResolve){
 	
 			https.bind(this)(port, confs);
 		}
-
-		var connectLockStr = JSON.stringify(loadConf);
-		fs.writeFileSync(rootPath + "/connection.lock", connectLockStr);
 
 		process.on("exit",function(){
 			console.log("[" + tool.getDateFormat("{DATETIME}") + "] Server Exit.");

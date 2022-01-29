@@ -1,8 +1,2 @@
 /package-lock.json
 /node_modules
-/assets
-/logs
-/__test.js
-/bin/__ignore
-/bin/modules/__ignore
-/etc

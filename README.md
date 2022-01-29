@@ -386,6 +386,47 @@ The following is an overview of the server modules currently available.
 |[hachiware_server_module_callback](https://github.com/masatonakatsuji2021/hachiware_server_module_callback/blob/main/README.md)|Implement a simple callback that can receive requests.<br>※ This module cannot be used with ``hachiware_server_module_framework``|
 |[hachiware_server_module_framework](https://github.com/masatonakatsuji2021/hachiware_server_module_framework/blob/main/README.md)|A module that provides a web framework.<br>* This module cannot be used with ``hachiware_server_module_callback``.|
 
+---
+
+## # Server startup settings
+
+hachiware_server has common startup settings in addition to the settings for each section.  
+``hachiware_server.json`` is the setting content.
+
+It is mainly for setting multi-thread support.
+
+### - Multithreaded server startup
+
+The server startup of hachiware_server is single thread by default.    
+This is similar to Node.js http module, express module, etc.
+
+This can be multithreaded to start the server.
+
+By changing the ``multiThread`` flag in the above ``hachiware_server.json`` file to true, it will be multithreaded.
+
+```json
+{
+    "multiThread": true,
+    "multiThreadMaxProcess": "auto"
+}
+```
+
+If ``multiThreadMaxProcess`` is not specified, or if ``auto`` is specified,  
+The number of threads corresponds to the number of CPU cores in the terminal.
+
+By setting ``multiThreadMaxProcess`` arbitrarily,  
+It can be set lower than the upper limit of multi-core and works as a limiter function.
+
+For example, in the case of a terminal with an 8-core CPU, by specifying 7 in ``multiThreadMaxProcess``  
+Reduce resource consumption up to 7 cores and use the remaining 1 core for another spare control, etc.
+Can be assigned.
+
+```json
+{
+    "multiThread": true,
+    "multiThreadMaxProcess": 7
+}
+```
 
 ---
 
