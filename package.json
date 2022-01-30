@@ -8,13 +8,17 @@
     "hachiware_tool": "^1.0.0",
     "hachiware_cli": "^1.0.0",
     "hachiware_fs": "^1.0.0",
-    "hachiware_routing": "^1.0.0",
     "hachiware_server_module_log": "^1.0.0",
     "hachiware_server_module_firewall": "^1.0.0",
     "hachiware_server_module_basic_auth": "^1.0.0",
     "hachiware_server_module_get_request": "^1.0.0",
     "hachiware_server_module_public": "^1.0.0",
-    "hachiware_server_module_callback": "^1.0.0"
+    "hachiware_server_module_callback": "^1.0.0",
+    "hachiware_server_module_proxy": "^1.0.0",
+    "hachiware_server_module_webroot": "^1.0.0",
+    "hachiware_server_module_cookie": "^1.0.0",
+    "hachiware_server_module_session": "^1.0.0",
+    "hachiware_server_module_framework": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {
