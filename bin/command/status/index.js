@@ -16,23 +16,28 @@ const fs = require("fs");
 const path = require('path');
 
 module.exports = function(rootPath, exitResolve){
-
-	this.outn("Server Status.");
+	
+	this.br().outn("  Hachiware Server Status.").br();
 
 	if(!fs.existsSync(rootPath + "/connection.lock")){
 		this.color.red("Status : Stop").br();
 		return exitResolve();
 	}
 
-	var getList = fs.readFileSync(rootPath + "/connection.lock").toString();
+	var getData = JSON.parse(fs.readFileSync(rootPath + "/connection.lock").toString());
 
-	getList = JSON.parse(getList);
+	this.color.green("  Status : Listen now").br(2);
 
-	this.color.green("Status : Listen").br();
+	this.outn("  Started : " + getData.startDate);
+
+	this.out("  Threads : " + getData.mainPid + " (main), ");
+	this.out(getData.pids.join(", ")).br();
+
+	this.br();
 
 	var res = [];
-	for(var n = 0 ; n < getList.length ; n++){
-		var row = getList[n];
+	for(var n = 0 ; n < getData.ss.length ; n++){
+		var row = getData.ss[n];
 
 		var protocol = "http://";
 		if(row.ssl){

@@ -55,9 +55,11 @@ module.exports = function(port, params){
 
 	h.listen(port);
 
+	/**
 	for(var n = 0 ; n < params.length ; n++){
 		var p_ = params[n];
 
 		context.loadFookModule(p_, "start", [p_]);
 	}
+	*/
 }; 

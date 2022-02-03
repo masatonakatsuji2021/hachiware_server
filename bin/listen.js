@@ -19,6 +19,7 @@ const fs = require("hachiware_fs");
 const http = require("./http.js");
 const https = require("./https.js");
 const loaderCheck = require("./command/listen/loaderCheck.js");
+const sysLog = require("./sysLog.js");
 
 module.exports = function(rootPath, exitResolve){
 
@@ -58,8 +59,6 @@ module.exports = function(rootPath, exitResolve){
 		}
 
 	};
-
-	var context = this;
 
 	try{
 
@@ -133,53 +132,48 @@ module.exports = function(rootPath, exitResolve){
 			https.bind(this)(port, confs);
 		}
 
-		process.on("exit",function(){
-			console.log("[" + tool.getDateFormat("{DATETIME}") + "] Server Exit.");
-	
-			var colums = Object.keys(confListOnPort);
-			for(var n = 0 ; n < colums.length ; n++){
-				var port = colums[n];
-				var confs = confListOnPort[port];
-	
-				for(var n2 = 0 ; n2 < confs.length ; n2++){
-					var c_ = confs[n2];
-
-					context.loadFookModule(c_, "end");
-				}
-			}
-	
-			var colums = Object.keys(confListOnPortAndSSL);
-			for(var n = 0 ; n < colums.length ; n++){
-				var port = colums[n];
-				var confs = confListOnPortAndSSL[port];
-	
-				for(var n2 = 0 ; n2 < confs.length ; n2++){
-					var c_ = confs[n2];
-
-					context.loadFookModule(c_, "end");
-				}
-			}
-	
-		});
-		process.on("SIGINT", function () {
-			try{
-				fs.unlinkSync(rootPath + "/connection.lock");
-			}catch(err){}
-			process.exit(0);
-		});
-
-		process.on("uncaughtException",function(error){
-
-			for(var n2 = 0 ; n2 < confs.length ; n2++){
-				var c_ = confs[n2];
-
-				context.loadFookModule(c_, "sysError", [error]);
-			}
-		});
-	
 	}catch(error){
 		this.br().color.red("[ERROR] ").outn(error);
 		exitResolve();
 	}
 
+	process.on("uncaughtException",function(error){
+		sysLog(rootPath, error);
+	});
+
+	/**
+	process.on("exit",function(){
+
+		console.log("[" + tool.getDateFormat("{DATETIME}") + "] Server Exit.");
+
+		var colums = Object.keys(confListOnPort);
+		for(var n = 0 ; n < colums.length ; n++){
+			var port = colums[n];
+			var confs = confListOnPort[port];
+
+			for(var n2 = 0 ; n2 < confs.length ; n2++){
+				var c_ = confs[n2];
+
+				context.loadFookModule(c_, "end");
+			}
+		}
+
+		var colums = Object.keys(confListOnPortAndSSL);
+		for(var n = 0 ; n < colums.length ; n++){
+			var port = colums[n];
+			var confs = confListOnPortAndSSL[port];
+
+			for(var n2 = 0 ; n2 < confs.length ; n2++){
+				var c_ = confs[n2];
+
+				context.loadFookModule(c_, "end");
+			}
+		}
+
+	});
+
+	process.on("SIGINT", function (){ 
+		process.exit(0);
+	});
+	**/
 };

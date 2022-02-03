@@ -17,6 +17,8 @@
 const CLI = require("hachiware_cli");
 const listen = require("../../listen.js");
 
+process.clusterMode = true;
+
 var args = process.argv;
 args.shift();
 args.shift();
@@ -27,11 +29,8 @@ var cli = new CLI();
 
 cli.then(function(){
 
-    this.outn(" -  Thread [PID = " + process.pid.toString().padEnd(6) + "]");
-
     listen.bind(this)(rootPath, function(){
         process.exit();
     });
 
 }).start();
-
