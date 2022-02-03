@@ -17,7 +17,7 @@ const fs = require("fs");
 
 module.exports = function(rootPath, args, exitResolve){
 
-	var init = {};
+	var addss = {};
 
 	this.then(function(resolve){
 
@@ -29,15 +29,15 @@ module.exports = function(rootPath, args, exitResolve){
 		;
 
 		if(args.getOpt("name")){
-			init.ssName = args.getOpt("name");
+			addss.ssName = args.getOpt("name");
 
-			if(init.fileName.substring(-3) != ".js"){
-				init.ssName += ".js";
+			if(addss.fileName.substring(-3) != ".js"){
+				addss.ssName += ".js";
 			}
 
-			if(fs.existsSync(rootPath + "/" + init.ssName)){
-				if(fs.statSync(rootPath + "/" + init.ssName).isDirectory()){
-					this.color.redn("[WARM] ").outn("The same server section \"" + init.ssName + "\" already exists.").br();
+			if(fs.existsSync(rootPath + "/" + addss.ssName)){
+				if(fs.statSync(rootPath + "/" + addss.ssName).isDirectory()){
+					this.color.redn("[WARM] ").outn("The same server section \"" + addss.ssName + "\" already exists.").br();
 				}
 				else{
 					return resolve();
@@ -67,7 +67,7 @@ module.exports = function(rootPath, args, exitResolve){
 				}
 			}
 
-			init.ssName = value;
+			addss.ssName = value;
 
 			resolve();
 		});
@@ -75,7 +75,7 @@ module.exports = function(rootPath, args, exitResolve){
 	}).then(function(resolve){
 
 		if(args.getOpt("host")){
-			init.host = args.getOpt("host");
+			addss.host = args.getOpt("host");
 			return resolve();
 		}
 
@@ -85,7 +85,7 @@ module.exports = function(rootPath, args, exitResolve){
 				value = "localhost";
 			}
 
-			init.host = value;
+			addss.host = value;
 
 			resolve();
 		});
@@ -94,10 +94,10 @@ module.exports = function(rootPath, args, exitResolve){
 
 		if(args.getExists("ssl")){
 			if(args.getOpt("ssl") == "false"){
-				init.ssl = false;
+				addss.ssl = false;
 			}
 			else{
-				init.ssl = true;
+				addss.ssl = true;
 			}
 			return resolve();
 		}
@@ -111,10 +111,10 @@ module.exports = function(rootPath, args, exitResolve){
 			value = value.toLowerCase();
 
 			if(value == "y"){
-				init.ssl = true;
+				addss.ssl = true;
 			}
 			else{
-				init.ssl = false;
+				addss.ssl = false;
 			}
 
 			resolve();
@@ -122,16 +122,16 @@ module.exports = function(rootPath, args, exitResolve){
 
 	}).then(function(resolve){
 
-		if(!init.ssl){
+		if(!addss.ssl){
 			return resolve();
 		}
 		
-		init.certificate = {};
+		addss.certificate = {};
 
 		this.then(function(resolve2){
 
 			if(args.getOpt("certkey")){
-				init.certificate.key = args.getOpt("certkey");
+				addss.certificate.key = args.getOpt("certkey");
 				return resolve2();
 			}
 
@@ -141,7 +141,7 @@ module.exports = function(rootPath, args, exitResolve){
 					value = "key/server.key";
 				}
 	
-				init.certificate.key = value;
+				addss.certificate.key = value;
 	
 				resolve2();
 			});
@@ -149,7 +149,7 @@ module.exports = function(rootPath, args, exitResolve){
 		}).then(function(resolve2){
 
 			if(args.getOpt("cert")){
-				init.certificate.cert = args.getOpt("cert");
+				addss.certificate.cert = args.getOpt("cert");
 				return resolve2();
 			}
 
@@ -159,7 +159,7 @@ module.exports = function(rootPath, args, exitResolve){
 					value = "key/server.crt";
 				}
 	
-				init.certificate.cert = value;
+				addss.certificate.cert = value;
 	
 				resolve2();
 			});
@@ -167,13 +167,13 @@ module.exports = function(rootPath, args, exitResolve){
 		}).then(function(){
 
 			if(args.getOpt("ca")){
-				init.certificate.ca = args.getOpt("ca");
+				addss.certificate.ca = args.getOpt("ca");
 				return resolve();
 			}
 
 			this.in("  Q. Specify the CA intermediate certificate path of the server certificate if required. ()",function(value){
 
-				init.certificate.ca = value;
+				addss.certificate.ca = value;
 	
 				resolve();
 			});
@@ -183,11 +183,11 @@ module.exports = function(rootPath, args, exitResolve){
 	}).then(function(resolve){
 
 		if(args.getOpt("port")){
-			init.port = args.getOpt("port");
+			addss.port = args.getOpt("port");
 			return resolve();
 		}
 
-		if(init.ssl){
+		if(addss.ssl){
 			var port = "443";
 		}
 		else{
@@ -200,7 +200,7 @@ module.exports = function(rootPath, args, exitResolve){
 				value = port;
 			}
 
-			init.port = value;
+			addss.port = value;
 
 			resolve();
 		});
@@ -210,20 +210,20 @@ module.exports = function(rootPath, args, exitResolve){
 		this.br();
 
 		var outData = {
-			"Server-Section Name" : init.ssName.toString(),
-			"SSL" : init.ssl.toString(),
+			"Server-Section Name" : addss.ssName.toString(),
+			"SSL" : addss.ssl.toString(),
 		};
 
-		if(init.ssl){
-			outData["  SSL certificate key"] = init.certificate.key;
-			outData["  SSL certificate cert"] = init.certificate.cert;
-			if(init.certificate.ca){
-				outData["  SSL certificate CA"] = init.certificate.ca;
+		if(addss.ssl){
+			outData["  SSL certificate key"] = addss.certificate.key;
+			outData["  SSL certificate cert"] = addss.certificate.cert;
+			if(addss.certificate.ca){
+				outData["  SSL certificate CA"] = addss.certificate.ca;
 			}
 		}
 		
-		outData["host"] = init.host;
-		outData["port"] = init.port;
+		outData["host"] = addss.host;
+		outData["port"] = addss.port;
 
 		this.outData(outData,{
 			fieldMaxLength:40,
@@ -245,15 +245,15 @@ module.exports = function(rootPath, args, exitResolve){
 				return exitResolve();
 			}
 
-			var path = rootPath + "/" + init.ssName;
+			var path = rootPath + "/" + addss.ssName;
 
 			if(!fs.existsSync(path)){
 				fs.mkdirSync(path);
 			}
 
-			var initStr = require("./source.js");
+			var addssStr = require("./source.js");
 
-			fs.writeFileSync(path + "/conf.js", initStr(init));
+			fs.writeFileSync(path + "/conf.js", addssStr(addss));
 
 			this.br(2).outn("Completed server creation.");
 

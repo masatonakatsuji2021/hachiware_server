@@ -22,9 +22,20 @@
 		const listen = require("./listen/");
 		listen.bind(this)(rootPath,args, exitResolve);
 	}
-	else if(cmd == "init"){
-		const init = require("./init/");
-		init.bind(this)(rootPath, args, exitResolve);
+	else if(cmd == "setup"){
+		const setup = require("./setup/");
+		setup.bind(this)(rootPath, args, exitResolve);
+	}
+	else if(
+		cmd == "addss" || 
+		cmd == "init"
+	){
+		const addss = require("./addss/");
+		addss.bind(this)(rootPath, args, exitResolve);
+	}
+	else if(cmd == "search"){
+		const search = require("./search/");
+		search.bind(this)(rootPath, args, exitResolve);
 	}
 	else if(cmd == "status"){
 		const status = require("./status/");

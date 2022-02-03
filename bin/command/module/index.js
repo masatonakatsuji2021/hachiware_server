@@ -21,58 +21,58 @@ module.exports = function(rootPath, args, exitResolve){
 
     this.then(function(resolve){
   
-        var confName = args.getOpt("conf");
+        var ssName = args.getOpt("ssname");
 
-        if(confName){
+        if(ssName){
 
-            if(!fs.existsSync(rootPath + "/conf/" + confName + ".js")){
-                this.color.red("[Error] ").outn("The specified configuration file \"" + confName + "\" does not exist.");
+            if(!fs.existsSync(rootPath + "/" + ssName + "/conf.js")){
+                this.color.red("[Error] ").outn("The specified server-section \"" + ssName + "\" does not exist.");
                 return exitResolve();
             }
 
             var juge = false;
 
             try{
-                var conf = require(rootPath + "/conf/" + confName + ".js");
+                var conf = require(rootPath + "/" + ssName + "/conf.js");
                 juge = true;
             }catch(err){}
 
             if(!juge){
-                this.color.red("[Error] ").outn("Could not load \"" + confName + "\" configuration information.");
+                this.color.red("[Error] ").outn("The setting information of server-section \"" + ssName + "\" could not be read. ");
                 return exitResolve();
             }
 
-            conf._file = rootPath + "/conf/" + confName + ".js";
+            conf._file = rootPath + "/" + ssName + "/conf.js";
 
             minfo.conf = conf;
             return resolve();
         }
 
-        this.in("Q. Please specify the target configuration file name.", function(value, retry){
+        this.in("Q. Please specify the target server section.", function(value, retry){
 
             if(!value){
-                this.color.red("[Error] ").outn("The configuration file name is not specified.");
+                this.color.red("[Error] ").outn("The server section name is not specified.");
                 return retry();
             }
 
-            if(!fs.existsSync(rootPath + "/conf/" + value + ".js")){
-                this.color.red("[Error] ").outn("The specified configuration file \"" + value + "\" does not exist.");
+            if(!fs.existsSync(rootPath + "/" + value + "/conf.js")){
+                this.color.red("[Error] ").outn("The specified server-section \"" + value + "\" does not exist.");
                 return exitResolve();
             }
 
             var juge = false;
 
             try{
-                var conf = require(rootPath + "/conf/" + value + ".js");
+                var conf = require(rootPath + "/" + value + "/conf.js");
                 juge = true;
             }catch(err){}
 
             if(!juge){
-                this.color.red("[Error] ").outn("Could not load \"" + value + "\" configuration information.");
+                this.color.red("[Error] ").outn("The setting information of server-section \"" + value + "\" could not be read. ");
                 return retry();
             }
 
-            conf._file = rootPath + "/conf/" + value + ".js";
+            conf._file = rootPath + "/" + value + "/conf.js";
 
             minfo.conf = conf;
 
@@ -121,10 +121,6 @@ module.exports = function(rootPath, args, exitResolve){
                 mdn = new mdn(minfo.conf, this);
                 exists = true;
             }catch(err){
-                console.log(err);
-            }
-
-            if(!exists){
                 this.color.red("[Error] ").outn("The specified module name \"" + value + "\" does not exist.");
                 return retry();
             }
@@ -139,12 +135,11 @@ module.exports = function(rootPath, args, exitResolve){
             resolve();
         });
 
-    }).then(function(resolve){
-
-        minfo.module.fookConsole(rootPath,args,resolve);
-
     }).then(function(){
 
+        this.br(2).outn("......Here is the console of the server module.").br(2);
+
+        minfo.module.fookConsole(rootPath,args,exitResolve);
 
     }).start();
 
