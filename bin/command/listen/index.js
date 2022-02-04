@@ -47,11 +47,13 @@ module.exports = function(rootPath, args, exitResolve){
 		}catch(err){}
 	};
 
-	var workers = [];
 	var pidList = [];
 	var limit = 1;
 	var loadConf = null;
 	const packagePath = "../../../package.json";
+	var foreverd = true;
+	var refreshed = false;
+	var foreverdCount = 0;
 
 	const listenStart = function(){
 
@@ -124,7 +126,6 @@ module.exports = function(rootPath, args, exitResolve){
 			var newProcess = cluster.fork();
 			this.outn("   -  Thread " + newProcess.process.pid.toString().padEnd(5) + "");
 			pidList.push(newProcess.process.pid);
-			workers.push(newProcess);
 		}
 	
 		lockSave();
@@ -132,13 +133,6 @@ module.exports = function(rootPath, args, exitResolve){
 		this.br().color.greenn("  Listen Start!").br(2);
 
 		this.outn("Enter here if there is a command related to server operation.")
-		/*
-		.br()
-			.outn("   status   .. Display server operation status")
-			.outn("   refresh  .. Restart the server once")
-			.outn("   exit     .. Quit the server.")
-			.br()
-			*/
 			.in(" >", function(value, retry){
 	
 				if(!value){
@@ -165,10 +159,18 @@ module.exports = function(rootPath, args, exitResolve){
 					}
 				}
 				else if(value == "exit"){
+					this.br().outn("Server exit.").br();
 					clusterKill();
 				}
 				else{
-					this.color.red("[Error] ").outn("\"" + value + "\" command does not exist. retry.");
+					this.color.red("[Error] ").outn("\"" + value + "\" command does not exist.")
+						.br()
+						.outn("   status   .. Display server operation status")
+						.outn("   refresh  .. Restart the server once")
+						.outn("   exit     .. Quit the server.")
+						.br()
+						.outn("Enter the command from the above. retry.");
+
 					retry();
 				}
 			return;
@@ -177,10 +179,6 @@ module.exports = function(rootPath, args, exitResolve){
 	};
 
 	listenStart.bind(this)();
-
-	var foreverd = true;
-	var refreshed = false;
-	var foreverdCount = 0;
 
 	cluster.on('exit', (worker) => {
 
@@ -212,8 +210,6 @@ module.exports = function(rootPath, args, exitResolve){
 
 		pidList.splice(pidList.indexOf(delPid),1);
 		pidList.push(newPid);
-
-		workers.push(newProcess);
 
 		lockSave();
 	});
