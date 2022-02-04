@@ -54,6 +54,7 @@ module.exports = function(rootPath, args, exitResolve){
 	var foreverd = true;
 	var refreshed = false;
 	var foreverdCount = 0;
+	var setting = {};
 
 	const listenStart = function(){
 
@@ -70,11 +71,16 @@ module.exports = function(rootPath, args, exitResolve){
 	
 		// setting json load & write
 		const settingPath = rootPath + "/package.json";
-	
+
+		setting = {};
+
 		try{
-			var setting = require(settingPath);
-		}catch(error){
-			var setting = {};
+			setting = fs.readFileSync(settingPath).toString();
+			setting = JSON.parse(setting);
+		}catch(error){}
+
+		if(!setting){
+			setting = {};
 		}
 	
 		if(!setting.server){
@@ -88,7 +94,9 @@ module.exports = function(rootPath, args, exitResolve){
 		if(!setting.server.multiThreadMaxProcess){
 			setting.server.multiThreadMaxProcess = "auto";
 		}
-	
+
+		limit = 1;
+
 		if(setting.server.multiThread){
 			limit = os.cpus().length;
 			if(setting.server.multiThreadMaxProcess){
