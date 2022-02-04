@@ -15,7 +15,6 @@
  */
 
 const tool = require("hachiware_tool");
-const { spawn } = require("child_process");
 const cluster = require("cluster");
 const fs = require("fs");
 const os = require("os");
@@ -48,96 +47,157 @@ module.exports = function(rootPath, args, exitResolve){
 		}catch(err){}
 	};
 
+	var workers = [];
+	var pidList = [];
+	var limit = 1;
+	var loadConf = null;
 	const packagePath = "../../../package.json";
 
-	var package = require(packagePath);
+	const listenStart = function(){
 
-	this.outn("Hachieare Server [Version : " + package.version + "] Listen Start! *****************").br();
-
-	try{
-		var loadConf = loaderCheck.bind(this)(rootPath);
-	}catch(error){
-		this.color.red("[ERROR] ").outn(error.toString());
-		return exitResolve();
-	}
-
-	// setting json load & write
-//	const settingPath = rootPath + "/hachiware_server.json";
-	const settingPath = rootPath + "/package.json";
-
-	try{
-		var setting = require(settingPath);
-	}catch(error){
-		var setting = {};
-	}
-
-	if(!setting.server){
-		setting.server = {};
-	}
-
-	if(!setting.server.multiThread){
-		setting.server.multiThread = false;
-	}
-
-	if(!setting.server.multiThreadMaxProcess){
-		setting.server.multiThreadMaxProcess = "auto";
-	}
-
-	var pidList = [];
-
-	var limit = 1;
-
-	if(setting.server.multiThread){
-
-		var limit = os.cpus().length;
-		if(setting.server.multiThreadMaxProcess){
-			if(setting.server.multiThreadMaxProcess != "auto"){
-				limit = setting.server.multiThreadMaxProcess;
+		var package = require(packagePath);
+	
+		this.br(2).outn("  Hachieare Server [Version : " + package.version + "] Listen Start! *****************").br();
+	
+		try{
+			loadConf = loaderCheck.bind(this)(rootPath);
+		}catch(error){
+			this.color.red("[ERROR] ").outn(error.toString());
+			return exitResolve();
+		}
+	
+		// setting json load & write
+		const settingPath = rootPath + "/package.json";
+	
+		try{
+			var setting = require(settingPath);
+		}catch(error){
+			var setting = {};
+		}
+	
+		if(!setting.server){
+			setting.server = {};
+		}
+	
+		if(!setting.server.multiThread){
+			setting.server.multiThread = false;
+		}
+	
+		if(!setting.server.multiThreadMaxProcess){
+			setting.server.multiThreadMaxProcess = "auto";
+		}
+	
+		if(setting.server.multiThread){
+			limit = os.cpus().length;
+			if(setting.server.multiThreadMaxProcess){
+				if(setting.server.multiThreadMaxProcess != "auto"){
+					limit = setting.server.multiThreadMaxProcess;
+				}
 			}
 		}
-
-	}
-
-	this.br();
-
-	if(limit > 1){
-		var autoStr = "";
-		if(setting.server.multiThreadMaxProcess == "auto"){
-			autoStr = "(auto)";
+	
+		this.br();
+	
+		if(limit > 1){
+			var autoStr = "";
+			if(setting.server.multiThreadMaxProcess == "auto"){
+				autoStr = "(auto)";
+			}
+			this.outn("  # Multi thread. [thread = " + limit + autoStr + "]").br();
 		}
-		this.outn("# Multi thread. [thread = " + limit + autoStr + "]").br();
-	}
-	else{
-		this.outn("# Single thread.").br();
-	}
+		else{
+			this.outn("  # Single thread.").br();
+		}
+	
+		var clusterOption = {
+			exec: __dirname + "/start.js",
+			args: [rootPath],
+		}
+	
+		if(setting.server.manualMemoryRelease){
+			clusterOption.execArgv = ["--expose-gc"];
+		}
+	
+		cluster.setupMaster(clusterOption);
+	
+		for(var n = 0 ; n < limit ; n++){
+			var newProcess = cluster.fork();
+			this.outn("   -  Thread " + newProcess.process.pid.toString().padEnd(5) + "");
+			pidList.push(newProcess.process.pid);
+			workers.push(newProcess);
+		}
+	
+		lockSave();
+	
+		this.br().color.greenn("  Listen Start!").br(2);
 
-	cluster.setupMaster({
-		exec: __dirname + "/start.js",
-		args: [rootPath],
-	});
+		this.outn("Enter here if there is a command related to server operation.")
+		/*
+		.br()
+			.outn("   status   .. Display server operation status")
+			.outn("   refresh  .. Restart the server once")
+			.outn("   exit     .. Quit the server.")
+			.br()
+			*/
+			.in(" >", function(value, retry){
+	
+				if(!value){
+					this.color.red("[ERROR] ").outn("No command entered. retry.");
+					return retry();
+				}
+	
+				if(value == "status"){
+					const status = require("../status/");
+					status.bind(this)(rootPath, retry);
+				}
+				else if(value == "refresh"){
+	
+					this.br().outn("...Server Refresh!!").br();
 
-	for(var n = 0 ; n < limit ; n++){
-		var newProcess = cluster.fork();
-		this.outn(" -  Thread " + newProcess.process.pid.toString().padEnd(5) + "");
-		pidList.push(newProcess.process.pid);
-	}
+					refreshed = true;
+					foreverdCount = 0;
+	
+					if(refreshed){
+						for(var n = 0 ; n < pidList.length ; n++){
+							var cpid = pidList[n];
+							process.kill(cpid);
+						}
+					}
+				}
+				else if(value == "exit"){
+					clusterKill();
+				}
+				else{
+					this.color.red("[Error] ").outn("\"" + value + "\" command does not exist. retry.");
+					retry();
+				}
+			return;
+		});
 
-	lockSave();
+	};
 
-	this.br().color.greenn("Listen Start!").br();
+	listenStart.bind(this)();
 
 	var foreverd = true;
-	var foreverdCOunt = 0;
+	var refreshed = false;
+	var foreverdCount = 0;
 
 	cluster.on('exit', (worker) => {
 
-		if(!foreverd){
-			foreverdCOunt++;
+		if(!foreverd || refreshed){
+			foreverdCount++;
 
 			console.log("..thread exit " + worker.process.pid);
 
-			if(foreverdCOunt == limit){
-				process.exit(0);
+			if(foreverdCount == limit){
+
+				if(refreshed){
+					pidList = [];
+					listenStart.bind(vm)();
+				}
+				else{
+					process.exit(0);
+				}
 			}
 
 			return;
@@ -151,8 +211,9 @@ module.exports = function(rootPath, args, exitResolve){
 		console.log("* thread exit " + delPid + " -> restart " + newPid);
 
 		pidList.splice(pidList.indexOf(delPid),1);
-
 		pidList.push(newPid);
+
+		workers.push(newProcess);
 
 		lockSave();
 	});
@@ -163,15 +224,22 @@ module.exports = function(rootPath, args, exitResolve){
 	});
 
 	process.on("SIGINT", function (){ 
+		clusterKill();
+		return null;
+	});
+
+	const clusterKill = function(){
 
 		foreverd = false;
+		refreshed = false;
+		foreverdCount = 0;
+
 		for(var n = 0 ; n < pidList.length ; n++){
 			var pid = pidList[n];
 			try{
 				process.kill(pid);
 			}catch(error){}
 		}
+	};
 
-		return null;
-	});
 };

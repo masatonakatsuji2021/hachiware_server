@@ -27,7 +27,7 @@ module.exports = function(rootPath, noOutputMsg, exitResolve){
     var loadConf = [];
 
     if(!noOutputMsg){
-        this.outn("# Listen Server-Section").br();
+        this.outn("  # Listen Server-Section").br();
     }
 
     for(var n = 0 ; n < confList.length ; n++){
@@ -66,7 +66,7 @@ module.exports = function(rootPath, noOutputMsg, exitResolve){
         if(conf.enable === false){
             fileName += "(disable) ";
         }
-        var connectStr = " - " + fileName.padEnd(50) + " ";
+        var connectStr = "   - " + fileName.padEnd(25) + " ";
 
         if(conf.ssl){
             connectStr += "https://";
@@ -88,7 +88,7 @@ module.exports = function(rootPath, noOutputMsg, exitResolve){
                 this.color.grayn(connectStr);
             }
             else{
-                this.outn(connectStr);
+                this.color.bluen(connectStr);
             }
         }
 

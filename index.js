@@ -15,16 +15,26 @@
  */
 
 const CLI = require("hachiware_cli");
-const fs = require("fs");
 
 module.exports = function(rootPath){
-	
+
+	if(!rootPath){
+		rootPath = process.cwd();
+	}
+
 	const versions = require("./package.json");
 
 	const cli = new CLI();
 
 	cli.then(function(resolve){
 
+		try{
+			var setting = require(process.cwd() + "/package.json");
+			if(setting.server.path){
+				rootPath = setting.server.path;
+			}
+		}catch(error){}
+	
 		var args = this.getArgs();
 
 		if(args.length){

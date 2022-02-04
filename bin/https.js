@@ -88,7 +88,7 @@ module.exports = function(port, params){
 		}
 
 	}catch(error){
-		this.color.red("[ERROR] ").outn(error).br().color.red(".....Canceled.");
+		console.log(error);
 		process.exit();
 	}
 

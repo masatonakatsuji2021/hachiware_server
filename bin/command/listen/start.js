@@ -14,7 +14,6 @@
  * ====================================================================
  */
 
-const CLI = require("hachiware_cli");
 const listen = require("../../listen.js");
 
 process.clusterMode = true;
@@ -25,12 +24,84 @@ args.shift();
 
 var rootPath = args[0];
 
-var cli = new CLI();
+listen(rootPath, function(){
+    process.exit();
+});
 
-cli.then(function(){
+const settingPath = rootPath + "/package.json";
 
-    listen.bind(this)(rootPath, function(){
-        process.exit();
-    });
+try{
+    var setting = require(settingPath);
+}catch(error){
+    var setting = {};
+}
 
-}).start();
+const manualGc = function(){
+
+    if(process.execArgv.indexOf("--expose-gc") == -1){
+        return;
+    }
+
+    if(!setting.server){
+        return;
+    }
+    
+    if(!setting.server.manualMemoryReleaseIinterval){
+        return;
+    }
+
+    releaseInterval = setting.server.manualMemoryReleaseIinterval;  
+
+    setInterval(function(){
+        global.gc();
+    },releaseInterval);
+
+};
+
+const refreshCycleDay = function(){
+
+    if(!setting.server){
+        return;
+    }
+
+    if(!setting.server.threadRefreshCycleDay){
+        return;
+    }
+
+    var day = 0;
+    setInterval(function(){
+        day++;
+        if(day > setting.server.threadRefreshCycleDay){
+            process.exit();
+        }
+    }, 24 * 3600 * 1000);
+
+};
+const refreshCycleDate = function(){
+
+    if(!setting.server){
+        return;
+    }
+
+    if(!setting.server.threadRefreshCycleDate){
+        return;
+    }
+
+    var d = new Date(setting.server.threadRefreshCycleDay);
+    var target = d.getTime();
+
+    setInterval(function(){
+        var d = new Date();
+        var now = d.getTime();
+
+        if(now > target){
+            process.exit();
+        }
+
+    }, 1000);
+
+};
+
+manualGc();
+refreshCycleDay();
+refreshCycleDate();

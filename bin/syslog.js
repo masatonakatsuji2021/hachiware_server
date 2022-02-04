@@ -22,6 +22,7 @@ module.exports = function(rootPath, exception){
 
     const convertShortCode = function(contents){
 
+        console.log(contents);
         contents = contents.split("{DATETIME}").join(tool.getDateFormat("{DATETIME}"));
         contents = contents.split("{PID}").join(process.pid);
         contents = contents.split("{EXCEPTION}").join(exception.stack.toString());
@@ -32,11 +33,7 @@ module.exports = function(rootPath, exception){
     try{
         var setting = require(rootPath + "/package.json");
     }catch(error){
-        var setting = {
-            server:{
-                systemLog:"sylog/sylog.log",
-            },
-        };
+        var setting = {};
     }
 
     if(!setting.server){

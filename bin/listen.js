@@ -133,7 +133,7 @@ module.exports = function(rootPath, exitResolve){
 		}
 
 	}catch(error){
-		this.br().color.red("[ERROR] ").outn(error);
+		console.log(error);
 		exitResolve();
 	}
 
