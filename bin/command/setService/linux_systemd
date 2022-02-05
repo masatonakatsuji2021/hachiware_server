@@ -1,0 +1,10 @@
+[Unit]
+Description = {description}
+
+[Service]
+ExecStart = {path}
+Restart = {restart}
+Type = {type}
+
+[Install]
+WantedBy = {wantedBy}

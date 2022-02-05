@@ -82,6 +82,9 @@ module.exports = function(conf ,req ,res){
 			if(req.url == "/image.png"){
 				pageContent = fs.readFileSync(__dirname + "/welcome/image.png");
 			}
+			else if(req.url == "/favicon.ico"){
+				pageContent = fs.readFileSync(__dirname + "/welcome/favicon.ico");
+			}
 			else{
 				pageContent = fs.readFileSync(__dirname + "/welcome/index.html").toString();
 			}

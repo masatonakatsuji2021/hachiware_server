@@ -22,9 +22,17 @@
 		const listen = require("./listen/");
 		listen.bind(this)(rootPath,args, exitResolve);
 	}
+	else if(cmd == "exit"){
+		const exit = require("./exit/");
+		exit.bind(this)(rootPath, exitResolve);
+	}
 	else if(cmd == "setup"){
 		const setup = require("./setup/");
 		setup.bind(this)(rootPath, args, exitResolve);
+	}
+	else if(cmd == "set_service"){
+		const setService = require("./setService/");
+		setService.bind(this)(rootPath, args, exitResolve);
 	}
 	else if(
 		cmd == "addss" || 
@@ -45,8 +53,13 @@
 		const modules = require("./module");
 		modules.bind(this)(rootPath, args, exitResolve);
 	}
+	else if(cmd == "version"){
+		const version = require("./version/");
+		version.bind(this)(exitResolve);
+	}
 	else{
 		this.color.red("[ERROR] ").outn("The command \"" + cmd + "\ does not exist.");
+
 		if(retry){
 			return retry();
 		}

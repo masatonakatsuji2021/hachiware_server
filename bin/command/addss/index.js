@@ -234,7 +234,7 @@ module.exports = function(rootPath, args, exitResolve){
 
 		this.outn("Create a server with the above contents.");
 
-		this.in("Q. Is it OK? [y/n] (y)", function(value, retry){
+		this.in("Is it this ok? [y/n] (y)", function(value, retry){
 
 			if(!value){
 				value = "y";
