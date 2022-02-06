@@ -19,10 +19,10 @@ const fs = require("fs");
 module.exports = function(binPath){
 
     var source_hs = __dirname + "/linux_gcli.js";
-    var source_hsl = __dirname + "/linux_gcli_listen.js";
+//    var source_hsl = __dirname + "/linux_gcli_listen.js";
 
     var path_hs = binPath + "/hachiware_server";
-    var path_hsl = binPath + "/hachiware_server_listen";
+//    var path_hsl = binPath + "/hachiware_server_listen";
 
     execSync("chmod 0755 " + source_hs);
     
@@ -33,6 +33,7 @@ module.exports = function(binPath){
     execSync("chmod 0755 " + path_hs);
     console.log("# install hachiware_server");
 
+    /*
     execSync("chmod 0755 " + source_hsl);
     if(fs.existsSync(path_hsl)){
         fs.unlinkSync(path_hsl);
@@ -52,4 +53,5 @@ module.exports = function(binPath){
     fs.writeFileSync(systemdPath, str);
     execSync("chmod 0755 " + systemdPath);
     console.log("# add systemd hachiware_server_listen");
+    */
 };

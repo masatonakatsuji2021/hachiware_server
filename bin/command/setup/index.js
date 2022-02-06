@@ -9,6 +9,19 @@ module.exports = function(rootPath , args, exitResolve){
 
         this.outn("hachiware Server Setup").br();
 
+        this.in("Q. Specify the directory path. (" + rootPath + ")", function(value){
+
+            if(!value){
+                value = rootPath;
+            }
+
+            setups.path = value;
+
+            resolve();
+        });
+        
+    }).then(function(resolve){
+
         this.in("Q. Do you want the server startup to be multithreaded? [y/n] (y)", function(value, retry){
 
             if(!value){
@@ -32,6 +45,10 @@ module.exports = function(rootPath , args, exitResolve){
         });
 
     }).then(function(resolve){
+
+        if(!setups.multiThread){
+            return resolve();
+        }
 
         var maxCpu = os.cpus().length;
 
@@ -109,6 +126,32 @@ module.exports = function(rootPath , args, exitResolve){
             }
 
             resolve();
+        });
+
+    }).then(function(resolve){
+
+
+        this.in("Q. If you want to change the memory release to specify every mirisecond, specify the interval. ()", function(value){
+
+            setups.manualMemoryReleaseInterval = false;
+            if(parseInt(value)){
+                setups.manualMemoryReleaseInterval = value; 
+            }
+
+            resolve();            
+        });
+
+    }).then(function(resolve){
+
+        this.in("Q. Specify the number of valid days for the server thread. ()", function(value){
+
+            setups.threadRefreshCycleDay = false; 
+            if(parseInt(value)){
+                setups.threadRefreshCycleDay = value; 
+            }
+
+            resolve();    
+
         });
 
     }).then(function(resolve){
