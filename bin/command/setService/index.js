@@ -16,6 +16,7 @@
 
 const os = require("os");
 const fs = require("fs");
+const {execSync} = require("child_process");
 
 module.exports = function(rootPath, argv, exitResolve){
 
@@ -144,7 +145,7 @@ module.exports = function(rootPath, argv, exitResolve){
                     fs.unlinkSync(systemdPath);
                 }
 
-                fs.writeFileSync(systemdPath, str);
+                fs.writeFileSync(systemdPath, systemdStr);
                 execSync("chmod 0755 " + systemdPath);
 
                 this.br(2).outn("Service registration is complete.")

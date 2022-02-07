@@ -21,10 +21,4 @@ module.exports = function(binPath){
     fs.copyFileSync(__dirname + "/win32", binPath + "/hachiware_server",);
     fs.copyFileSync(__dirname + "/win32.cmd", binPath + "/hachiware_server.cmd");
     console.log("# install hachiware_server");
-    
-    /*
-    fs.copyFileSync(__dirname + "/win32_listen", binPath + "/hachiware_server_listen",);
-    fs.copyFileSync(__dirname + "/win32_listen.cmd", binPath + "/hachiware_server_listen.cmd",);
-    console.log("# install hachiware_server_listen");
-    */
 };
