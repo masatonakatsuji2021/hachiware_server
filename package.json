@@ -17,8 +17,7 @@
     "hachiware_server_module_proxy": "^1.0.0",
     "hachiware_server_module_webroot": "^1.0.0",
     "hachiware_server_module_cookie": "^1.0.0",
-    "hachiware_server_module_session": "^1.0.0",
-    "hachiware_server_module_framework": "^1.0.0"
+    "hachiware_server_module_session": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {
