@@ -131,14 +131,14 @@ module.exports = function(rootPath , args, exitResolve){
 
         https.request(url + "/" + dlData.path, function(res){
 
-            var body;
+            var body2 = Buffer.alloc(0);
 
             res.on("data", function(data){
-                body = data;
+                body2 = Buffer.concat([body2, data],data.length + body2.length);
             });
 
             res.on("end", function(){
-                getZip = body;
+                getZip = body2;
                 resolve();
             });
 
