@@ -19,7 +19,25 @@ module.exports = function(rootPath , args, exitResolve){
 
             resolve();
         });
+
+    }).then(function(resolve){
         
+        this.in("Q. Specify the user. If not specified, root privileges will be applied. ()", function(value){
+
+            setups.user = value;
+
+            resolve();
+        });
+
+    }).then(function(resolve){
+
+        this.in("Q. Specify the group. If not specified, root privileges will be applied. ()", function(value){
+
+            setups.group = value;
+
+            resolve();
+        });
+
     }).then(function(resolve){
 
         this.in("Q. Do you want the server startup to be multithreaded? [y/n] (y)", function(value, retry){
