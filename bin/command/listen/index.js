@@ -63,7 +63,7 @@ module.exports = function(rootPath, args, exitResolve){
 		this.br(2).outn("  Hachieare Server [Version : " + package.version + "] Listen Start! *****************").br();
 	
 		try{
-			loadConf = loaderCheck.bind(this)(rootPath);
+			loadConf = loaderCheck.bind(this)(rootPath, false, exitResolve);
 		}catch(error){
 			this.color.red("[ERROR] ").outn(error.toString());
 			return exitResolve();

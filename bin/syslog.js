@@ -22,7 +22,6 @@ module.exports = function(rootPath, exception){
 
     const convertShortCode = function(contents){
 
-        console.log(contents);
         contents = contents.split("{DATETIME}").join(tool.getDateFormat("{DATETIME}"));
         contents = contents.split("{PID}").join(process.pid);
         contents = contents.split("{EXCEPTION}").join(exception.stack.toString());

@@ -15,11 +15,12 @@
  */
 
 const tool = require("hachiware_tool");
+const sync = require("hachiware_sync");
 const fs = require("hachiware_fs");
 const http = require("./http.js");
 const https = require("./https.js");
 const loaderCheck = require("./command/listen/loaderCheck.js");
-const sysLog = require("./sysLog.js");
+const sysLog = require("./syslog.js");
 
 module.exports = function(rootPath, exitResolve){
 
@@ -115,15 +116,67 @@ module.exports = function(rootPath, exitResolve){
 				confListOnPort[conf.port].push(conf);
 			}
 		}
-			
+		
+		var vm = this;
+
+		sync.then(function(resolve0){
+
+			if(!Object.keys(confListOnPort).length){
+				return resolve0();
+			}
+
+			sync.foreach(confListOnPort, function(resolve1, confs, port){
+				http.bind(vm)(port, confs, resolve1);
+			},function(){
+				resolve0();
+			});
+
+		}).then(function(resolve0){
+
+			if(!Object.keys(confListOnPortAndSSL).length){
+				return resolve0();
+			}
+
+			sync.foreach(confListOnPortAndSSL, function(resolve1, confs, port){
+				https.bind(vm)(port, confs,resolve1);
+			},function(){
+				resolve0();
+			});
+
+		}).then(function(){
+
+			if(process.getuid){
+				
+				if(fs.existsSync(rootPath + "/package.json")){
+					var packages = require(rootPath + "/package.json");
+
+					if(packages.server){
+
+						// change group
+						if(packages.server.group){
+							process.setgid(packages.server.group);
+						}
+
+						// change user
+						if(packages.server.user){
+							process.setuid(packages.server.user);
+						}
+					}
+				}
+			}
+	
+		}).start();
+
+		/*
 		var colums = Object.keys(confListOnPort);
 		for(var n = 0 ; n < colums.length ; n++){
 			var port = colums[n];
 			var confs = confListOnPort[port];
 
-			http.bind(this)(port, confs);
 		}
-	
+		*/
+
+		/*	
 		var colums = Object.keys(confListOnPortAndSSL);
 		for(var n = 0 ; n < colums.length ; n++){
 			var port = colums[n];
@@ -131,6 +184,7 @@ module.exports = function(rootPath, exitResolve){
 	
 			https.bind(this)(port, confs);
 		}
+		*/
 
 	}catch(error){
 		console.log(error);
@@ -141,39 +195,4 @@ module.exports = function(rootPath, exitResolve){
 		sysLog(rootPath, error);
 	});
 
-	/**
-	process.on("exit",function(){
-
-		console.log("[" + tool.getDateFormat("{DATETIME}") + "] Server Exit.");
-
-		var colums = Object.keys(confListOnPort);
-		for(var n = 0 ; n < colums.length ; n++){
-			var port = colums[n];
-			var confs = confListOnPort[port];
-
-			for(var n2 = 0 ; n2 < confs.length ; n2++){
-				var c_ = confs[n2];
-
-				context.loadFookModule(c_, "end");
-			}
-		}
-
-		var colums = Object.keys(confListOnPortAndSSL);
-		for(var n = 0 ; n < colums.length ; n++){
-			var port = colums[n];
-			var confs = confListOnPortAndSSL[port];
-
-			for(var n2 = 0 ; n2 < confs.length ; n2++){
-				var c_ = confs[n2];
-
-				context.loadFookModule(c_, "end");
-			}
-		}
-
-	});
-
-	process.on("SIGINT", function (){ 
-		process.exit(0);
-	});
-	**/
 };

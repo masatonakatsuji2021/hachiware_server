@@ -15,7 +15,7 @@
 const http = require("http");
 const server = require("./server.js");
 
-module.exports = function(port, params){
+module.exports = function(port, params, resolve){
 
 	var context = this;
 
@@ -53,7 +53,9 @@ module.exports = function(port, params){
 	
 	h.httpAllowHalfOpen = true;
 
-	h.listen(port);
+	h.listen(port, function(){
+		resolve();
+	});
 
 	/**
 	for(var n = 0 ; n < params.length ; n++){

@@ -30,6 +30,7 @@ module.exports = function(rootPath, noOutputMsg, exitResolve){
         this.outn("  # Listen Server-Section").br();
     }
 
+    var portList = [];
     for(var n = 0 ; n < confList.length ; n++){
         var ssName = confList[n];
 
@@ -118,15 +119,16 @@ module.exports = function(rootPath, noOutputMsg, exitResolve){
                     try{
                         require(module);
                     }catch(error){
-                        this.color.red("[Error] ").outn("Host=" + conf._host + "  " + error.toString());
+                        this.color.yellow("[Warm] ").outn("Host=" + conf._host + "  " + error.toString());
                     }
                 }
             }    
         }
 
         loadConf.push(conf);
+        portList.push(conf.port);
     }
-
+   
     if(loadConf.length == 0){
         this.br().outn(".....Quit because there is no server to start.");
         return exitResolve();

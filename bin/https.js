@@ -18,7 +18,7 @@ const fs = require('fs');
 const tls = require("tls");
 const path0 = require("path");
 
-module.exports = function(port, params){
+module.exports = function(port, params, resolve){
 
 	var context = this;
 
@@ -139,7 +139,9 @@ module.exports = function(port, params){
 
 	hs.httpAllowHalfOpen = true;
 
-	hs.listen(port);
+	hs.listen(port, function(){
+		resolve();
+	});
 
 	/*
 	for(var n = 0 ; n < params.length ; n++){
