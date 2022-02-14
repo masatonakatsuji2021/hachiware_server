@@ -151,14 +151,16 @@ On the other hand, in the local installation, the setting directory is the direc
 
 Since it is only on any directory that is made into a server, it is possible to start the server individually.
 
+* 2022/02/14 hachiware_server_listen is obsolete.
+
 ---
 
 ## # Server construction
 
-For global installation, Server construction is possible only with the `` hachiware_server_listen`` command.
+For global installation, Server construction is possible only with the `` hachiware_server`` command.
 
 ```code
-hachiware_server_listen
+hachiware_server start
 ```
 
 For local installation, To start the server, execute the following command on the directory where ``index.js`` is installed.
@@ -383,8 +385,8 @@ The following is an overview of the server modules currently available.
 |[hachiware_server_module_public](https://github.com/masatonakatsuji2021/hachiware_server_module_public/blob/main/README.md)|Set the bizarre that can publish source files such as css and image files.|
 |[hachiware_server_module_get_request](https://github.com/masatonakatsuji2021/hachiware_server_module_get_request/blob/main/README.md)|Get the request data contents (GET, POST, etc.)|
 |[hachiware_server_module_proxy](https://github.com/masatonakatsuji2021/hachiware_server_module_proxy/blob/main/README.md)|It is a server module that realizes a proxy server.|
-|[hachiware_server_module_callback](https://github.com/masatonakatsuji2021/hachiware_server_module_callback/blob/main/README.md)|Implement a simple callback that can receive requests.<br>※ This module cannot be used with ``hachiware_server_module_framework``|
-|[hachiware_server_module_framework](https://github.com/masatonakatsuji2021/hachiware_server_module_framework/blob/main/README.md)|A module that provides a web framework.<br>* This module cannot be used with ``hachiware_server_module_callback``.|
+|[hachiware_server_module_callback](https://github.com/masatonakatsuji2021/hachiware_server_module_callback/blob/main/README.md)|Implement a simple callback that can receive requests.<br>※ This module cannot be used with ``mike_js``|
+|[mike](https://github.com/masatonakatsuji2021/mike/blob/main/README.md)|A module that provides a web framework.<br>* This module cannot be used with ``hachiware_server_module_callback``.|
 
 ---
 
