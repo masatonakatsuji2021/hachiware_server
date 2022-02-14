@@ -30,9 +30,9 @@
 		const setup = require("./setup/");
 		setup.bind(this)(rootPath, args, exitResolve);
 	}
-	else if(cmd == "set_service"){
-		const setService = require("./setService/");
-		setService.bind(this)(rootPath, args, exitResolve);
+	else if(cmd == "set_systemd"){
+		const setSystemd = require("./setSystemd/");
+		setSystemd.bind(this)(rootPath, args, exitResolve);
 	}
 	else if(
 		cmd == "addss" || 

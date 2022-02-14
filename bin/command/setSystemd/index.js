@@ -20,14 +20,14 @@ const {execSync} = require("child_process");
 
 module.exports = function(rootPath, argv, exitResolve){
 
-    this.br().outn("  Service Setup").br(2);
+    this.br().outn("  Systemd Setup (LinuxOS Only)").br(2);
 
     if(os.platform() != "linux"){
         this.color.red("[Warm] ").outn("This feature is only available on Linux-based operating systems.\nThis function cannot be used with the OS of this terminal.").outn("OS : " + os.version());
         return exitResolve();
     }
 
-    var services = {};
+    var systemds = {};
 
     this.then(function(resolve){
 
@@ -38,7 +38,7 @@ module.exports = function(rootPath, argv, exitResolve){
                 return retry();
             }
 
-            services.name = value + ".service";
+            systemds.name = value + ".service";
 
             resolve();
         });
@@ -47,7 +47,7 @@ module.exports = function(rootPath, argv, exitResolve){
 
         this.in("Q. Enter if there is a Description. ()", function(value, retry){
 
-            services.description = value;
+            systemds.description = value;
 
             resolve();
         });
@@ -60,7 +60,7 @@ module.exports = function(rootPath, argv, exitResolve){
                 value = "always";
             }
 
-            services.restart = value;
+            systemds.restart = value;
 
             resolve();
         });
@@ -73,7 +73,7 @@ module.exports = function(rootPath, argv, exitResolve){
                 value = "simple";
             }
 
-            services.type = value;
+            systemds.type = value;
 
             resolve();
         });   
@@ -86,29 +86,54 @@ module.exports = function(rootPath, argv, exitResolve){
                 value = "multi-user.target";
             }
 
-            services.wantedBy = value;
+            systemds.wantedBy = value;
 
             resolve();
         });   
 
     }).then(function(resolve){
         
-        this.in("Q. Please enter any changes to the service path. (/etc/systemd/system)", function(value){
+        this.in("Q. Please enter any changes to the systemd path. (/etc/systemd/system)", function(value){
 
             if(!value){
                 value = "/etc/systemd/system";
             }
 
-            services.systemPath = value;
+            systemds.systemPath = value;
+
+            resolve();
+        });
+
+    }).then(function(resolve){
+        
+        this.outn("Q. Do you want to run \"systemctl daemon-reload\" automatically after registering with systemd?")
+            .in("   If the systemds registered in some systemd are affected, select n (= no) and manually execute \"systemctl daemon -reload\". [y/n] (y)", function(value, retry){
+
+            if(!value){
+                value = "y";
+            }
+
+            value = value.toLowerCase();
+
+            if(value == "y"){
+                systemds.daemonReload = true;
+            }
+            else if(value == "n"){
+                systemds.daemonReload = false;
+            }
+            else{
+                this.color.red("[Error] ").outn("Enter either \"y\"(=Yes) or \"n\"(=No). retry.");
+                return retry();
+            }
 
             resolve();
         });
 
     }).then(function(){
 
-        this.outData(services);
+        this.outData(systemds);
 
-        this.outn("Register the service with the above contents.")
+        this.outn("Register the systemd with the above contents.")
             .in("It is this ok? [y/n] (y)", function(value, retry){
 
                 if(!value){
@@ -129,29 +154,32 @@ module.exports = function(rootPath, argv, exitResolve){
                 }
 
                 if(!status){
-                    this.br(2).outn(".....Service Setup Canceled.");
+                    this.br(2).outn(".....Systemd Setup Canceled.");
                     return exitResolve();
                 }
 
                 var systemdStr = fs.readFileSync(__dirname + "/linux_systemd").toString();
-                systemdStr = systemdStr.replace("{path}", "node " + rootPath + " start");
-                systemdStr = systemdStr.replace("{description}", services.description);
-                systemdStr = systemdStr.replace("{restart}", services.restart);
-                systemdStr = systemdStr.replace("{type}", services.type);
-                systemdStr = systemdStr.replace("{wantedBy}", services.wantedBy);
+                systemdStr = systemdStr.replace("{path}", process.argv[0] +" " + process.argv[1] + " start");
+                systemdStr = systemdStr.replace("{description}", systemds.description);
+                systemdStr = systemdStr.replace("{restart}", systemds.restart);
+                systemdStr = systemdStr.replace("{type}", systemds.type);
+                systemdStr = systemdStr.replace("{wantedBy}", systemds.wantedBy);
 
-                var systemdPath = services.systemPath + "/" + services.name;
+                var systemdPath = systemds.systemPath + "/" + systemds.name;
                 if(fs.existsSync(systemdPath)){
                     fs.unlinkSync(systemdPath);
                 }
 
                 fs.writeFileSync(systemdPath, systemdStr);
                 execSync("chmod 0755 " + systemdPath);
+                if(systemds.daemonReload){
+                    execSync("systemctl daemon-reload");
+                }
 
-                this.br(2).outn("Service registration is complete.")
-                    .outn("* After that, you can instruct the persistence or stop from the terminal console with the same command as other services.")
+                this.br(2).outn("Systemd registration is complete.")
+                    .outn("* After that, you can instruct the persistence or stop from the terminal console with the same command as other systemds.")
                     .br()
-                    .outn(".....Service Setup Complete.")
+                    .outn(".....Systemd Setup Complete.")
                 ;
 
                 exitResolve();

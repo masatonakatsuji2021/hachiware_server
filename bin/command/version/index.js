@@ -28,7 +28,7 @@ module.exports = function(exitResolve){
         "- start": "Start the server.\n",
         "- exit": "Quit the server.\n",
         "- setup": "Make initial settings for the server.\n",
-        "- set_service": "Register for the service.\n                     * This feature is only available on Linux devices.\n",
+        "- set_systemd": "Register for the systemd.\n                     * This feature is only available on Linux devices.\n",
         "- addss | init":"Add a new server section.\n",
         "- search": "Find and import the public image for creating the server section.\n",
         "- status": "Displays the server operation status.\n",
