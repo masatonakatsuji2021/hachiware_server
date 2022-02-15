@@ -159,7 +159,7 @@ module.exports = function(rootPath, argv, exitResolve){
                 }
 
                 var systemdStr = fs.readFileSync(__dirname + "/linux_systemd").toString();
-                systemdStr = systemdStr.replace("{path}", process.argv[0] +" " + process.argv[1] + " start");
+                systemdStr = systemdStr.replace("{path}", process.execPath +" " + rootPath + " start");
                 systemdStr = systemdStr.replace("{description}", systemds.description);
                 systemdStr = systemdStr.replace("{restart}", systemds.restart);
                 systemdStr = systemdStr.replace("{type}", systemds.type);
