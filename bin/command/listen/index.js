@@ -65,7 +65,7 @@ module.exports = function(rootPath, args, exitResolve){
 		try{
 			loadConf = loaderCheck.bind(this)(rootPath, false, exitResolve);
 		}catch(error){
-			this.color.red("[ERROR] ").outn(error.toString());
+			this.color.red("[ERROR] ").outn(error.stack.toString());
 			return exitResolve();
 		}
 	

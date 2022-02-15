@@ -27,7 +27,12 @@ module.exports = function(rootPath, noOutputMsg, exitResolve){
     var loadConf = [];
 
     if(!noOutputMsg){
-        this.outn("  # Listen Server-Section").br();
+        if(this.outn){
+            this.outn("  # Listen Server-Section").br();
+        }
+        else{
+            console.log("  # Listen Server-Section\n");
+        }
     }
 
     var portList = [];
@@ -86,10 +91,14 @@ module.exports = function(rootPath, noOutputMsg, exitResolve){
 
         if(!noOutputMsg){
             if(conf.enable === false){
-                this.color.grayn(connectStr);
+                if(this.color){
+                    this.color.grayn(connectStr);
+                }
             }
             else{
-                this.color.bluen(connectStr);
+                if(this.color){
+                    this.color.bluen(connectStr);
+                }
             }
         }
 
@@ -119,7 +128,13 @@ module.exports = function(rootPath, noOutputMsg, exitResolve){
                     try{
                         require(module);
                     }catch(error){
-                        this.color.yellow("[Warm] ").outn("Host=" + conf._host + "  " + error.toString());
+                        if(this.color){
+                            this.color.red("[Error] ").outn("Host=" + conf._host + "  " + error.toString());
+                        }
+                        else{
+                            console.log("[Error] Host=" + conf._host + "  " + error.toString());
+                        }
+                        return exitResolve();
                     }
                 }
             }    
@@ -130,7 +145,12 @@ module.exports = function(rootPath, noOutputMsg, exitResolve){
     }
    
     if(loadConf.length == 0){
-        this.br().outn(".....Quit because there is no server to start.");
+        if(this.br){
+            this.br().outn(".....Quit because there is no server to start.");
+        }
+        else{
+            console.log("\n.....Quit because there is no server to start.");
+        }
         return exitResolve();
     }
 
@@ -145,7 +165,12 @@ module.exports = function(rootPath, noOutputMsg, exitResolve){
                 try{
                     require(module);
                 }catch(error){
-                    this.color.red("[Error] ").outn("Host=" + conf._host + "  " + error.toString());
+                    if(this.color){
+                        this.color.red("[Error] ").outn("Host=" + conf._host + "  " + error.toString());
+                    }
+                    else{
+                        console.log("[Error] Host=" + conf._host + "  " + error.toString());
+                    }
                 }
             }
         }
