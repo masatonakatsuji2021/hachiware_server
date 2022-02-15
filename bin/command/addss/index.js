@@ -48,11 +48,7 @@ module.exports = function(rootPath, args, exitResolve){
 			}
 		}
 
-		var ssName = "";
-
-		var existFile = fs.readdirSync(rootPath);
-		var fileLen = existFile.length + 1;
-		ssName = "sect_" + ("000" + fileLen).slice(-4);
+		var ssName = "sect_" + tool.getDateFormat("{YYYY}{MM}{DD}{HH}{mm}{ss}");
 
 		this.in("Q. Enter the server-section name (" + ssName  + ")", function(value, retry){
 
@@ -79,10 +75,10 @@ module.exports = function(rootPath, args, exitResolve){
 			return resolve();
 		}
 
-		this.in("Q. Enter the host name. (localhost)",function(value, retry){
+		this.in("Q. Enter the host name. (*)",function(value, retry){
 
 			if(!value){
-				value = "localhost";
+				value = "*";
 			}
 
 			addss.host = value;
