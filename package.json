@@ -18,6 +18,7 @@
     "hachiware_server_module_webroot": "^1.0.0",
     "hachiware_server_module_cookie": "^1.0.0",
     "hachiware_server_module_session": "^1.0.0",
+    "hachiware_server_module_websocket": "^1.0.0",
     "mike_js": "^1.0.0",
     "node-zip": "^1.1.1"
   },
