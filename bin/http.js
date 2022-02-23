@@ -50,7 +50,37 @@ module.exports = function(port, params, resolve){
 
 		server.bind(context)(decisionParam, req, res);
 	});
+
+	h.on("upgrade", function(req, socket, head){
+
+		var decisionParam = null;
+
+		var targetHost = req.headers.host;
+
+		for(var n = 0 ; n < params.length ; n++){
+			var p_ = params[n];
+
+			for(var n = 0 ; n < params.length ; n++){
+				var p_ = params[n];
 	
+				if(p_.host == "*"){
+					decisionParam = p_;
+				}
+	
+				if(targetHost === p_._host){
+					decisionParam = p_;
+					break;
+				}
+			}
+
+			if(!decisionParam){
+				return;
+			}
+	
+			context.loadFookModule(decisionParam, "upgrade", [req, socket, head]);
+		}
+	});
+
 	h.httpAllowHalfOpen = true;
 
 	h.listen(port, function(){

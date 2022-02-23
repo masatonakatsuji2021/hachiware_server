@@ -35,7 +35,7 @@ module.exports = function(rootPath, exitResolve){
 		if(!this.modules[conf._file]){
 			return;
 		}
-
+		
 		var colums = Object.keys(this.modules[conf._file]);
 		for(var n = 0; n < colums.length ; n++){
 			var moduleName = colums[n];
