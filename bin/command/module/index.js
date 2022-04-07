@@ -137,8 +137,6 @@ module.exports = function(rootPath, args, exitResolve){
 
     }).then(function(){
 
-        this.br(2).outn("......Here is the console of the server module.").br(2);
-
         minfo.module.fookConsole(rootPath,args,exitResolve);
 
     }).start();
